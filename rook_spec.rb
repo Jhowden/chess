@@ -10,11 +10,12 @@ describe Rook do
     allow( rook.possible_moves ).to receive( :clear )
   end
 
-  it "returns all possibile moves" do
-    expect( board ).to receive( :find_horizontal_spaces ).with( rook ).and_return( [[3,4], [2,4], [1,4], [5,4]] )
-    expect( board ).to receive( :find_vertical_spaces ).with( rook ).and_return( [[4,3], [4,2], [4,5], [4,6]] )
-    rook.determine_possible_moves
-    expect( rook.possible_moves.size ).to eq( 8 )
+  describe "#determine_possible_moves"
+    it "returns all possibile moves" do
+      expect( board ).to receive( :find_horizontal_spaces ).with( rook ).and_return( [[3,4], [2,4], [1,4], [5,4]] )
+      expect( board ).to receive( :find_vertical_spaces ).with( rook ).and_return( [[4,3], [4,2], [4,5], [4,6]] )
+      rook.determine_possible_moves
+      expect( rook.possible_moves.size ).to eq( 8 )
+    end
   end
-  
 end
