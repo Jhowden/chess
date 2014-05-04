@@ -7,9 +7,7 @@ describe Board do
   let(:piece2) { double( team: :white, orientation: :up ) }
   let(:piece3) { double( team: :black ) }
   let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down ) }
-  let(:rook) { double( team: "black" ) }
-  let(:rook2) { double( team: "white" ) }
-  let(:rook3) { double( team: "black" ) }
+  let(:piece5) { double( team: :black ) }
   
   before (:each) do
     stub_const "Position", Class.new
@@ -160,29 +158,32 @@ describe Board do
   describe "#find_horizontal_spaces" do
     
     before (:each) do
-      allow( rook ).to receive( :position ).and_return( rook )
-      allow( rook ).to receive( :file_position_converter ).and_return( 4 )
-      allow( rook ).to receive( :rank_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :position ).and_return( piece5 )
+      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
       allow( game_board.possible_moves ).to receive( :clear )
     end
     
     context "when there are no other pieces in the same row" do
       it "returns an array of possible moves" do
-        expect( game_board.find_horizontal_spaces( rook ).size ).to eq( 7 )
+        game_board.find_horizontal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 7 )
       end
     end
     
     context "when there is an enemy in the same row" do
       it "returns an array of possible moves with that space included and not any others past it" do
-        game_board.chess_board[4][2] = rook2
-        expect( game_board.find_horizontal_spaces( rook ).size ).to eq( 5 )
+        game_board.chess_board[4][2] = piece2
+        game_board.find_horizontal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 5 )
         end
     end
     
     context "when there is a friendly piece in the same row" do
       it "returns an array not including that space or any more after it" do
-        game_board.chess_board[4][5] = rook3
-        expect( game_board.find_horizontal_spaces( rook ).size ).to eq( 4 )
+        game_board.chess_board[4][5] = piece3
+        game_board.find_horizontal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 4 )
       end
     end
   end
@@ -190,29 +191,68 @@ describe Board do
   describe "#find_vertical_spaces" do
     
     before (:each) do
-      allow( rook ).to receive( :position ).and_return( rook )
-      allow( rook ).to receive( :file_position_converter ).and_return( 4 )
-      allow( rook ).to receive( :rank_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :position ).and_return( piece5 )
+      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
       allow( game_board.possible_moves ).to receive( :clear )
     end
     
     context "when there are no other pieces in the same column" do
       it "return an array of possible moves" do
-        expect( game_board.find_vertical_spaces( rook ).size ).to eq( 7 )
+        game_board.find_vertical_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 7 )
       end
     end
     
     context "when there is an enemy in the same column" do
-      it "returns an array of possibles moves with that space included and not any others past it" do
-        game_board.chess_board[2][4] = rook2
-        expect( game_board.find_vertical_spaces( rook ).size ).to eq( 5 )
+      it "returns an array of possible moves with that space included and not any others past it" do
+        game_board.chess_board[2][4] = piece2
+        game_board.find_vertical_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 5 )
       end
     end
     
     context "when there is a friendly piece in the same row" do
       it "returns an array not including that space or any more after it" do
-        game_board.chess_board[6][4] = rook3
-        expect( game_board.find_vertical_spaces( rook ).size ).to eq( 5 )
+        game_board.chess_board[6][4] = piece3
+        game_board.find_vertical_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 5 )
+      end
+    end
+  end
+  
+  describe "#find_diagonal_spaces" do
+    
+    before (:each) do
+      allow( piece5 ).to receive( :position ).and_return( piece5 )
+      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
+      allow( game_board.possible_moves ).to receive( :clear )
+    end
+    
+    context "when there are no other pieces diagonally" do
+      it "returns an array of possible moves" do
+        game_board.find_diagonal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 13 )
+      end
+    end
+    
+    context "when there is an enemy in a diagonal space" do
+      it "returns an array of possible moves with that space included but not any others past it" do
+        game_board.chess_board[2][2] = piece2
+        game_board.chess_board[6][2] = piece2
+        game_board.find_diagonal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 10 )
+      end
+    end
+    
+    context "when there is a friendly piece in the same diagonal space" do
+      it "returns an array not including that sapce or any more after it" do
+        game_board.chess_board[2][2] = piece3
+        game_board.chess_board[6][2] = piece3
+        game_board.chess_board[3][5] = piece3
+        game_board.find_diagonal_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 5 )
       end
     end
   end

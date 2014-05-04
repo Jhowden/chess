@@ -59,31 +59,8 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    left_counter = 1
-    while legal_move?( column, row - left_counter )
-      if empty_space?( column, row - left_counter )
-        possible_moves << [column, row - left_counter]
-      elsif different_team?( column, row - left_counter, piece )
-        possible_moves << [column, row - left_counter]
-        break
-      else
-        break
-      end
-      left_counter += 1
-    end
-    
-    right_counter = 1
-    while legal_move?( column, row + right_counter )
-      if empty_space?( column, row + right_counter )
-        possible_moves << [column, row + right_counter]
-      elsif different_team?( column, row + right_counter, piece )
-        possible_moves << [column, row + right_counter]
-        break
-      else
-        break
-      end
-      right_counter += 1
-    end
+    find_spaces_to_the_left( column, row, piece )
+    find_spaces_to_the_right( column, row, piece )
      
     possible_moves
   end
@@ -94,31 +71,22 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    up_counter = 1
-    while legal_move?( column - up_counter, row )
-      if empty_space?( column - up_counter, row )
-        possible_moves << [column - up_counter, row ]
-      elsif different_team?( column - up_counter, row, piece )
-        possible_moves << [column - up_counter, row ]
-        break
-      else
-        break
-      end
-      up_counter += 1
-    end
+    find_spaces_above( column, row, piece )
+    find_spaces_below( column, row, piece )
     
-    down_counter = 1
-    while legal_move?( column + down_counter, row )
-      if empty_space?( column + down_counter, row )
-        possible_moves << [column + down_counter, row ]
-      elsif different_team?( column + down_counter, row, piece )
-        possible_moves << [column + up_counter, row ]
-        break
-      else
-        break
-      end
-      down_counter += 1
-    end
+    possible_moves
+  end
+  
+  def find_diagonal_spaces( piece )
+    possible_moves.clear unless possible_moves.empty?
+    
+    row = piece.position.file_position_converter 
+    column = piece.position.rank_position_converter
+    
+    find_spaces_diagonally_top_left( column, row, piece )
+    find_spaces_diagonally_top_right( column, row, piece )
+    find_spaces_diagonally_bottom_left( column, row, piece )
+    find_spaces_diagonally_bottom_right( column, row, piece )
     
     possible_moves
   end
@@ -143,5 +111,133 @@ class Board
   
   def different_team?( column, row, piece )
     chess_board[column][row].team != piece.team
+  end
+  
+  def find_spaces_to_the_left( column, row, piece )
+    left_counter = 1
+    while legal_move?( column, row - left_counter )
+      if empty_space?( column, row - left_counter )
+        possible_moves << [column, row - left_counter]
+      elsif different_team?( column, row - left_counter, piece )
+        possible_moves << [column, row - left_counter]
+        break
+      else
+        break
+      end
+      left_counter += 1
+    end
+  end
+  
+  def find_spaces_to_the_right( column, row, piece )
+    right_counter = 1
+    while legal_move?( column, row + right_counter )
+      if empty_space?( column, row + right_counter )
+        possible_moves << [column, row + right_counter]
+      elsif different_team?( column, row + right_counter, piece )
+        possible_moves << [column, row + right_counter]
+        break
+      else
+        break
+      end
+      right_counter += 1
+    end
+  end
+  
+  def find_spaces_above( column, row, piece )
+    up_counter = 1
+    while legal_move?( column - up_counter, row )
+      if empty_space?( column - up_counter, row )
+        possible_moves << [column - up_counter, row ]
+      elsif different_team?( column - up_counter, row, piece )
+        possible_moves << [column - up_counter, row ]
+        break
+      else
+        break
+      end
+      up_counter += 1
+    end
+  end
+  
+  def find_spaces_below( column, row, piece )
+    down_counter = 1
+    while legal_move?( column + down_counter, row )
+      if empty_space?( column + down_counter, row )
+        possible_moves << [column + down_counter, row ]
+      elsif different_team?( column + down_counter, row, piece )
+        possible_moves << [column + up_counter, row ]
+        break
+      else
+        break
+      end
+      down_counter += 1
+    end
+  end
+  
+  def find_spaces_diagonally_top_left( column, row, piece )
+    up_counter = 1
+    left_counter = 1 
+    while legal_move?( column - up_counter, row - left_counter )
+      if empty_space?( column - up_counter, row - left_counter )
+        possible_moves << [column - up_counter, row - left_counter ]
+      elsif different_team?( column - up_counter, row - left_counter, piece )
+        possible_moves << [column - up_counter, row - left_counter ]
+        break
+      else
+        break
+      end
+      up_counter += 1
+      left_counter += 1
+    end
+  end
+  
+  def find_spaces_diagonally_top_right( column, row, piece )
+    up_counter = 1
+    right_counter = 1 
+    while legal_move?( column - up_counter, row + right_counter )
+      if empty_space?( column - up_counter, row + right_counter )
+        possible_moves << [column - up_counter, row + right_counter ]
+      elsif different_team?( column - up_counter, row + right_counter, piece )
+        possible_moves << [column - up_counter, row + right_counter ]
+        break
+      else
+        break
+      end
+      up_counter += 1
+      right_counter += 1
+    end
+  end
+  
+  def find_spaces_diagonally_bottom_left( column, row, piece )
+    down_counter = 1
+    left_counter = 1 
+    while legal_move?( column + down_counter, row - left_counter )
+      if empty_space?( column + down_counter, row - left_counter )
+        possible_moves << [column + down_counter, row - left_counter ]
+      elsif different_team?( column + down_counter, row - left_counter, piece )
+        possible_moves << [column + down_counter, row - left_counter ]
+        break
+      else
+        break
+      end
+      down_counter += 1
+      left_counter += 1
+    end
+  end
+  
+  def find_spaces_diagonally_bottom_right( column, row, piece )
+    down_counter = 1
+    right_counter = 1 
+    while legal_move?( column + down_counter, row + right_counter )
+      if empty_space?( column + down_counter, row + right_counter )
+        possible_moves << [column + down_counter, row + right_counter ]
+      elsif different_team?( column + down_counter, row + right_counter, piece )
+        possible_moves << [column + down_counter, row + right_counter ]
+        break
+      else
+        break
+      end
+      down_counter += 1
+      right_counter += 1
+    end
   end
 end
