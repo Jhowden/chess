@@ -256,4 +256,33 @@ describe Board do
       end
     end
   end
+  
+  describe "#find_knight_spaces" do
+    
+    before (:each) do
+      allow( piece5 ).to receive( :position ).and_return( piece5 )
+      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
+      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
+      allow( game_board.possible_moves ).to receive( :clear )
+    end
+    
+    it "returns an array of all possible moves" do
+      game_board.find_knight_spaces( piece5 )
+      expect( game_board.possible_moves.size ).to eq( 8 )
+    end
+    
+    it "returns an array of possibles moves with that space included" do
+      game_board.chess_board[2][3] = piece2
+      game_board.chess_board[5][2] = piece2
+      game_board.find_knight_spaces( piece5 )
+      expect( game_board.possible_moves.size ).to eq( 8 )
+    end
+    
+    it "returns an array not including that space" do
+      game_board.chess_board[2][3] = piece3
+      game_board.chess_board[5][2] = piece3
+      game_board.find_knight_spaces( piece5 )
+      expect( game_board.possible_moves.size ).to eq( 6 )
+    end
+  end
 end

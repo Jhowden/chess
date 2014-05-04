@@ -90,6 +90,24 @@ class Board
    
     possible_moves
   end
+  
+  def find_knight_spaces( piece )
+    possible_moves.clear unless possible_moves.empty?
+    
+    row = piece.position.file_position_converter 
+    column = piece.position.rank_position_converter
+    
+    possible_moves << [column - 1, row - 2] if empty_space?( column - 1, row - 2 ) || different_team?( column - 1, row - 2, piece )
+    possible_moves << [column - 2, row - 1] if empty_space?( column - 2, row - 1 ) || different_team?( column - 2, row - 1, piece )
+    possible_moves << [column + 1, row - 2] if empty_space?( column + 1, row - 2 ) || different_team?( column + 1, row - 2, piece )
+    possible_moves << [column + 2, row - 1] if empty_space?( column + 2, row - 1 ) || different_team?( column + 2, row - 1, piece )
+    possible_moves << [column - 1, row + 2] if empty_space?( column - 1, row + 2 ) || different_team?( column - 1, row + 2, piece )
+    possible_moves << [column - 2, row + 1] if empty_space?( column - 2, row + 1 ) || different_team?( column - 2, row + 1, piece )
+    possible_moves << [column + 1, row + 2] if empty_space?( column + 1, row + 2 ) || different_team?( column + 1, row + 2, piece )
+    possible_moves << [column + 2, row + 1] if empty_space?( column + 2, row + 1 ) || different_team?( column + 2, row + 1, piece )
+    
+    possible_moves
+  end
    
    # def update_board( piece )
    #   if legal_move?( piece )
