@@ -193,7 +193,7 @@ describe Board do
       allow( rook ).to receive( :position ).and_return( rook )
       allow( rook ).to receive( :file_position_converter ).and_return( 4 )
       allow( rook ).to receive( :rank_position_converter ).and_return( 4 )
-      expect( game_board.possible_moves ).to receive( :clear )
+      allow( game_board.possible_moves ).to receive( :clear )
     end
     
     context "when there are no other pieces in the same column" do

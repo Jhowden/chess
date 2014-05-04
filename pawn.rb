@@ -10,16 +10,13 @@ require_relative 'chess_piece'
 
 class Pawn < ChessPiece
   
-  attr_reader :possible_moves
-  
   def initialize( name, file, rank, team, board, orientation )
     super( name, file, rank, team, board )
     @orientation = orientation
-    @possible_moves = []
   end
   
   def determine_possible_moves # will probably need to empty @possibe_moves at the beginning each time to make sure that it is always up to date
-    possible_moves.clear
+    possible_moves.clear unless possible_moves.empty?
     
     possible_moves << piece_move_forward? if piece_move_forward? != nil
     possible_moves << piece_move_forward_diagonally?( :left ) if piece_move_forward_diagonally?( :left ) != nil

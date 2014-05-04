@@ -53,13 +53,13 @@ class Board
     end
   end
   
-  def find_horizontal_spaces( piece ) 
-    possible_moves.clear
+  def find_horizontal_spaces( piece ) # these methods just return an array of indices, not a position instance
+    possible_moves.clear unless possible_moves.empty?
     
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    left_counter = 1 # this does the left
+    left_counter = 1
     while legal_move?( column, row - left_counter )
       if empty_space?( column, row - left_counter )
         possible_moves << [column, row - left_counter]
@@ -72,7 +72,7 @@ class Board
       left_counter += 1
     end
     
-    right_counter = 1 # this does the left
+    right_counter = 1
     while legal_move?( column, row + right_counter )
       if empty_space?( column, row + right_counter )
         possible_moves << [column, row + right_counter]
@@ -88,8 +88,8 @@ class Board
     possible_moves
   end
   
-  def find_vertical_spaces( piece )
-    possible_moves.clear
+  def find_vertical_spaces( piece ) # these methods just return an array of indices, not a position instance
+    possible_moves.clear unless possible_moves.empty?
     
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter

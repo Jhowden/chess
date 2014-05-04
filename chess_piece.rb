@@ -2,7 +2,7 @@ class ChessPiece
   
   FILE_POSITIONS = ["a", "b", "c", "d", "e", "f", "g", "h"]
   
-  attr_reader :name, :captured, :position, :board, :team
+  attr_reader :name, :captured, :position, :board, :team, :possible_moves
   
   def initialize( name, file, rank, team, board )
     @name = name
@@ -10,6 +10,7 @@ class ChessPiece
     @board = board
     @team = team
     @captured = false
+    @possible_moves = []
   end
   
   def piece_captured

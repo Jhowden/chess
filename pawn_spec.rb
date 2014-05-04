@@ -11,7 +11,7 @@ describe Pawn do
   before :each do
     allow( board ).to receive( :move_straight? )
     allow( board ).to receive( :move_forward_diagonally? )
-    expect( pawn.possible_moves ).to receive( :clear )
+    allow( pawn.possible_moves ).to receive( :clear )
   end
 
   describe "#determine_possible_moves" do
