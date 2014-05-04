@@ -87,7 +87,7 @@ class Board
     find_spaces_diagonally_top_right( column, row, piece )
     find_spaces_diagonally_bottom_left( column, row, piece )
     find_spaces_diagonally_bottom_right( column, row, piece )
-    
+   
     possible_moves
   end
    

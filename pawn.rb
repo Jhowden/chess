@@ -15,7 +15,7 @@ class Pawn < ChessPiece
     @orientation = orientation
   end
   
-  def determine_possible_moves # will probably need to empty @possibe_moves at the beginning each time to make sure that it is always up to date
+  def determine_possible_moves
     possible_moves.clear unless possible_moves.empty?
     
     possible_moves << piece_move_forward? if piece_move_forward? != nil
