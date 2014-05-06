@@ -115,16 +115,15 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    possible_moves << [column - 1, row]
-    possible_moves << [column - 1, row - 1]
-    possible_moves << [column, row - 1]
-    possible_moves << [column + 1, row - 1]
-    possible_moves << [column + 1, row]
-    possible_moves << [column + 1, row + 1]
-    possible_moves << [column, row + 1]
-    possible_moves << [column - 1, row + 1]
+    possible_moves << [column - 1, row]     if empty_space?( column - 1, row )     || different_team?( column - 1, row, piece )
+    possible_moves << [column - 1, row - 1] if empty_space?( column - 1, row - 1 ) || different_team?( column - 1, row - 1, piece )
+    possible_moves << [column, row - 1]     if empty_space?( column, row - 1 )     || different_team?( column, row - 1, piece )
+    possible_moves << [column + 1, row - 1] if empty_space?( column + 1, row - 1 ) || different_team?( column + 1, row - 1, piece )
+    possible_moves << [column + 1, row]     if empty_space?( column + 1, row )     || different_team?( column + 1, row, piece )
+    possible_moves << [column + 1, row + 1] if empty_space?( column + 1, row + 1 ) || different_team?( column + 1, row + 1, piece )
+    possible_moves << [column, row + 1]     if empty_space?( column, row + 1 )     || different_team?( column, row + 1, piece )
+    possible_moves << [column - 1, row + 1] if empty_space?( column - 1, row + 1 ) || different_team?( column - 1, row + 1, piece )
     
-    puts possible_moves.inspect
     possible_moves
   end
   

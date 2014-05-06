@@ -266,23 +266,29 @@ describe Board do
       allow( game_board.possible_moves ).to receive( :clear )
     end
     
-    it "returns an array of all possible moves" do
-      game_board.find_knight_spaces( piece5 )
-      expect( game_board.possible_moves.size ).to eq( 8 )
+    context "when there are no surrounding pieces" do
+      it "returns an array of all possible moves" do
+        game_board.find_knight_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 8 )
+      end
     end
     
-    it "returns an array of possibles moves with that space included" do
-      game_board.chess_board[2][3] = piece2
-      game_board.chess_board[5][2] = piece2
-      game_board.find_knight_spaces( piece5 )
-      expect( game_board.possible_moves.size ).to eq( 8 )
+    context "when there are surrounding enemy pieces" do
+      it "returns an array of possibles moves with those space included" do
+        game_board.chess_board[2][3] = piece2
+        game_board.chess_board[5][2] = piece2
+        game_board.find_knight_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 8 )
+      end
     end
     
-    it "returns an array not including that space" do
-      game_board.chess_board[2][3] = piece3
-      game_board.chess_board[5][2] = piece3
-      game_board.find_knight_spaces( piece5 )
-      expect( game_board.possible_moves.size ).to eq( 6 )
+    context "when there are surrounding friendly pieces" do
+      it "returns an array not including that space" do
+        game_board.chess_board[2][3] = piece3
+        game_board.chess_board[5][2] = piece3
+        game_board.find_knight_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 6 )
+      end
     end
   end
   
@@ -295,9 +301,29 @@ describe Board do
       allow( game_board.possible_moves ).to receive( :clear )
     end
     
-    it "returns an array of all possible moves" do
-      game_board.find_king_spaces( piece5 )
-      expect( game_board.possible_moves.size ).to eq( 8 )
+    context "when there are no surrounding pieces" do
+      it "returns an array of all possible moves" do
+        game_board.find_king_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 8 )
+      end
+    end
+
+    context "when there are surrounding enemy pieces" do
+      it "returns an array of possible moves with those spaces included" do
+        game_board.chess_board[3][3] = piece2
+        game_board.chess_board[5][5] = piece2
+        game_board.find_king_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 8 )
+      end
+    end
+
+    context "when there are surrounding enemy pieces" do
+      it "returns an array of possible moves not including those spaces" do
+        game_board.chess_board[3][3] = piece3
+        game_board.chess_board[5][5] = piece3
+        game_board.find_king_spaces( piece5 )
+        expect( game_board.possible_moves.size ).to eq( 6 )
+      end
     end
   end
 end
