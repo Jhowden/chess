@@ -1,11 +1,3 @@
-# movement instance variable in the initialize method that is populated by an array of possible places that the piece can move. Call a method to populate this instance variable. Can update this for each piece of a team at the beginning of their turn. Can only move as far as their path is unblocked. Must be a spot before their team member or the spot of an opponent.
-
-# A piece needs to know its movement (ie pawn can move forward one spot if no one is blocking its path or can move diagonally to capture a piece)
-
-# Need to account for pieces that start on top and head down, not just peices that start at bottom and move up. What about an orientation variable that keeps track of N/S/E/W and then moves based on that...
-
-# Board should have a method about diagonals (what is three digaonal spaces from here...)
-
 require_relative 'chess_piece'
 
 class Pawn < ChessPiece
