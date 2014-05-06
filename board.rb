@@ -14,7 +14,7 @@ class Board
     check_move?( row_position ) && check_move?( column_position ) ? true : false
   end
   
-  def move_or_capture_piece( piece ) # rename update board?
+  def move_or_capture_piece( piece ) # rename update board and just iterate through the piece to update the board?
     row = piece.position.file_position_converter
     column = piece.position.rank_position_converter
     @captured_piece = chess_board[column][row]
@@ -28,7 +28,7 @@ class Board
     column = piece.position.rank_position_converter
     
     if piece.orientation == :up 
-      legal_move?( row, column - 1 ) && empty_space?( column - 1, row ) # think about moving out this logic
+      legal_move?( row, column - 1 ) && empty_space?( column - 1, row )
     else
       legal_move?( row, column + 1 ) && empty_space?( column + 1, row )
     end
@@ -108,14 +108,25 @@ class Board
 
     possible_moves
   end
-   
-   # def update_board( piece )
-   #   if legal_move?( piece )
-   #     move_or_capture( piece )
-   #   else
-   #     gets.chomp
-   #   end
-   # end
+  
+  def find_king_spaces( piece )
+    possible_moves.clear unless possible_moves.empty?
+    
+    row = piece.position.file_position_converter 
+    column = piece.position.rank_position_converter
+    
+    possible_moves << [column - 1, row]
+    possible_moves << [column - 1, row - 1]
+    possible_moves << [column, row - 1]
+    possible_moves << [column + 1, row - 1]
+    possible_moves << [column + 1, row]
+    possible_moves << [column + 1, row + 1]
+    possible_moves << [column, row + 1]
+    possible_moves << [column - 1, row + 1]
+    
+    puts possible_moves.inspect
+    possible_moves
+  end
   
   private
   
