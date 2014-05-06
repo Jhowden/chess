@@ -123,7 +123,7 @@ class Board
     possible_moves << [column + 1, row + 1] if empty_space?( column + 1, row + 1 ) || different_team?( column + 1, row + 1, piece )
     possible_moves << [column, row + 1]     if empty_space?( column, row + 1 )     || different_team?( column, row + 1, piece )
     possible_moves << [column - 1, row + 1] if empty_space?( column - 1, row + 1 ) || different_team?( column - 1, row + 1, piece )
-    
+
     possible_moves
   end
   
