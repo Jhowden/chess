@@ -326,4 +326,11 @@ describe Board do
       end
     end
   end
+  
+  describe "#find_king" do
+    it "finds the position of a king piece" do
+      game_board.chess_board[7][2] = piece3
+      expect( game_board.find_king( piece3 ) ).to eq( [7, 2] )
+    end
+  end
 end

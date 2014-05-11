@@ -127,6 +127,13 @@ class Board
     possible_moves
   end
   
+  def find_king( piece ) # I am unsure if this method is really necessary...
+    column_location = chess_board.detect{ |column_location| column_location.include?( piece ) }
+    column = chess_board.index( column_location )
+    row = column_location.index( piece )
+    [column, row]
+  end
+  
   private
   
   def check_move?( cell )
