@@ -12,4 +12,11 @@ class King < ChessPiece
 
     possible_moves
   end
+  
+  def check?( possible_enemy_moves_array )
+    row = self.position.file_position_converter
+    column = self.position.rank_position_converter
+    
+    possible_enemy_moves_array.include?( [column, row] )
+  end
 end

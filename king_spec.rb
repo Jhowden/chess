@@ -17,4 +17,16 @@ describe King do
       expect( king.possible_moves.size ).to eq( 6 )
     end
   end
+  
+  describe "check?" do
+    it "determines if the king is in check" do
+      expect( king.check?( [[7, 4], [1, 3], [5, 2], [2, 4]] ) ).to be_false
+    end
+  end
+  
+  # describe "checkmate?" do
+  #   it "determines if the king is in checkmate" do
+  #     expect( king.checkmate?( [[3, 4], [4, 3], [5, 3], [5, 4], [4, 5], [3, 5], [4,4]] ) ).to be_true
+  #   end
+  # end
 end
