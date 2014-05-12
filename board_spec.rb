@@ -1,20 +1,20 @@
 require_relative 'board'
+require_relative 'position'
 
 describe Board do
   
+  FILE_POSITIONS = ["a", "b", "c", "d", "e", "f", "g", "h"]
+  
   let(:game_board) { described_class.new }
   let(:piece) { double( position: Position.new( "f", 5 ), team: :black, orientation: :up ) }
-  let(:piece2) { double( team: :white, orientation: :up ) }
+  let(:piece2) { double( position: Position.new( "a", 8 ), team: :white, orientation: :up ) }
   let(:piece3) { double( team: :black ) }
   let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down ) }
-  let(:piece5) { double( team: :black ) }
+  let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
   
   before (:each) do
-    stub_const "Position", Class.new
-    allow( Position ).to receive( :new ).and_return( Position )
     game_board.create_board
-    allow( Position ).to receive( :file_position_converter ).and_return( 5 )
-    allow( Position ).to receive( :rank_position_converter ).and_return( 3 )
+    allow( game_board.possible_moves ).to receive( :clear )
   end
 
   describe "#create_board" do
@@ -31,20 +31,19 @@ describe Board do
     end
   end
   
-  describe "#move_or_capture_piece" do
+  describe "#update_board" do
     context "when a space is occupied" do
       it "removes and replaces the opposing piece with new piece" do
         game_board.chess_board[3][5] = piece2
-        captured_piece = game_board.move_or_capture_piece( piece )
+        expect( piece2 ).to receive( :captured )
+        game_board.update_board( piece )
         expect( game_board.chess_board[3][5] ).to eq( piece )
-        expect( captured_piece ).to eq( piece2 )
       end
     end
     
     context "when a space is open" do
       it "places the piece in the cell" do
-        captured_piece = game_board.move_or_capture_piece( piece )
-        expect( captured_piece ).to be_nil
+        game_board.update_board( piece )
         expect( game_board.chess_board[3][5] ).to eq( piece )
       end
     end
@@ -66,9 +65,6 @@ describe Board do
     
     context "when at the edge of the board" do
       it "prevents the piece from moving off the board" do
-        allow( piece2 ).to receive( :position ).and_return( piece2 )
-        allow( piece2 ).to receive( :file_position_converter ).and_return( 0 )
-        allow( piece2 ).to receive( :rank_position_converter ).and_return( 0 )
         expect( game_board.move_straight?( piece2 )).to be_false
       end
     end
@@ -86,9 +82,6 @@ describe Board do
         end
         
         it "doesn't allow for an illegal move" do
-          allow( piece2 ).to receive( :position ).and_return( piece2 )
-          allow( piece2 ).to receive( :file_position_converter ).and_return( 0 )
-          allow( piece2 ).to receive( :rank_position_converter ).and_return( 0 )
           expect( game_board.move_straight?( piece2 )).to be_false
         end
       end
@@ -157,13 +150,6 @@ describe Board do
   
   describe "#find_horizontal_spaces" do
     
-    before (:each) do
-      allow( piece5 ).to receive( :position ).and_return( piece5 )
-      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
-      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
-      allow( game_board.possible_moves ).to receive( :clear )
-    end
-    
     context "when there are no other pieces in the same row" do
       it "returns an array of possible moves" do
         game_board.find_horizontal_spaces( piece5 )
@@ -190,13 +176,6 @@ describe Board do
   
   describe "#find_vertical_spaces" do
     
-    before (:each) do
-      allow( piece5 ).to receive( :position ).and_return( piece5 )
-      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
-      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
-      allow( game_board.possible_moves ).to receive( :clear )
-    end
-    
     context "when there are no other pieces in the same column" do
       it "return an array of possible moves" do
         game_board.find_vertical_spaces( piece5 )
@@ -222,13 +201,6 @@ describe Board do
   end
   
   describe "#find_diagonal_spaces" do
-    
-    before (:each) do
-      allow( piece5 ).to receive( :position ).and_return( piece5 )
-      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
-      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
-      allow( game_board.possible_moves ).to receive( :clear )
-    end
     
     context "when there are no other pieces diagonally" do
       it "returns an array of possible moves" do
@@ -259,13 +231,6 @@ describe Board do
   
   describe "#find_knight_spaces" do
     
-    before (:each) do
-      allow( piece5 ).to receive( :position ).and_return( piece5 )
-      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
-      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
-      allow( game_board.possible_moves ).to receive( :clear )
-    end
-    
     context "when there are no surrounding pieces" do
       it "returns an array of all possible moves" do
         game_board.find_knight_spaces( piece5 )
@@ -293,14 +258,6 @@ describe Board do
   end
   
   describe "#find_king_spaces" do
-    
-    before (:each) do
-      allow( piece5 ).to receive( :position ).and_return( piece5 )
-      allow( piece5 ).to receive( :file_position_converter ).and_return( 4 )
-      allow( piece5 ).to receive( :rank_position_converter ).and_return( 4 )
-      allow( game_board.possible_moves ).to receive( :clear )
-    end
-    
     context "when there are no surrounding pieces" do
       it "returns an array of all possible moves" do
         game_board.find_king_spaces( piece5 )
@@ -324,6 +281,18 @@ describe Board do
         game_board.find_king_spaces( piece5 )
         expect( game_board.possible_moves.size ).to eq( 6 )
       end
+    end
+  end
+  
+  describe "#convert_to_file_position" do
+    it "converts an index into a file position" do
+      expect( game_board.convert_to_file_position( 0 ) ).to eq( "a" )
+    end
+  end
+  
+  describe "#convert_to_rank_position" do
+    it "converts an index into a rank position" do
+      expect( game_board.convert_to_rank_position( 5 ) ).to eq( 3 )
     end
   end
   

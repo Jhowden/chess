@@ -14,13 +14,11 @@ class Board
     check_move?( row_position ) && check_move?( column_position ) ? true : false
   end
   
-  def move_or_capture_piece( piece ) # rename update board and just iterate through the piece to update the board?
+  def update_board( piece ) # rename update board and just iterate through the pieces to update the board?
     row = piece.position.file_position_converter
     column = piece.position.rank_position_converter
-    @captured_piece = chess_board[column][row]
+    chess_board[column][row].captured unless chess_board[column][row] == nil
     chess_board[column][row] = piece
-    
-    @captured_piece
   end
   
   def move_straight?( piece )
@@ -97,14 +95,14 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    possible_moves << [column - 1, row - 2] if empty_space?( column - 1, row - 2 ) || different_team?( column - 1, row - 2, piece )
-    possible_moves << [column - 2, row - 1] if empty_space?( column - 2, row - 1 ) || different_team?( column - 2, row - 1, piece )
-    possible_moves << [column + 1, row - 2] if empty_space?( column + 1, row - 2 ) || different_team?( column + 1, row - 2, piece )
-    possible_moves << [column + 2, row - 1] if empty_space?( column + 2, row - 1 ) || different_team?( column + 2, row - 1, piece )
-    possible_moves << [column - 1, row + 2] if empty_space?( column - 1, row + 2 ) || different_team?( column - 1, row + 2, piece )
-    possible_moves << [column - 2, row + 1] if empty_space?( column - 2, row + 1 ) || different_team?( column - 2, row + 1, piece )
-    possible_moves << [column + 1, row + 2] if empty_space?( column + 1, row + 2 ) || different_team?( column + 1, row + 2, piece )
-    possible_moves << [column + 2, row + 1] if empty_space?( column + 2, row + 1 ) || different_team?( column + 2, row + 1, piece )
+    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column - 1, row - 2 ) || different_team?( column - 1, row - 2, piece )
+    possible_moves << [convert_to_file_position( column - 2 ), convert_to_rank_position( row - 1 )] if empty_space?( column - 2, row - 1 ) || different_team?( column - 2, row - 1, piece )
+    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column + 1, row - 2 ) || different_team?( column + 1, row - 2, piece )
+    possible_moves << [convert_to_file_position( column + 2 ), convert_to_rank_position( row - 1 )] if empty_space?( column + 2, row - 1 ) || different_team?( column + 2, row - 1, piece )
+    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row + 2 )] if empty_space?( column - 1, row + 2 ) || different_team?( column - 1, row + 2, piece )
+    possible_moves << [convert_to_file_position( column - 2 ), convert_to_rank_position( row + 1 )] if empty_space?( column - 2, row + 1 ) || different_team?( column - 2, row + 1, piece )
+    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row + 2 )] if empty_space?( column + 1, row + 2 ) || different_team?( column + 1, row + 2, piece )
+    possible_moves << [convert_to_file_position( column + 2 ), convert_to_rank_position( row + 1 )] if empty_space?( column + 2, row + 1 ) || different_team?( column + 2, row + 1, piece )
 
     possible_moves
   end
@@ -115,16 +113,24 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
-    possible_moves << [column - 1, row]     if empty_space?( column - 1, row )     || different_team?( column - 1, row, piece )
-    possible_moves << [column - 1, row - 1] if empty_space?( column - 1, row - 1 ) || different_team?( column - 1, row - 1, piece )
-    possible_moves << [column, row - 1]     if empty_space?( column, row - 1 )     || different_team?( column, row - 1, piece )
-    possible_moves << [column + 1, row - 1] if empty_space?( column + 1, row - 1 ) || different_team?( column + 1, row - 1, piece )
-    possible_moves << [column + 1, row]     if empty_space?( column + 1, row )     || different_team?( column + 1, row, piece )
-    possible_moves << [column + 1, row + 1] if empty_space?( column + 1, row + 1 ) || different_team?( column + 1, row + 1, piece )
-    possible_moves << [column, row + 1]     if empty_space?( column, row + 1 )     || different_team?( column, row + 1, piece )
-    possible_moves << [column - 1, row + 1] if empty_space?( column - 1, row + 1 ) || different_team?( column - 1, row + 1, piece )
+    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row )]     if empty_space?( column - 1, row )     || different_team?( column - 1, row, piece )
+    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row - 1 )] if empty_space?( column - 1, row - 1 ) || different_team?( column - 1, row - 1, piece )
+    possible_moves << [convert_to_file_position( column )    , convert_to_rank_position( row - 1 )] if empty_space?( column, row - 1 )     || different_team?( column, row - 1, piece )
+    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row - 1 )] if empty_space?( column + 1, row - 1 ) || different_team?( column + 1, row - 1, piece )
+    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row )]     if empty_space?( column + 1, row )     || different_team?( column + 1, row, piece )
+    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row + 1 )] if empty_space?( column + 1, row + 1 ) || different_team?( column + 1, row + 1, piece )
+    possible_moves << [convert_to_file_position( column )    , convert_to_rank_position( row + 1 )] if empty_space?( column, row + 1 )     || different_team?( column, row + 1, piece )
+    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row + 1 )] if empty_space?( column - 1, row + 1 ) || different_team?( column - 1, row + 1, piece )
 
     possible_moves
+  end
+  
+  def convert_to_file_position( index )
+    FILE_POSITIONS[index]
+  end
+  
+  def convert_to_rank_position( index )
+    ( index - 8 ).abs
   end
   
   def find_king( piece ) # I am unsure if this method is really necessary...
@@ -152,9 +158,9 @@ class Board
     left_counter = 1
     while legal_move?( column, row - left_counter )
       if empty_space?( column, row - left_counter )
-        possible_moves << [column, row - left_counter]
+        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row - left_counter )]
       elsif different_team?( column, row - left_counter, piece )
-        possible_moves << [column, row - left_counter]
+        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row - left_counter )]
         break
       else
         break
@@ -167,9 +173,9 @@ class Board
     right_counter = 1
     while legal_move?( column, row + right_counter )
       if empty_space?( column, row + right_counter )
-        possible_moves << [column, row + right_counter]
+        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row + right_counter )]
       elsif different_team?( column, row + right_counter, piece )
-        possible_moves << [column, row + right_counter]
+        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row + right_counter )]
         break
       else
         break
@@ -182,9 +188,9 @@ class Board
     up_counter = 1
     while legal_move?( column - up_counter, row )
       if empty_space?( column - up_counter, row )
-        possible_moves << [column - up_counter, row ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row )]
       elsif different_team?( column - up_counter, row, piece )
-        possible_moves << [column - up_counter, row ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row )]
         break
       else
         break
@@ -197,9 +203,9 @@ class Board
     down_counter = 1
     while legal_move?( column + down_counter, row )
       if empty_space?( column + down_counter, row )
-        possible_moves << [column + down_counter, row ]
+        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row )]
       elsif different_team?( column + down_counter, row, piece )
-        possible_moves << [column + up_counter, row ]
+        possible_moves << [convert_to_file_position( column + up_counter ), convert_to_rank_position( row )]
         break
       else
         break
@@ -213,9 +219,9 @@ class Board
     left_counter = 1 
     while legal_move?( column - up_counter, row - left_counter )
       if empty_space?( column - up_counter, row - left_counter )
-        possible_moves << [column - up_counter, row - left_counter ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row - left_counter )]
       elsif different_team?( column - up_counter, row - left_counter, piece )
-        possible_moves << [column - up_counter, row - left_counter ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row - left_counter )]
         break
       else
         break
@@ -230,9 +236,9 @@ class Board
     right_counter = 1 
     while legal_move?( column - up_counter, row + right_counter )
       if empty_space?( column - up_counter, row + right_counter )
-        possible_moves << [column - up_counter, row + right_counter ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row + right_counter )]
       elsif different_team?( column - up_counter, row + right_counter, piece )
-        possible_moves << [column - up_counter, row + right_counter ]
+        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row + right_counter )]
         break
       else
         break
@@ -247,9 +253,9 @@ class Board
     left_counter = 1 
     while legal_move?( column + down_counter, row - left_counter )
       if empty_space?( column + down_counter, row - left_counter )
-        possible_moves << [column + down_counter, row - left_counter ]
+        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row - left_counter )]
       elsif different_team?( column + down_counter, row - left_counter, piece )
-        possible_moves << [column + down_counter, row - left_counter ]
+        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row - left_counter )]
         break
       else
         break
@@ -264,9 +270,9 @@ class Board
     right_counter = 1 
     while legal_move?( column + down_counter, row + right_counter )
       if empty_space?( column + down_counter, row + right_counter )
-        possible_moves << [column + down_counter, row + right_counter ]
+        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row + right_counter )]
       elsif different_team?( column + down_counter, row + right_counter, piece )
-        possible_moves << [column + down_counter, row + right_counter ]
+        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row + right_counter )]
         break
       else
         break
