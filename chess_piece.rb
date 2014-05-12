@@ -21,8 +21,8 @@ class ChessPiece
     captured
   end
   
-  def update_position( new_position )
-    @position = new_position
+  def update_piece_position( file, rank )
+    position.update_position( file, rank )
   end
   
   private

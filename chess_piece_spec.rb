@@ -1,15 +1,10 @@
 require_relative 'chess_piece'
+require_relative 'position'
 
 describe ChessPiece do
   
   let(:board) { double() }
   let(:piece) { described_class.new( "Pawn", "a", 0, :white, board ) }
-  let(:position) { double() }
-  
-  before :each do
-    stub_const "Position", Class.new
-    allow( Position ).to receive( :new ).with( "a", 0 ).and_return( Position )
-  end
 
   describe "#piece_captured?" do
     it "returns the status of a piece" do
@@ -25,10 +20,11 @@ describe ChessPiece do
     end
   end
   
-  describe "#update_position" do
+  describe "#update_piece_position" do
     it "updates the position of the piece" do
-      piece.update_position( position )
-      expect( piece.position ).to eq( position )
+      piece.update_piece_position( "e", 5 )
+      expect( piece.position.file ).to eq( "e" )
+      expect( piece.position.rank ).to eq( 5 )
     end
   end
 end
