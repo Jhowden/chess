@@ -25,4 +25,12 @@ describe Position do
       expect( position.rank_position_converter ).to eq( 7 )
     end
   end
+  
+  describe "#update_position" do
+    it "updates the file and rank" do
+      position.update_position "f", 5 
+      expect( position.file ).to eq( "f" )
+      expect( position.rank ).to eq( 5 )
+    end
+  end
 end

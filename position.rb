@@ -25,4 +25,9 @@ class Position
   def rank_position_converter
     ( rank - 8 ).abs
   end
+  
+  def update_position( file, rank )
+    @file = file
+    @rank = rank
+  end
 end
