@@ -2,6 +2,8 @@ require_relative 'chess_piece'
 
 class Pawn < ChessPiece
   
+  attr_reader :orientation
+  
   def initialize( name, file, rank, team, board, orientation )
     super( name, file, rank, team, board )
     @orientation = orientation
@@ -20,16 +22,16 @@ class Pawn < ChessPiece
   private
   
   def piece_move_forward?
-    if board.move_straight?( self ) # move_straight
-      possible_move = Position.new( position.file, position.rank + 1 )
+    if board.move_straight?( self )
+      [position.file, position.rank + 1]
     end
   end
   
   def piece_move_forward_diagonally?( direction )
     if direction == :left && board.move_forward_diagonally?( self, :left )
-      Position.new( new_file_position( :previous ), position.rank + 1 )
+      [new_file_position( :previous ), position.rank + 1]
     elsif direction == :right && board.move_forward_diagonally?( self, :right )
-      Position.new( new_file_position( :next ), position.rank + 1)
+      [new_file_position( :next ), position.rank + 1]
     end
   end
 end
