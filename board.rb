@@ -1,4 +1,6 @@
 class Board
+  KNIGHT_SPACE_MODIFIERS = [[-1, -2], [-2, -1], [1, -2], [2, -1], [-1, 2], [-2, 1], [1, 2], [2, 1] ]
+  KING_SPACE_MODIFIERS = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1,1], [0,1], [-1, 1]]
   
   attr_reader :chess_board, :possible_moves
   
@@ -10,124 +12,113 @@ class Board
     @chess_board = Array.new( 8 ) { |cell| Array.new( 8 ) }
   end
   
-  def legal_move?( row_position, column_position )
-    check_move?( row_position ) && check_move?( column_position ) ? true : false
+  def legal_move?( file_position, column_position )
+    check_move?( file_position ) && check_move?( column_position ) ? true : false
   end
   
-  def update_board( piece ) # rename update board and just iterate through the pieces to update the board?
-    row = piece.position.file_position_converter
-    column = piece.position.rank_position_converter
-    chess_board[column][row].captured unless chess_board[column][row] == nil
-    chess_board[column][row] = piece
+  def update_board( piece )
+    file = piece.position.file_position_converter
+    rank = piece.position.rank_position_converter
+    chess_board[rank][file].captured unless chess_board[rank][file] == nil
+    chess_board[rank][file] = piece
   end
   
   def move_straight?( piece )
-    row = piece.position.file_position_converter
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter
+    rank = piece.position.rank_position_converter
     
     if piece.orientation == :up 
-      legal_move?( row, column - 1 ) && empty_space?( column - 1, row )
+      legal_move?( file, rank - 1 ) && empty_space?( file, rank - 1 )
     else
-      legal_move?( row, column + 1 ) && empty_space?( column + 1, row )
+      legal_move?( file, rank + 1 ) && empty_space?( file, rank + 1 )
     end
   end
   
   def move_forward_diagonally?( piece, direction ) # this really only works for pawns
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
     
     if piece.orientation == :up
       if direction == :left
-        !empty_space?( column - 1, row - 1 ) && different_team?( column - 1, row - 1, piece ) && legal_move?( column - 1, row - 1 )
+        !empty_space?( file - 1, rank - 1 ) && different_team?( file - 1, rank - 1, piece ) && legal_move?( file - 1, rank - 1 )
       else
-        !empty_space?( column - 1, row + 1 ) && different_team?( column - 1, row + 1, piece ) && legal_move?( column - 1, row - 1 )
+        !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece ) && legal_move?( file - 1, rank - 1 )
       end
     else
       if direction == :left
-        !empty_space?( column + 1, row + 1 ) && different_team?( column + 1, row + 1, piece ) && legal_move?( column + 1, row + 1 )
+        !empty_space?( file + 1, rank + 1 ) && different_team?( file + 1, rank + 1, piece ) && legal_move?( file + 1, rank + 1 )
       else
-        !empty_space?( column + 1, row - 1 ) && different_team?( column + 1, row - 1, piece ) && legal_move?( column + 1, row + 1 )
+        !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece ) && legal_move?( file + 1, rank + 1 )
       end
     end
   end
   
   def find_horizontal_spaces( piece ) # these methods just return an array of indices, not a position instance
-    possible_moves.clear unless possible_moves.empty?
+    clear_possible_moves?
     
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
     
-    find_spaces_to_the_left( column, row, piece )
-    find_spaces_to_the_right( column, row, piece )
+    find_spaces_to_the_left( rank, file, piece )
+    find_spaces_to_the_right( rank, file, piece )
      
     possible_moves
   end
   
   def find_vertical_spaces( piece ) # these methods just return an array of indices, not a position instance
-    possible_moves.clear unless possible_moves.empty?
+    clear_possible_moves?
     
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
     
-    find_spaces_above( column, row, piece )
-    find_spaces_below( column, row, piece )
+    find_spaces_above( rank, file, piece )
+    find_spaces_below( rank, file, piece )
     
     possible_moves
   end
   
   def find_diagonal_spaces( piece )
-    possible_moves.clear unless possible_moves.empty?
+    clear_possible_moves?
     
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
     
-    find_spaces_diagonally_top_left( column, row, piece )
-    find_spaces_diagonally_top_right( column, row, piece )
-    find_spaces_diagonally_bottom_left( column, row, piece )
-    find_spaces_diagonally_bottom_right( column, row, piece )
+    find_spaces_diagonally_top_left( rank, file, piece )
+    find_spaces_diagonally_top_right( rank, file, piece )
+    find_spaces_diagonally_bottom_left( rank, file, piece )
+    find_spaces_diagonally_bottom_right( rank, file, piece )
    
     possible_moves
   end
   
   def find_knight_spaces( piece )
-    possible_moves.clear unless possible_moves.empty?
+    clear_possible_moves?
     
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
     
-    [[-1, -2], [-2, -1] ].each do |rank_mod, file_mod|
-      rank = column + rank_mod
-      file = #...
-      
+    KNIGHT_SPACE_MODIFIERS.each do |file_mod, rank_mod|
+      new_rank = rank + rank_mod
+      new_file = file + file_mod
+
+      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
     end
-    
-    #combine empty_space? and different_team? into one method
-    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column - 1, row - 2 ) || different_team?( column - 1, row - 2, piece )
-    possible_moves << [convert_to_file_position( column - 2 ), convert_to_rank_position( row - 1 )] if empty_space?( column - 2, row - 1 ) || different_team?( column - 2, row - 1, piece )
-    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column + 1, row - 2 ) || different_team?( column + 1, row - 2, piece )
-    possible_moves << [convert_to_file_position( column + 2 ), convert_to_rank_position( row - 1 )] if empty_space?( column + 2, row - 1 ) || different_team?( column + 2, row - 1, piece )
-    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row + 2 )] if empty_space?( column - 1, row + 2 ) || different_team?( column - 1, row + 2, piece )
-    possible_moves << [convert_to_file_position( column - 2 ), convert_to_rank_position( row + 1 )] if empty_space?( column - 2, row + 1 ) || different_team?( column - 2, row + 1, piece )
-    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row + 2 )] if empty_space?( column + 1, row + 2 ) || different_team?( column + 1, row + 2, piece )
-    possible_moves << [convert_to_file_position( column + 2 ), convert_to_rank_position( row + 1 )] if empty_space?( column + 2, row + 1 ) || different_team?( column + 2, row + 1, piece )
 
     possible_moves
   end
   
   def find_king_spaces( piece )
-    possible_moves.clear unless possible_moves.empty?
+    clear_possible_moves?
     
-    row = piece.position.file_position_converter 
-    column = piece.position.rank_position_converter
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
+
+    KING_SPACE_MODIFIERS.each do |file_mod, rank_mod|
+      new_rank = rank + rank_mod
+      new_file = file + file_mod
     
-    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row )]     if empty_space?( column - 1, row )     || different_team?( column - 1, row, piece )
-    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row - 1 )] if empty_space?( column - 1, row - 1 ) || different_team?( column - 1, row - 1, piece )
-    possible_moves << [convert_to_file_position( column )    , convert_to_rank_position( row - 1 )] if empty_space?( column, row - 1 )     || different_team?( column, row - 1, piece )
-    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row - 1 )] if empty_space?( column + 1, row - 1 ) || different_team?( column + 1, row - 1, piece )
-    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row )]     if empty_space?( column + 1, row )     || different_team?( column + 1, row, piece )
-    possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row + 1 )] if empty_space?( column + 1, row + 1 ) || different_team?( column + 1, row + 1, piece )
-    possible_moves << [convert_to_file_position( column )    , convert_to_rank_position( row + 1 )] if empty_space?( column, row + 1 )     || different_team?( column, row + 1, piece )
-    possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row + 1 )] if empty_space?( column - 1, row + 1 ) || different_team?( column - 1, row + 1, piece )
+      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
+    end
 
     possible_moves
   end
@@ -141,10 +132,14 @@ class Board
   end
   
   def find_king( piece ) # I am unsure if this method is really necessary...
-    column_location = chess_board.detect{ |column_location| column_location.include?( piece ) }
-    column = chess_board.index( column_location )
-    row = column_location.index( piece )
-    [column, row]
+    rank_location = chess_board.detect{ |rank_location| rank_location.include?( piece ) }
+    rank = chess_board.index( rank_location )
+    file = rank_location.index( piece )
+    [rank, file]
+  end
+
+  def valid_space?( file, rank, piece )
+    empty_space?( file, rank ) || different_team?( file, rank, piece )
   end
   
   private
@@ -153,21 +148,25 @@ class Board
     cell <= 7 && cell >= 0
   end
   
-  def empty_space?( column, row )
-    chess_board[column][row].nil?
+  def empty_space?( file, rank )
+    chess_board[rank][file].nil?
   end
   
-  def different_team?( column, row, piece )
-    chess_board[column][row].team != piece.team
+  def different_team?( file, rank, piece )
+    chess_board[rank][file].team != piece.team
+  end
+
+  def clear_possible_moves?
+    possible_moves.clear unless possible_moves.empty?
   end
   
-  def find_spaces_to_the_left( column, row, piece )
+  def find_spaces_to_the_left( rank, file, piece )
     left_counter = 1
-    while legal_move?( column, row - left_counter )
-      if empty_space?( column, row - left_counter )
-        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row - left_counter )]
-      elsif different_team?( column, row - left_counter, piece )
-        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row - left_counter )]
+    while legal_move?( rank, file - left_counter )
+      if empty_space?( file - left_counter, rank )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank )]
+      elsif different_team?( file - left_counter, rank, piece )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank )]
         break
       else
         break
@@ -176,13 +175,13 @@ class Board
     end
   end
   
-  def find_spaces_to_the_right( column, row, piece )
+  def find_spaces_to_the_right( rank, file, piece )
     right_counter = 1
-    while legal_move?( column, row + right_counter )
-      if empty_space?( column, row + right_counter )
-        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row + right_counter )]
-      elsif different_team?( column, row + right_counter, piece )
-        possible_moves << [convert_to_file_position( column ), convert_to_rank_position( row + right_counter )]
+    while legal_move?( rank, file + right_counter )
+      if empty_space?( file + right_counter, rank )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank )]
+      elsif different_team?( file + right_counter, rank, piece )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank )]
         break
       else
         break
@@ -191,13 +190,13 @@ class Board
     end
   end
   
-  def find_spaces_above( column, row, piece )
+  def find_spaces_above( rank, file, piece )
     up_counter = 1
-    while legal_move?( column - up_counter, row )
-      if empty_space?( column - up_counter, row )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row )]
-      elsif different_team?( column - up_counter, row, piece )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row )]
+    while legal_move?( rank - up_counter, file )
+      if empty_space?( file, rank - up_counter )
+        possible_moves << [convert_to_file_position( file ), convert_to_rank_position( rank - up_counter )]
+      elsif different_team?( file, rank - up_counter, piece )
+        possible_moves << [convert_to_file_position( file ), convert_to_rank_position( rank - up_counter )]
         break
       else
         break
@@ -206,13 +205,13 @@ class Board
     end
   end
   
-  def find_spaces_below( column, row, piece )
+  def find_spaces_below( rank, file, piece )
     down_counter = 1
-    while legal_move?( column + down_counter, row )
-      if empty_space?( column + down_counter, row )
-        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row )]
-      elsif different_team?( column + down_counter, row, piece )
-        possible_moves << [convert_to_file_position( column + up_counter ), convert_to_rank_position( row )]
+    while legal_move?( rank + down_counter, file )
+      if empty_space?( file, rank + down_counter )
+        possible_moves << [convert_to_file_position( file ), convert_to_rank_position( rank + down_counter )]
+      elsif different_team?( file, rank + down_counter, piece )
+        possible_moves << [convert_to_file_position( file ), convert_to_rank_position( rank + down_counter )]
         break
       else
         break
@@ -221,14 +220,14 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_top_left( column, row, piece )
+  def find_spaces_diagonally_top_left( rank, file, piece )
     up_counter = 1
     left_counter = 1 
-    while legal_move?( column - up_counter, row - left_counter )
-      if empty_space?( column - up_counter, row - left_counter )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row - left_counter )]
-      elsif different_team?( column - up_counter, row - left_counter, piece )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row - left_counter )]
+    while legal_move?( rank - up_counter, file - left_counter )
+      if empty_space?( file - left_counter, rank - up_counter )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank - up_counter )]
+      elsif different_team?( file - left_counter, rank - up_counter, piece )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank - up_counter )]
         break
       else
         break
@@ -238,14 +237,14 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_top_right( column, row, piece )
+  def find_spaces_diagonally_top_right( rank, file, piece )
     up_counter = 1
     right_counter = 1 
-    while legal_move?( column - up_counter, row + right_counter )
-      if empty_space?( column - up_counter, row + right_counter )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row + right_counter )]
-      elsif different_team?( column - up_counter, row + right_counter, piece )
-        possible_moves << [convert_to_file_position( column - up_counter ), convert_to_rank_position( row + right_counter )]
+    while legal_move?( rank - up_counter, file + right_counter )
+      if empty_space?( file + right_counter, rank - up_counter )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank - up_counter )]
+      elsif different_team?( file + right_counter, rank - up_counter, piece )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank - up_counter )]
         break
       else
         break
@@ -255,14 +254,14 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_bottom_left( column, row, piece )
+  def find_spaces_diagonally_bottom_left( rank, file, piece )
     down_counter = 1
     left_counter = 1 
-    while legal_move?( column + down_counter, row - left_counter )
-      if empty_space?( column + down_counter, row - left_counter )
-        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row - left_counter )]
-      elsif different_team?( column + down_counter, row - left_counter, piece )
-        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row - left_counter )]
+    while legal_move?( rank + down_counter, file - left_counter )
+      if empty_space?( file - left_counter, rank + down_counter )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank + down_counter )]
+      elsif different_team?( file - left_counter, rank + down_counter, piece )
+        possible_moves << [convert_to_file_position( file - left_counter ), convert_to_rank_position( rank + down_counter )]
         break
       else
         break
@@ -272,14 +271,14 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_bottom_right( column, row, piece )
+  def find_spaces_diagonally_bottom_right( rank, file, piece )
     down_counter = 1
     right_counter = 1 
-    while legal_move?( column + down_counter, row + right_counter )
-      if empty_space?( column + down_counter, row + right_counter )
-        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row + right_counter )]
-      elsif different_team?( column + down_counter, row + right_counter, piece )
-        possible_moves << [convert_to_file_position( column + down_counter ), convert_to_rank_position( row + right_counter )]
+    while legal_move?( rank + down_counter, file + right_counter )
+      if empty_space?( file + right_counter, rank + down_counter )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank + down_counter )]
+      elsif different_team?( file + right_counter, rank + down_counter, piece )
+        possible_moves << [convert_to_file_position( file + right_counter ), convert_to_rank_position( rank + down_counter )]
         break
       else
         break

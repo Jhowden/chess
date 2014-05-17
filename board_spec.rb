@@ -302,4 +302,10 @@ describe Board do
       expect( game_board.find_king( piece3 ) ).to eq( [7, 2] )
     end
   end
+
+  describe "#valid_space?" do
+    it "determines if a space can be occupied" do
+      expect( game_board.valid_space?( 3, 2, piece5 ) ).to be_true
+    end
+  end
 end
