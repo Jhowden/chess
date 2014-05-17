@@ -59,8 +59,8 @@ class Board
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
     
-    find_spaces_to_the_left( rank, file, piece )
-    find_spaces_to_the_right( rank, file, piece )
+    find_spaces_to_the_left( file, rank, piece )
+    find_spaces_to_the_right( file, rank, piece )
      
     possible_moves
   end
@@ -71,8 +71,8 @@ class Board
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
     
-    find_spaces_above( rank, file, piece )
-    find_spaces_below( rank, file, piece )
+    find_spaces_above( file, rank, piece )
+    find_spaces_below( file, rank, piece )
     
     possible_moves
   end
@@ -83,44 +83,20 @@ class Board
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
     
-    find_spaces_diagonally_top_left( rank, file, piece )
-    find_spaces_diagonally_top_right( rank, file, piece )
-    find_spaces_diagonally_bottom_left( rank, file, piece )
-    find_spaces_diagonally_bottom_right( rank, file, piece )
+    find_spaces_diagonally_top_left( file, rank, piece )
+    find_spaces_diagonally_top_right( file, rank, piece )
+    find_spaces_diagonally_bottom_left( file, rank, piece )
+    find_spaces_diagonally_bottom_right( file, rank, piece )
    
     possible_moves
   end
   
   def find_knight_spaces( piece )
-    clear_possible_moves?
-    
-    file = piece.position.file_position_converter 
-    rank = piece.position.rank_position_converter
-    
-    KNIGHT_SPACE_MODIFIERS.each do |file_mod, rank_mod|
-      new_rank = rank + rank_mod
-      new_file = file + file_mod
-
-      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
-    end
-
-    possible_moves
+    find_surrounding_spaces( piece, KNIGHT_SPACE_MODIFIERS )
   end
   
   def find_king_spaces( piece )
-    clear_possible_moves?
-    
-    file = piece.position.file_position_converter 
-    rank = piece.position.rank_position_converter
-
-    KING_SPACE_MODIFIERS.each do |file_mod, rank_mod|
-      new_rank = rank + rank_mod
-      new_file = file + file_mod
-    
-      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
-    end
-
-    possible_moves
+    find_surrounding_spaces( piece, KING_SPACE_MODIFIERS )
   end
   
   def convert_to_file_position( index )
@@ -159,8 +135,24 @@ class Board
   def clear_possible_moves?
     possible_moves.clear unless possible_moves.empty?
   end
+
+  def find_surrounding_spaces( piece, modifier_array )
+    clear_possible_moves?
+    
+    file = piece.position.file_position_converter 
+    rank = piece.position.rank_position_converter
+
+    modifier_array.each do |file_mod, rank_mod|
+      new_rank = rank + rank_mod
+      new_file = file + file_mod
+    
+      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
+    end
+
+    possible_moves
+  end
   
-  def find_spaces_to_the_left( rank, file, piece )
+  def find_spaces_to_the_left( file, rank, piece )
     left_counter = 1
     while legal_move?( rank, file - left_counter )
       if empty_space?( file - left_counter, rank )
@@ -175,7 +167,7 @@ class Board
     end
   end
   
-  def find_spaces_to_the_right( rank, file, piece )
+  def find_spaces_to_the_right( file, rank, piece )
     right_counter = 1
     while legal_move?( rank, file + right_counter )
       if empty_space?( file + right_counter, rank )
@@ -190,7 +182,7 @@ class Board
     end
   end
   
-  def find_spaces_above( rank, file, piece )
+  def find_spaces_above( file, rank, piece )
     up_counter = 1
     while legal_move?( rank - up_counter, file )
       if empty_space?( file, rank - up_counter )
@@ -205,7 +197,7 @@ class Board
     end
   end
   
-  def find_spaces_below( rank, file, piece )
+  def find_spaces_below( file, rank, piece )
     down_counter = 1
     while legal_move?( rank + down_counter, file )
       if empty_space?( file, rank + down_counter )
@@ -220,7 +212,7 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_top_left( rank, file, piece )
+  def find_spaces_diagonally_top_left( file, rank, piece )
     up_counter = 1
     left_counter = 1 
     while legal_move?( rank - up_counter, file - left_counter )
@@ -237,7 +229,7 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_top_right( rank, file, piece )
+  def find_spaces_diagonally_top_right( file, rank, piece )
     up_counter = 1
     right_counter = 1 
     while legal_move?( rank - up_counter, file + right_counter )
@@ -254,7 +246,7 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_bottom_left( rank, file, piece )
+  def find_spaces_diagonally_bottom_left( file, rank, piece )
     down_counter = 1
     left_counter = 1 
     while legal_move?( rank + down_counter, file - left_counter )
@@ -271,7 +263,7 @@ class Board
     end
   end
   
-  def find_spaces_diagonally_bottom_right( rank, file, piece )
+  def find_spaces_diagonally_bottom_right( file, rank, piece )
     down_counter = 1
     right_counter = 1 
     while legal_move?( rank + down_counter, file + right_counter )
