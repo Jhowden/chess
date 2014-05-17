@@ -1,5 +1,5 @@
-require_relative 'queen'
-require_relative 'position'
+require "spec_helper"
+require_relative "../lib/position"
 
 describe Queen do
 

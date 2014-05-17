@@ -1,4 +1,4 @@
-require_relative 'player'
+require "spec_helper"
 
 describe Player do 
 

@@ -1,5 +1,5 @@
-require_relative 'board'
-require_relative 'position'
+require "spec_helper"
+require_relative "../lib/position"
 
 describe Board do
   

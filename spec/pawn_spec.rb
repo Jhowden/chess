@@ -1,7 +1,5 @@
-require_relative "pawn"
-require_relative "position"
-
-FILE_POSITIONS = ["a", "b", "c", "d", "e", "f", "g", "h"]
+require "spec_helper"
+require_relative "../lib/position"
 
 describe Pawn do
 

@@ -1,6 +1,4 @@
-# when inserting the converted indices to check the array, have to switch them around. For example "b",2 needs to be board.chess_board[6][1]
-
-require_relative 'position'
+require "spec_helper"
 
 describe Position do
 

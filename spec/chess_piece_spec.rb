@@ -1,5 +1,5 @@
-require_relative 'chess_piece'
-require_relative 'position'
+require "spec_helper"
+require_relative "../lib/position"
 
 describe ChessPiece do
   
