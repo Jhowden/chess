@@ -95,6 +95,13 @@ class Board
     row = piece.position.file_position_converter 
     column = piece.position.rank_position_converter
     
+    [[-1, -2], [-2, -1] ].each do |rank_mod, file_mod|
+      rank = column + rank_mod
+      file = #...
+      
+    end
+    
+    #combine empty_space? and different_team? into one method
     possible_moves << [convert_to_file_position( column - 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column - 1, row - 2 ) || different_team?( column - 1, row - 2, piece )
     possible_moves << [convert_to_file_position( column - 2 ), convert_to_rank_position( row - 1 )] if empty_space?( column - 2, row - 1 ) || different_team?( column - 2, row - 1, piece )
     possible_moves << [convert_to_file_position( column + 1 ), convert_to_rank_position( row - 2 )] if empty_space?( column + 1, row - 2 ) || different_team?( column + 1, row - 2, piece )
