@@ -4,8 +4,8 @@ class Game
 
   def initialize( board )
     @board = board
-    @chess_board = board.create_board
-    @board_interface = BoardInterface.new( chess_board )
+    board.create_board
+    @board_interface = BoardInterface.new( board )
   end
   
   def get_player_teams

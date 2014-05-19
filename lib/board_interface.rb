@@ -6,8 +6,8 @@ class BoardInterface
   VERTICAL_BORDER_MARKERS = ["║"] * 8 +  ["╚"]
   HORIZONTAL_BORDER_MARKERS = ["═"] * 8
 
-  def initialize( chess_board )
-    @chess_board = chess_board
+  def initialize( board )
+    @board = board
     @new_board = Array.new( 10 ) { |cell| Array.new( 10, "…" ) }
     set_vertical_markers( RANK_MARKERS, 0, 0)
     set_vertical_markers( VERTICAL_BORDER_MARKERS, 0, 1)
@@ -28,7 +28,7 @@ class BoardInterface
   end
 
   def populate_new_board
-    chess_board.each_with_index do |row, rank_index|
+    board.chess_board.each_with_index do |row, rank_index|
       row.each_with_index do |cell, file_index|
         if !cell.nil?
           new_board[rank_index][file_index + 2] = cell.marker
