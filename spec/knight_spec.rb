@@ -4,7 +4,7 @@ require_relative "../lib/position"
 describe Knight do
   
   let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
-  let(:knight) { described_class.new( "W-Kn", "e", 4, :black, board ) }
+  let(:knight) { described_class.new( "♞", "e", 4, :black, board ) }
   
   before (:each) do
     allow( knight.possible_moves ).to receive( :clear )

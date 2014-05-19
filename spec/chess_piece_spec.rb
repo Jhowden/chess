@@ -4,7 +4,7 @@ require_relative "../lib/position"
 describe ChessPiece do
   
   let(:board) { double() }
-  let(:piece) { described_class.new( "Pawn", "a", 0, :white, board ) }
+  let(:piece) { described_class.new( "♟", "a", 0, :white, board ) }
 
   describe "#piece_captured?" do
     it "returns the status of a piece" do

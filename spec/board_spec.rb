@@ -11,6 +11,7 @@ describe Board do
   let(:piece3) { double( team: :black ) }
   let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down ) }
   let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
+  let(:position) { Position.new( "c", 1 ) }
   
   before (:each) do
     game_board.create_board
@@ -296,10 +297,10 @@ describe Board do
     end
   end
   
-  describe "#find_king" do
+  describe "#find_piece" do
     it "finds the position of a king piece" do
       game_board.chess_board[7][2] = piece3
-      expect( game_board.find_king( piece3 ) ).to eq( [7, 2] )
+      expect( game_board.find_piece( position ) ).to eq( piece3 )
     end
   end
 
