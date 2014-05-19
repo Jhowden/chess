@@ -9,6 +9,7 @@ describe Game do
   let(:piece) { double( team: :white ) }
 
   before(:each) do
+    allow( board ).to receive( :create_board ).and_return board
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )
     allow( game ).to receive( :gets ).and_return( game )

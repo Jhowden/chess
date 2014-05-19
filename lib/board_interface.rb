@@ -1,6 +1,6 @@
 class BoardInterface
 
-  attr_reader :chess_board, :new_board
+  attr_reader :board, :new_board
   FILE_MARKERS = %w[ — — a b c d e f g h]
   RANK_MARKERS = [8, 7, 6, 5, 4, 3, 2, 1, "—"]
   VERTICAL_BORDER_MARKERS = ["║"] * 8 +  ["╚"]

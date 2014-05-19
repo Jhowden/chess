@@ -11,6 +11,7 @@ describe BoardInterface do
   before(:each) do
     allow( board_interface ).to receive( :puts )
     allow( board_interface ).to receive( :print )
+    allow( board ).to receive( :chess_board ).and_return( board )
     board[0][0] = piece1
     board[5][2] = piece2
   end

@@ -12,6 +12,5 @@ require_relative 'queen'
 require_relative 'rook'
 
 board = Board.new
-
 game = Game.new( board )
 game.play!
