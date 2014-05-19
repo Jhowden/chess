@@ -1,9 +1,11 @@
 class Game
 
-  attr_reader :player1, :player2, :board
+  attr_reader :player1, :player2, :board, :board_interface, :chess_board
 
   def initialize( board )
     @board = board
+    @chess_board = board.create_board
+    @board_interface = BoardInterface.new( chess_board )
   end
   
   def get_player_teams
@@ -39,6 +41,7 @@ class Game
   def player_turn_commands( player )
     player_input = get_player_move.gsub( /\s+/, "" )
     piece_position = convert_to_position( player_input[0], player_input[1] )
+    puts "PIECE POSITION: #{piece_position}"
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
     if player_and_piece_same_team?( piece_position, player )
       if check_move( piece_position, [target_file , target_rank] )
@@ -50,6 +53,20 @@ class Game
     else
       puts "That piece is not on your team. Please pick again."
       player_turn_command( player )
+    end
+  end
+  
+  def display_board
+    board_interface.display_board
+  end
+  
+  def play!
+    get_player_teams
+    while true
+      display_board
+      player_turn_commands( player1 )
+      display_board
+      player_turn_commands( player2 )
     end
   end
 
