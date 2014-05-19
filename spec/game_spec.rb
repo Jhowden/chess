@@ -74,6 +74,20 @@ describe Game do
       game.player_turn_commands( player_1 )
     end
   end
+  
+  describe "#display_board" do
+    it "displays the board" do
+      expect( game.board_interface ).to receive( :display_board )
+      game.display_board
+    end
+  end
+  
+  # describe "#play!" do
+  #   it "plays the game" do
+  #     expect( game ).to receive( :player_turn_commands ).exactly( 2 ).times
+  #     game.play!
+  #   end
+  # end
 end
 
 # ask player to select a piece and a new location
