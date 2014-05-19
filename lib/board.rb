@@ -53,7 +53,7 @@ class Board
     end
   end
   
-  def find_horizontal_spaces( piece ) # these methods just return an array of indices, not a position instance
+  def find_horizontal_spaces( piece )
     clear_possible_moves?
     
     file = piece.position.file_position_converter 
@@ -65,7 +65,7 @@ class Board
     possible_moves
   end
   
-  def find_vertical_spaces( piece ) # these methods just return an array of indices, not a position instance
+  def find_vertical_spaces( piece )
     clear_possible_moves?
     
     file = piece.position.file_position_converter 
@@ -107,11 +107,10 @@ class Board
     ( index - 8 ).abs
   end
   
-  def find_king( piece ) # I am unsure if this method is really necessary...
-    rank_location = chess_board.detect{ |rank_location| rank_location.include?( piece ) }
-    rank = chess_board.index( rank_location )
-    file = rank_location.index( piece )
-    [rank, file]
+  def find_piece( position )
+    file = position.file_position_converter
+    rank = position.rank_position_converter
+    chess_board[rank][file]
   end
 
   def valid_space?( file, rank, piece )
