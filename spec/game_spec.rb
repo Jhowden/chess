@@ -3,13 +3,13 @@ require_relative 'spec_helper'
 describe Game do
 
   let(:game) { described_class.new( board ) }
-  let(:board) { Array.new( 8 ) { |cell| Array.new( 8 ) } }
+  let(:board) { stub_const( "Board", Class.new ) }
   let(:player_1) { double( team: :white ) }
   let(:position) { double( file: "b", rank: 3 ) }
   let(:piece) { double( team: :white ) }
 
   before(:each) do
-    allow( board ).to receive( :create_board ).and_return board
+    allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )
     allow( game ).to receive( :gets ).and_return( game )
