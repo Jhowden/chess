@@ -69,9 +69,9 @@ describe Game do
   describe "#player_turn_commands" do
     it "goes through the commands for a player to complete a turn" do
       expect( game ).to receive( :get_player_move ).and_return( "b3 b6" )
-      expect( game ).to receive( :player_and_piece_same_team? ).and_return( true )
-      expect( game ).to receive( :check_move ).and_return( true )
-      expect( game ).to receive( :update_position ).with( anything, "b", 6 )
+      expect( game ).to receive( :player_and_piece_same_team? ).with( an_instance_of( Position ), player_1 ).and_return( true )
+      expect( game ).to receive( :check_move ).with( an_instance_of( Position ), ["b", 6] ).and_return( true )
+      expect( game ).to receive( :update_position ).with( an_instance_of( Position ), "b", 6 )
       game.player_turn_commands( player_1 )
     end
   end
