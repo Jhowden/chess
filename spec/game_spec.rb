@@ -72,6 +72,7 @@ describe Game do
       expect( game ).to receive( :player_and_piece_same_team? ).with( an_instance_of( Position ), player_1 ).and_return( true )
       expect( game ).to receive( :check_move ).with( an_instance_of( Position ), ["b", 6] ).and_return( true )
       expect( game ).to receive( :update_position ).with( an_instance_of( Position ), "b", 6 )
+      expect( game ).to receive( :update_piece_on_board ).with( an_instance_of( Position ) )
       game.player_turn_commands( player_1 )
     end
   end
@@ -82,6 +83,14 @@ describe Game do
       game.display_board
     end
   end
+
+  describe "#update_piece_on_board" do
+    it "updates the piece position on the board" do
+      expect( game ).to receive( :find_piece_on_board ).with( position ).and_return( piece )
+      expect( board ).to receive( :update_board ).with( piece )
+      game.update_piece_on_board( position )
+    end
+  end
   
   # describe "#play!" do
   #   it "plays the game" do
@@ -90,9 +99,3 @@ describe Game do
   #   end
   # end
 end
-
-# ask player to select a piece and a new location
-# check to see if it is the same team as the player selecting
-# check the move to see if it is in the piece's list of possible moves
-#   if not, have player select a piece and new location
-#   if it is, update the pieces position with the new location

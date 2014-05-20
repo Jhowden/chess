@@ -5,11 +5,12 @@ class Board
   attr_reader :chess_board, :possible_moves
   
   def initialize
+    @chess_board = create_board
     @possible_moves = []
   end
   
   def create_board
-    @chess_board = Array.new( 8 ) { |cell| Array.new( 8 ) }
+     Array.new( 8 ) { |cell| Array.new( 8 ) }
   end
   
   def legal_move?( file_position, column_position )
@@ -34,7 +35,7 @@ class Board
     end
   end
   
-  def move_forward_diagonally?( piece, direction ) # this really only works for pawns
+  def move_forward_diagonally?( piece, direction )
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
     

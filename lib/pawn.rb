@@ -4,8 +4,8 @@ class Pawn < ChessPiece
   
   attr_reader :orientation
   
-  def initialize( name, file, rank, team, board, orientation )
-    super( name, file, rank, team, board )
+  def initialize( marker, file, rank, team, board, orientation )
+    super( marker, file, rank, team, board )
     @orientation = orientation
   end
   

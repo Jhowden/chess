@@ -14,7 +14,6 @@ describe Board do
   let(:position) { Position.new( "c", 1 ) }
   
   before (:each) do
-    game_board.create_board
     allow( game_board.possible_moves ).to receive( :clear )
   end
 

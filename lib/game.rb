@@ -4,15 +4,14 @@ class Game
 
   def initialize( board )
     @board = board
-    board.create_board
     @board_interface = BoardInterface.new( board )
   end
   
   def get_player_teams
-    puts "Please choose your team player 1..."
+    puts "Please choose your team player 1 (white or black):"
     player1_team = user_input
     @player1 = set_player_team( player1_team )
-    puts "Please choose your team player 2..."
+    puts "Please choose your team player 2 (white or black):"
     player2_team = user_input
     @player2 = set_player_team( player2_team )
   end
@@ -46,6 +45,7 @@ class Game
     if player_and_piece_same_team?( piece_position, player )
       if check_move( piece_position, [target_file , target_rank] )
         update_position( piece_position, target_file, target_rank )
+        update_piece_on_board( piece_position )
       else
         puts "That is not a valid move that piece. Please pick again."
         player_turn_command( player )
@@ -58,6 +58,11 @@ class Game
   
   def display_board
     board_interface.display_board
+  end
+
+  def update_piece_on_board( piece_position )
+    piece = find_piece_on_board( piece_position )
+    board.update_board( piece )
   end
   
   def play!
