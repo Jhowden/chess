@@ -10,6 +10,7 @@ require_relative 'player'
 require_relative 'position'
 require_relative 'queen'
 require_relative 'rook'
+require_relative 'white_pieces_factory'
 
 board = Board.new
 game = Game.new( board )
