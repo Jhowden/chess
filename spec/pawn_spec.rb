@@ -7,7 +7,7 @@ describe Pawn do
   
   before :each do
     allow( board ).to receive( :move_straight? )
-    allow( board ).to receive( :move_forward_diagonally? )
+    allow( board ).to receive( :move_forward_diagonally? ).twice
     allow( pawn.possible_moves ).to receive( :clear )
   end
 
@@ -15,7 +15,6 @@ describe Pawn do
     context "when there are no diagonal enemies" do
       it "only has one possible move" do
         expect( board ).to receive( :move_straight? ).with( pawn ).and_return( true )
-        expect( board ).to receive( :move_forward_diagonally? ).twice
     
         pawn.determine_possible_moves
         expect( pawn.possible_moves.size ).to eq( 1 )
