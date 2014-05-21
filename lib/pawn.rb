@@ -12,18 +12,22 @@ class Pawn < ChessPiece
   def determine_possible_moves
     possible_moves.clear unless possible_moves.empty?
     
-    possible_moves << piece_move_forward? if piece_move_forward? != nil
-    possible_moves << piece_move_forward_diagonally?( :left ) if piece_move_forward_diagonally?( :left ) != nil
-    possible_moves << piece_move_forward_diagonally?( :right ) if piece_move_forward_diagonally?( :right ) != nil
+    possible_moves << piece_move_forward?
+    possible_moves << piece_move_forward_diagonally?( :left )
+    possible_moves << piece_move_forward_diagonally?( :right )
     
-    possible_moves
+    possible_moves.compact!
   end
   
   private
   
   def piece_move_forward?
     if board.move_straight?( self )
-      [position.file, position.rank + 1]
+      if orientation == :down
+        [position.file, position.rank - 1]
+      else
+        [position.file, position.rank + 1]
+      end
     end
   end
   
