@@ -1,9 +1,7 @@
 require "spec_helper"
 
 describe Board do
-  
-  FILE_POSITIONS = ["a", "b", "c", "d", "e", "f", "g", "h"]
-  
+    
   let(:game_board) { described_class.new }
   let(:piece) { double( position: Position.new( "f", 5 ), team: :black, orientation: :up ) }
   let(:piece2) { double( position: Position.new( "a", 8 ), team: :white, orientation: :up ) }
@@ -27,6 +25,14 @@ describe Board do
       expect( game_board.legal_move?( 4, 6 ) ).to be
       expect( game_board.legal_move?( 5, 8 ) ).to be_false
       expect( game_board.legal_move?( 8, 0 ) ).to be_false
+    end
+  end
+  
+  describe "#remove_marker" do
+    it "removes a pieces marker" do
+      game_board.chess_board[3][5] = piece
+      game_board.remove_marker( Position.new( "f", 5 ) )
+      expect( game_board.chess_board[3][5] ).to be_nil
     end
   end
   
@@ -305,6 +311,13 @@ describe Board do
   describe "#valid_space?" do
     it "determines if a space can be occupied" do
       expect( game_board.valid_space?( 3, 2, piece5 ) ).to be_true
+    end
+  end
+  
+  describe "#populate_white_team" do
+    it "places the white pieces in their starting location" do
+      game_board.populate_white_team
+      expect( game_board.chess_board[0][0] ).to_not be_nil
     end
   end
 end

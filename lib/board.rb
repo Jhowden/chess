@@ -13,8 +13,14 @@ class Board
      Array.new( 8 ) { |cell| Array.new( 8 ) }
   end
   
-  def legal_move?( file_position, column_position )
-    check_move?( file_position ) && check_move?( column_position ) ? true : false
+  def legal_move?( file_position, rank_position )
+    check_move?( file_position ) && check_move?( rank_position ) ? true : false
+  end
+  
+  def remove_marker( piece_position )
+    file = piece_position.file_position_converter
+    rank = piece_position.rank_position_converter
+    chess_board[rank][file] = nil
   end
   
   def update_board( piece )
@@ -27,8 +33,7 @@ class Board
   def move_straight?( piece )
     file = piece.position.file_position_converter
     rank = piece.position.rank_position_converter
-    
-    if piece.orientation == :up 
+    if piece.orientation == :up
       legal_move?( file, rank - 1 ) && empty_space?( file, rank - 1 )
     else
       legal_move?( file, rank + 1 ) && empty_space?( file, rank + 1 )
@@ -41,15 +46,15 @@ class Board
     
     if piece.orientation == :up
       if direction == :left
-        !empty_space?( file - 1, rank - 1 ) && different_team?( file - 1, rank - 1, piece ) && legal_move?( file - 1, rank - 1 )
+        legal_move?( file - 1, rank - 1 ) && !empty_space?( file - 1, rank - 1 ) && different_team?( file - 1, rank - 1, piece ) 
       else
-        !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece ) && legal_move?( file - 1, rank - 1 )
+        legal_move?( file - 1, rank - 1 ) && !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece )
       end
     else
       if direction == :left
-        !empty_space?( file + 1, rank + 1 ) && different_team?( file + 1, rank + 1, piece ) && legal_move?( file + 1, rank + 1 )
+        legal_move?( file + 1, rank + 1 ) && !empty_space?( file + 1, rank + 1 ) && different_team?( file + 1, rank + 1, piece )
       else
-        !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece ) && legal_move?( file + 1, rank + 1 )
+        legal_move?( file + 1, rank + 1 ) && !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece )
       end
     end
   end
@@ -101,7 +106,7 @@ class Board
   end
   
   def convert_to_file_position( index )
-    FILE_POSITIONS[index]
+    Position::FILE_POSITIONS[index]
   end
   
   def convert_to_rank_position( index )
@@ -116,6 +121,14 @@ class Board
 
   def valid_space?( file, rank, piece )
     empty_space?( file, rank ) || different_team?( file, rank, piece )
+  end
+  
+  def populate_white_team
+    white_team = WhitePiecesFactory.new( self )
+    white_team.build
+    white_team.pieces.each do |piece|
+      update_board( piece )
+    end
   end
   
   private
@@ -146,7 +159,7 @@ class Board
       new_rank = rank + rank_mod
       new_file = file + file_mod
     
-      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if valid_space?( new_file, new_rank, piece )
+      possible_moves << [convert_to_file_position( new_file ), convert_to_rank_position( new_rank )] if legal_move?( new_file, new_rank ) && valid_space?( new_file, new_rank, piece )
     end
 
     possible_moves
