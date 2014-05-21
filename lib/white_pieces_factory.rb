@@ -1,7 +1,7 @@
 class WhitePiecesFactory
-  ROOKS_STARTING_POSITIONS = [[0, 0], [0, 7]]
-  BISHOPS_STARTING_POSITIONS = [[0,1], [0,6]]
-  KNIGHTS_STARTING_POSITIONS = [[0,2], [0,5]]
+  ROOKS_STARTING_POSITIONS = [["a", 8], ["h", 8]]
+  BISHOPS_STARTING_POSITIONS = [["c",8], ["f",8]]
+  KNIGHTS_STARTING_POSITIONS = [["b",8], ["g",8]]
 
   attr_reader :pieces, :board
 
@@ -11,8 +11,8 @@ class WhitePiecesFactory
   end
 
   def create_pawns
-    8.times do |rank|
-      pieces << Pawn.new( "♙", 1, rank, :white, board, :down )
+    8.times do |file|
+      pieces << Pawn.new( "♙", Position::FILE_POSITIONS[file], 7, :white, board, :down )
     end
   end
 
@@ -24,7 +24,7 @@ class WhitePiecesFactory
 
   def create_bishops
     BISHOPS_STARTING_POSITIONS.each do |file, rank|
-      pieces << Bishop.new( "♖", file, rank, :white, board )
+      pieces << Bishop.new( "♗", file, rank, :white, board )
     end
   end
 
@@ -35,11 +35,11 @@ class WhitePiecesFactory
   end
 
   def create_queen
-    pieces << Queen.new( "♕", 0, 3, :white, board )
+    pieces << Queen.new( "♕", "d", 8, :white, board )
   end
 
   def create_king
-    pieces << King.new( "♔", 0, 3, :white, board )
+    pieces << King.new( "♔", "e", 8, :white, board )
   end
   
   def build
