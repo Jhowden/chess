@@ -9,6 +9,7 @@ describe Game do
   let(:piece) { double( team: :white ) }
 
   before(:each) do
+    allow( board ).to receive( :populate_white_team )
     allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )
@@ -71,6 +72,7 @@ describe Game do
       expect( game ).to receive( :get_player_move ).and_return( "b3 b6" )
       expect( game ).to receive( :player_and_piece_same_team? ).with( an_instance_of( Position ), player_1 ).and_return( true )
       expect( game ).to receive( :check_move ).with( an_instance_of( Position ), ["b", 6] ).and_return( true )
+      expect( game ).to receive( :remove_piece_marker ).with( an_instance_of( Position ) )
       expect( game ).to receive( :update_position ).with( an_instance_of( Position ), "b", 6 )
       expect( game ).to receive( :update_piece_on_board ).with( an_instance_of( Position ) )
       game.player_turn_commands( player_1 )
@@ -89,6 +91,13 @@ describe Game do
       expect( game ).to receive( :find_piece_on_board ).with( position ).and_return( piece )
       expect( board ).to receive( :update_board ).with( piece )
       game.update_piece_on_board( position )
+    end
+  end
+  
+  describe "#remove_piece_marker" do
+    it "removes a piece's marker from the board" do
+      expect( board ).to receive( :remove_marker ).with( position )
+      game.remove_piece_marker( position )
     end
   end
   
