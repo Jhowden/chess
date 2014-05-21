@@ -4,6 +4,7 @@ describe Pawn do
 
   let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
   let(:pawn) { described_class.new( "♟", "b", 2, :black, board, :up ) }
+  let(:pawn2) { described_class.new( "♟", "b", 1, :black, board, :down ) }
   
   before :each do
     allow( board ).to receive( :move_straight? )
@@ -29,6 +30,17 @@ describe Pawn do
     
         pawn.determine_possible_moves
         expect( pawn.possible_moves.size ).to eq( 2 )
+      end
+      
+      context "when on the edge of the board" do
+        it "returns no possible moves" do
+          expect( board ).to receive( :move_straight? ).with( pawn ).and_return( false )
+          expect( board ).to receive( :move_forward_diagonally? ).with( pawn, :left ).and_return( false )
+          expect( board ).to receive( :move_forward_diagonally? ).with( pawn, :right ).and_return( false )
+    
+          pawn.determine_possible_moves
+          expect( pawn.possible_moves.size ).to eq( 0 )
+        end
       end
     end
   

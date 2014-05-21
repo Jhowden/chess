@@ -8,6 +8,7 @@ describe Board do
   let(:piece3) { double( team: :black ) }
   let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down ) }
   let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
+  let(:piece6) { double( position: Position.new( "g", 1 ), team: :black ) }
   let(:position) { Position.new( "c", 1 ) }
   
   before (:each) do
@@ -58,6 +59,10 @@ describe Board do
     context "when moving from bottom to top" do
       it "checks if a piece can move straight" do
         expect( game_board.move_straight?( piece ) ).to be_true
+      end
+      
+      it "does NOT let a piece go off the board" do
+        expect( game_board.move_straight?( piece2 ) ).to be_false
       end
     end
     
@@ -258,6 +263,13 @@ describe Board do
         game_board.chess_board[5][2] = piece3
         game_board.find_knight_spaces( piece5 )
         expect( game_board.possible_moves.size ).to eq( 6 )
+      end
+    end
+    
+    context "when at the edge of the board" do
+      it "does NOT include moves off the board" do
+        game_board.find_knight_spaces( piece6 )
+        expect( game_board.possible_moves.size ).to eq( 3 )
       end
     end
   end
