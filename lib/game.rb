@@ -4,7 +4,8 @@ class Game
 
   def initialize( board )
     @board = board
-    @board_interface = BoardInterface.new( board )
+    @board_interface = BoardInterface.new
+    board.populate_white_team
   end
   
   def get_player_teams
@@ -31,6 +32,10 @@ class Game
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
   end
+  
+  def remove_piece_marker( piece_position )
+    board.remove_marker( piece_position )
+  end
 
   def update_position( piece_position, file, rank )
     piece = find_piece_on_board( piece_position )
@@ -40,24 +45,24 @@ class Game
   def player_turn_commands( player )
     player_input = get_player_move.gsub( /\s+/, "" )
     piece_position = convert_to_position( player_input[0], player_input[1] )
-    puts "PIECE POSITION: #{piece_position}"
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
     if player_and_piece_same_team?( piece_position, player )
       if check_move( piece_position, [target_file , target_rank] )
         update_position( piece_position, target_file, target_rank )
         update_piece_on_board( piece_position )
+        remove_piece_marker( piece_position )
       else
-        puts "That is not a valid move that piece. Please pick again."
-        player_turn_command( player )
+        puts "That is not a valid move that piece."
+        player_turn_commands( player )
       end
     else
-      puts "That piece is not on your team. Please pick again."
-      player_turn_command( player )
+      puts "That piece is not on your team."
+      player_turn_commands( player )
     end
   end
   
-  def display_board
-    board_interface.display_board
+  def display_board( board )
+    board_interface.display_board( board )
   end
 
   def update_piece_on_board( piece_position )
@@ -68,9 +73,11 @@ class Game
   def play!
     get_player_teams
     while true
-      display_board
+      display_board( board )
+      puts "Player 1: "
       player_turn_commands( player1 )
-      display_board
+      display_board( board )
+      puts "Playaer 2: "
       player_turn_commands( player2 )
     end
   end
