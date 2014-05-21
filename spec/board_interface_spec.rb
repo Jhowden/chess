@@ -39,7 +39,6 @@ describe BoardInterface do
   
   describe "#display_board" do
     it "displays the board" do
-      expect( board_interface ).to receive(  :remove_markers )
       expect( board_interface ).to receive( :populate_new_board ).with( board )
       expect( board_interface ).to receive(  :print_board )
       board_interface.display_board( board )
