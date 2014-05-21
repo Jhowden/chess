@@ -1,13 +1,12 @@
 class BoardInterface
 
-  attr_reader :board, :new_board
+  attr_reader :new_board
   FILE_MARKERS = %w[ — — a b c d e f g h]
   RANK_MARKERS = [8, 7, 6, 5, 4, 3, 2, 1, "—"]
   VERTICAL_BORDER_MARKERS = ["║"] * 8 +  ["╚"]
   HORIZONTAL_BORDER_MARKERS = ["═"] * 8
 
-  def initialize( board )
-    @board = board
+  def initialize
     @new_board = Array.new( 10 ) { |cell| Array.new( 10, "…" ) }
     set_vertical_markers( RANK_MARKERS, 0, 0)
     set_vertical_markers( VERTICAL_BORDER_MARKERS, 0, 1)
@@ -15,8 +14,8 @@ class BoardInterface
     set_horizontal_markers( HORIZONTAL_BORDER_MARKERS, 2, 8)
   end
 
-  def display_board
-    populate_new_board
+  def display_board( board )
+    populate_new_board( board )
     print_board
   end
 
@@ -27,15 +26,18 @@ class BoardInterface
     end
   end
 
-  def populate_new_board
+  def populate_new_board( board )
     board.chess_board.each_with_index do |row, rank_index|
       row.each_with_index do |cell, file_index|
-        if !cell.nil?
+        remove_marker( file_index + 2, rank_index,  ) # this is super ugly and I hate it.
+        if !cell.nil?  
           new_board[rank_index][file_index + 2] = cell.marker
         end
       end
     end
   end
+  
+
 
   private 
 
@@ -51,5 +53,9 @@ class BoardInterface
       new_board[counter][file_position] = marker
       counter += 1
     end
+  end
+  
+  def remove_marker( file, rank )
+    new_board[rank][file] = "…"
   end
 end
