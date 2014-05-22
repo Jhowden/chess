@@ -32,10 +32,18 @@ class Pawn < ChessPiece
   end
   
   def piece_move_forward_diagonally?( direction )
-    if direction == :left && board.move_forward_diagonally?( self, :left )
-      [new_file_position( :previous ), position.rank + 1]
-    elsif direction == :right && board.move_forward_diagonally?( self, :right )
-      [new_file_position( :next ), position.rank + 1]
+    if orientation == :up
+      if direction == :left && board.move_forward_diagonally?( self, :left )
+        [new_file_position( :previous ), position.rank + 1]
+      elsif direction == :right && board.move_forward_diagonally?( self, :right )
+        [new_file_position( :next ), position.rank + 1]
+      end
+    else
+      if direction == :left && board.move_forward_diagonally?( self, :left )
+        [new_file_position( :next ), position.rank - 1]
+      elsif direction == :right && board.move_forward_diagonally?( self, :right )
+        [new_file_position( :previous ), position.rank - 1]
+      end
     end
   end
 end
