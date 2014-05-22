@@ -48,13 +48,13 @@ class Board
       if direction == :left
         legal_move?( file - 1, rank - 1 ) && !empty_space?( file - 1, rank - 1 ) && different_team?( file - 1, rank - 1, piece ) 
       else
-        legal_move?( file - 1, rank - 1 ) && !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece )
+        legal_move?( file + 1, rank - 1 ) && !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece )
       end
     else
       if direction == :left
         legal_move?( file + 1, rank + 1 ) && !empty_space?( file + 1, rank + 1 ) && different_team?( file + 1, rank + 1, piece )
       else
-        legal_move?( file + 1, rank + 1 ) && !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece )
+        legal_move?( file - 1, rank + 1 ) && !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece )
       end
     end
   end
@@ -123,10 +123,11 @@ class Board
     empty_space?( file, rank ) || different_team?( file, rank, piece )
   end
   
-  def populate_white_team
-    white_team = WhitePiecesFactory.new( self )
-    white_team.build
-    white_team.pieces.each do |piece|
+  def place_pieces_on_board( team_factory )
+    team_name = Object.const_get( team_factory )
+    team = team_name.new( self )
+    team.build
+    team.pieces.each do |piece|
       update_board( piece )
     end
   end

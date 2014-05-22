@@ -9,7 +9,8 @@ describe Game do
   let(:piece) { double( team: :white ) }
 
   before(:each) do
-    allow( board ).to receive( :populate_white_team )
+    allow( board ).to receive( :place_pieces_on_board ).with( "WhitePiecesFactory" )
+    allow( board ).to receive( :place_pieces_on_board ).with( "BlackPiecesFactory" )
     allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )

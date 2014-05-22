@@ -326,10 +326,15 @@ describe Board do
     end
   end
   
-  describe "#populate_white_team" do
+  describe "#place_pieces_on_board" do
     it "places the white pieces in their starting location" do
-      game_board.populate_white_team
-      expect( game_board.chess_board[0][0] ).to_not be_nil
+      expect( game_board ).to receive( :update_board ).exactly( 16 ).times
+      game_board.place_pieces_on_board( "WhitePiecesFactory" )
     end
   end
+
+    it "places the black pieces in their starting location" do
+      expect( game_board ).to receive( :update_board ).exactly( 16 ).times
+      game_board.place_pieces_on_board( "BlackPiecesFactory" )
+    end
 end

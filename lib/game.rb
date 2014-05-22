@@ -5,7 +5,8 @@ class Game
   def initialize( board )
     @board = board
     @board_interface = BoardInterface.new
-    board.populate_white_team
+    board.place_pieces_on_board( "WhitePiecesFactory" )
+    board.place_pieces_on_board( "BlackPiecesFactory" )
   end
   
   def get_player_teams
@@ -77,7 +78,7 @@ class Game
       puts "Player 1: "
       player_turn_commands( player1 )
       display_board( board )
-      puts "Playaer 2: "
+      puts "Player 2: "
       player_turn_commands( player2 )
     end
   end
