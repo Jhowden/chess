@@ -10,9 +10,9 @@ class King < ChessPiece
   end
   
   def check?( possible_enemy_moves_array )
-    row = self.position.file_position_converter
-    column = self.position.rank_position_converter
+    file = position.file
+    rank = position.rank
     
-    possible_enemy_moves_array.include?( [column, row] )
+    possible_enemy_moves_array.include?( [file, rank] )
   end
 end

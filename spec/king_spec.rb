@@ -19,7 +19,7 @@ describe King do
   
   describe "check?" do
     it "determines if the king is in check" do
-      expect( king.check?( [[7, 4], [1, 3], [5, 2], [2, 4]] ) ).to be_false
+      expect( king.check?( [["e", 5], ["d", 4], ["e", 4], ["f", 4]] ) ).to be_true
     end
   end
   
