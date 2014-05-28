@@ -6,7 +6,7 @@ describe BoardInterface do
   let(:piece1) { double( marker: "♚") }
   let(:piece2) { double( marker: "♔") }
   let(:row) { double() }
-  let(:board_interface) { described_class.new }
+  let(:board_interface) { described_class.new( board ) }
 
   before(:each) do
     allow( board_interface ).to receive( :puts )
@@ -18,13 +18,13 @@ describe BoardInterface do
 
   describe "#populate_new_board" do
     it "places the markers to the new board" do
-      board_interface.populate_new_board( board )
+      board_interface.populate_new_board
       expect( board_interface.new_board[0][2] ).to eq( "♚" )
       expect( board_interface.new_board[5][4] ).to eq( "♔" )
     end
 
     it "does nothing when there is no piece transferred" do
-      board_interface.populate_new_board( board )
+      board_interface.populate_new_board
       expect( board_interface.new_board[5][5] ).to eq( "…" )
     end
   end
@@ -39,9 +39,9 @@ describe BoardInterface do
   
   describe "#display_board" do
     it "displays the board" do
-      expect( board_interface ).to receive( :populate_new_board ).with( board )
+      expect( board_interface ).to receive( :populate_new_board )
       expect( board_interface ).to receive(  :print_board )
-      board_interface.display_board( board )
+      board_interface.display_board
     end
   end
 end

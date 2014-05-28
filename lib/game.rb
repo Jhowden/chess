@@ -4,7 +4,7 @@ class Game
 
   def initialize( board )
     @board = board
-    @board_interface = BoardInterface.new
+    @board_interface = BoardInterface.new( board )
     board.place_pieces_on_board( "WhitePiecesFactory" )
     board.place_pieces_on_board( "BlackPiecesFactory" )
   end
@@ -62,8 +62,8 @@ class Game
     end
   end
   
-  def display_board( board )
-    board_interface.display_board( board )
+  def display_board
+    board_interface.display_board
   end
 
   def update_piece_on_board( piece_position )
@@ -74,10 +74,10 @@ class Game
   def play!
     get_player_teams
     while true
-      display_board( board )
+      display_board
       puts "Player 1: "
       player_turn_commands( player1 )
-      display_board( board )
+      display_board
       puts "Player 2: "
       player_turn_commands( player2 )
     end

@@ -83,7 +83,7 @@ describe Game do
   describe "#display_board" do
     it "displays the board" do
       expect( game.board_interface ).to receive( :display_board )
-      game.display_board( board )
+      game.display_board
     end
   end
 
