@@ -9,7 +9,7 @@ class King < ChessPiece
     possible_moves
   end
   
-  def check?( possible_enemy_moves_array )
+  def check?( possible_enemy_moves_array ) # have an array of pieces for each team and iterate through to find there possible moves
     file = position.file
     rank = position.rank
     
