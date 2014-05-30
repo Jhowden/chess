@@ -1,21 +1,21 @@
 class Game
-
+  PIECES_FACTORY = "PiecesFactory"
   attr_reader :player1, :player2, :board, :board_interface, :chess_board
 
   def initialize( board )
     @board = board
     @board_interface = BoardInterface.new( board )
-    board.place_pieces_on_board( "WhitePiecesFactory" )
-    board.place_pieces_on_board( "BlackPiecesFactory" )
   end
   
   def get_player_teams
     puts "Please choose your team player 1 (white or black):"
-    player1_team = user_input
-    @player1 = set_player_team( player1_team )
+    player1_team_color = user_input
+    @player1 = set_player_team( player1_team_color )
+    set_up_players_half_of_board( player1_team_color, player1 )
     puts "Please choose your team player 2 (white or black):"
-    player2_team = user_input
-    @player2 = set_player_team( player2_team )
+    player2_team_color = user_input
+    @player2 = set_player_team( player2_team_color )
+    set_up_players_half_of_board( player2_team_color, player2 )
   end
 
   def get_player_move
@@ -77,9 +77,11 @@ class Game
       display_board
       puts "Player 1: "
       player_turn_commands( player1 )
+      clear_screen!
       display_board
       puts "Player 2: "
       player_turn_commands( player2 )
+      clear_screen!
     end
   end
 
@@ -90,8 +92,8 @@ class Game
 
   private
 
-  def set_player_team( team )
-    Player.new( team.to_sym )
+  def set_player_team( team_color )
+    Player.new( team_color.to_sym )
   end
 
   def find_piece_on_board( piece_position )
@@ -104,5 +106,30 @@ class Game
 
   def convert_to_file_and_rank( file, rank )
     return file, rank.to_i
+  end
+
+  def set_up_players_half_of_board( team_color, player )
+    set_players_team_pieces( player, create_team( team_color ) )
+    place_pieces_on_board( player )
+  end
+
+  def create_team( team_color )
+    team_color = Object.const_get( team_color.capitalize + PIECES_FACTORY )
+    team = team_color.new( board )
+    team.build
+    team.pieces
+  end
+
+  def set_players_team_pieces( player, pieces )
+    player.set_team_pieces( pieces )
+    player.find_king_piece
+  end
+
+  def place_pieces_on_board( player )
+    board.place_pieces_on_board( player )
+  end
+
+  def clear_screen!
+    print "\e[H\e[2J"
   end
 end

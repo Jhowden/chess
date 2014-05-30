@@ -9,8 +9,6 @@ describe Game do
   let(:piece) { double( team: :white ) }
 
   before(:each) do
-    allow( board ).to receive( :place_pieces_on_board ).with( "WhitePiecesFactory" )
-    allow( board ).to receive( :place_pieces_on_board ).with( "BlackPiecesFactory" )
     allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )
@@ -31,6 +29,8 @@ describe Game do
   describe "#get_player_teams" do
     it "gets the player's teams" do
       expect( game ).to receive( :gets ).exactly( 2 ).times.and_return( "white", "black" )
+      expect( game ).to receive( :set_up_players_half_of_board ).with( "white", instance_of( Player ) )
+      expect( game ).to receive( :set_up_players_half_of_board ).with( "black", instance_of( Player ) )
       game.get_player_teams
       expect( game.player1.team ).to eq( :white )
       expect( game.player2.team ).to eq( :black )

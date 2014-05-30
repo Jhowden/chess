@@ -123,11 +123,8 @@ class Board
     empty_space?( file, rank ) || different_team?( file, rank, piece )
   end
   
-  def place_pieces_on_board( team_factory )
-    team_name = Object.const_get( team_factory )
-    team = team_name.new( self )
-    team.build
-    team.pieces.each do |piece|
+  def place_pieces_on_board( player )
+    player.team_pieces.each do |piece|
       update_board( piece )
     end
   end

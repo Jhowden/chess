@@ -10,6 +10,12 @@ describe Board do
   let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
   let(:piece6) { double( position: Position.new( "g", 1 ), team: :black ) }
   let(:position) { Position.new( "c", 1 ) }
+  let(:player) { Player.new( :white ) }
+  let(:response) do
+    [ "piece1","piece2","piece3","piece4","piece5","piece6","piece7",
+      "piece8","piece9","piece10","piece11","piece12","piece13",
+      "piece14","piece15","piece16" ]
+  end
   
   before (:each) do
     allow( game_board.possible_moves ).to receive( :clear )
@@ -328,13 +334,9 @@ describe Board do
   
   describe "#place_pieces_on_board" do
     it "places the white pieces in their starting location" do
+      expect( player ).to receive( :team_pieces ).and_return response
       expect( game_board ).to receive( :update_board ).exactly( 16 ).times
-      game_board.place_pieces_on_board( "WhitePiecesFactory" )
+      game_board.place_pieces_on_board( player )
     end
   end
-
-    it "places the black pieces in their starting location" do
-      expect( game_board ).to receive( :update_board ).exactly( 16 ).times
-      game_board.place_pieces_on_board( "BlackPiecesFactory" )
-    end
 end
