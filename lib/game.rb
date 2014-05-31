@@ -45,13 +45,8 @@ class Game
     update_piece_on_board( piece )
     remove_piece_marker( piece_position )
   end
-
-  def player_turn_commands( player, enemy_player )
-    display_king_in_check_message( player, enemy_player )
-    player_input = get_player_move.gsub( /\s+/, "" )
-    piece_position = convert_to_position( player_input[0], player_input[1] )
-    piece = find_piece_on_board( piece_position )
-    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+  
+  def move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
       if check_move( piece, [target_file , target_rank] )
         move_piece!( piece, target_file, target_rank, piece_position )
@@ -61,6 +56,15 @@ class Game
     else
       display_invalid_message( "That piece is not on your team.", player, enemy_player )
     end
+  end
+
+  def player_turn_commands( player, enemy_player )
+    display_king_in_check_message( player, enemy_player )
+    player_input = get_player_move.gsub( /\s+/, "" )
+    piece_position = convert_to_position( player_input[0], player_input[1] )
+    piece = find_piece_on_board( piece_position )
+    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+    move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
   end
   
   def display_board

@@ -27,14 +27,6 @@ describe Board do
     end
   end
   
-  describe "#legal_move" do
-    it "detects if a piece is trying to be placed off the board" do
-      expect( game_board.legal_move?( 4, 6 ) ).to be
-      expect( game_board.legal_move?( 5, 8 ) ).to be_false
-      expect( game_board.legal_move?( 8, 0 ) ).to be_false
-    end
-  end
-  
   describe "#remove_marker" do
     it "removes a pieces marker" do
       game_board.chess_board[3][5] = piece
@@ -165,7 +157,6 @@ describe Board do
   end
   
   describe "#find_horizontal_spaces" do
-    
     context "when there are no other pieces in the same row" do
       it "returns an array of possible moves" do
         game_board.find_horizontal_spaces( piece5 )
@@ -191,7 +182,6 @@ describe Board do
   end
   
   describe "#find_vertical_spaces" do
-    
     context "when there are no other pieces in the same column" do
       it "return an array of possible moves" do
         game_board.find_vertical_spaces( piece5 )
@@ -217,7 +207,6 @@ describe Board do
   end
   
   describe "#find_diagonal_spaces" do
-    
     context "when there are no other pieces diagonally" do
       it "returns an array of possible moves" do
         game_board.find_diagonal_spaces( piece5 )
@@ -246,7 +235,6 @@ describe Board do
   end
   
   describe "#find_knight_spaces" do
-    
     context "when there are no surrounding pieces" do
       it "returns an array of all possible moves" do
         game_board.find_knight_spaces( piece5 )
@@ -326,12 +314,6 @@ describe Board do
     end
   end
 
-  describe "#valid_space?" do
-    it "determines if a space can be occupied" do
-      expect( game_board.valid_space?( 3, 2, piece5 ) ).to be_true
-    end
-  end
-  
   describe "#place_pieces_on_board" do
     it "places the white pieces in their starting location" do
       expect( player ).to receive( :team_pieces ).and_return response
