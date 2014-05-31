@@ -22,7 +22,7 @@ class BoardInterface
 
   def print_board
     new_board.each do |row|
-      print row.join( " " )
+      print row.join( "  " )
       puts
     end
   end
