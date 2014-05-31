@@ -7,6 +7,10 @@ describe Game do
   let(:player_1) { double( team: :white ) }
   let(:position) { double( file: "b", rank: 3 ) }
   let(:piece) { double( team: :white ) }
+  let(:player_2) { double( team: :black ) }
+  let(:players_pieces) do
+    [piece] * 16
+  end
 
   before(:each) do
     allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
@@ -45,13 +49,8 @@ describe Game do
   end
 
   describe "#player_and_piece_same_team?" do
-    it "checks the board to find the piece" do
-      expect( board ).to receive( :find_piece ).and_return( piece )
-      game.player_and_piece_same_team?( position, player_1 )
-    end
-
     it "checks to see if the piece and player have the same team" do
-      expect( game.player_and_piece_same_team?( position, player_1 ) ).to be_true
+      expect( game.player_and_piece_same_team?( piece, player_1 ) ).to be_true
     end
   end
 
@@ -64,19 +63,21 @@ describe Game do
   describe "#update_position" do
     it "updates the piece's position" do
       expect( piece ).to receive( :update_piece_position ).with( "b", 6 )
-      game.update_position( position, "b", 6 )
+      game.update_position( piece, "b", 6 )
     end
   end
 
   describe "#player_turn_commands" do
     it "goes through the commands for a player to complete a turn" do
       expect( game ).to receive( :get_player_move ).and_return( "b3 b6" )
-      expect( game ).to receive( :player_and_piece_same_team? ).with( an_instance_of( Position ), player_1 ).and_return( true )
-      expect( game ).to receive( :check_move ).with( an_instance_of( Position ), ["b", 6] ).and_return( true )
+      expect( game ).to receive( :find_piece_on_board ).with( an_instance_of( Position ) ).and_return( piece )
+      expect( game ).to receive( :player_and_piece_same_team? ).with( piece, player_1 ).and_return( true )
+      expect( game ).to receive( :check_move ).with( piece, ["b", 6] ).and_return( true )
       expect( game ).to receive( :remove_piece_marker ).with( an_instance_of( Position ) )
-      expect( game ).to receive( :update_position ).with( an_instance_of( Position ), "b", 6 )
-      expect( game ).to receive( :update_piece_on_board ).with( an_instance_of( Position ) )
-      game.player_turn_commands( player_1 )
+      expect( game ).to receive( :update_position ).with( piece, "b", 6 )
+      expect( game ).to receive( :update_piece_on_board ).with( piece )
+      expect( game ).to receive( :display_king_in_check_message ).with( player_1, player_2 )
+      game.player_turn_commands( player_1, player_2 )
     end
   end
   
@@ -89,9 +90,8 @@ describe Game do
 
   describe "#update_piece_on_board" do
     it "updates the piece position on the board" do
-      expect( game ).to receive( :find_piece_on_board ).with( position ).and_return( piece )
       expect( board ).to receive( :update_board ).with( piece )
-      game.update_piece_on_board( position )
+      game.update_piece_on_board( piece )
     end
   end
   
@@ -102,10 +102,23 @@ describe Game do
     end
   end
   
-  # describe "#play!" do
-  #   it "plays the game" do
-  #     expect( game ).to receive( :player_turn_commands ).exactly( 2 ).times
-  #     game.play!
-  #   end
-  # end
+  describe "#player_in_check?" do
+    it "checks to see if a player is in check" do
+      expect( player_2 ).to receive( :team_pieces ).and_return players_pieces
+      expect( players_pieces ).to receive( :map ).and_yield piece
+      expect( piece ).to receive( :piece_captured? ).and_return false
+      expect( piece ).to receive( :determine_possible_moves ).and_return [[["a", 3], ["b",4]], [["c",5], ["c", 4], ["c",3]]]
+      expect( player_1 ).to receive( :king_piece ).and_return( player_1 )
+      expect( player_1 ).to receive( :check? ).with [["a", 3],["b",4],["c",5], ["c", 4],["c",3]]
+      game.player_in_check?( player_1, player_2 )
+    end
+  end
+  
+  describe "#display_king_in_check_message" do
+    it "displays a message to inform player he is in check" do
+      expect( game ).to receive( :player_in_check? ).with( player_1, player_2 ).and_return true
+      expect( game ).to receive( :puts )
+      game.display_king_in_check_message( player_1, player_2 )
+    end
+  end
 end

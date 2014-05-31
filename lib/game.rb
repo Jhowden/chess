@@ -23,13 +23,11 @@ class Game
     user_input
   end
 
-  def player_and_piece_same_team?( piece_position, player )
-    piece = find_piece_on_board( piece_position )
+  def player_and_piece_same_team?( piece, player )
     piece.team == player.team
   end
 
-  def check_move( piece_position, target_location )
-    piece = find_piece_on_board( piece_position )
+  def check_move( piece, target_location )
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
   end
@@ -38,27 +36,30 @@ class Game
     board.remove_marker( piece_position )
   end
 
-  def update_position( piece_position, file, rank )
-    piece = find_piece_on_board( piece_position )
+  def update_position( piece, file, rank )
     piece.update_piece_position( file, rank )
   end
+  
+  def move_piece!( piece, target_file, target_rank, piece_position )
+    update_position( piece, target_file, target_rank )
+    update_piece_on_board( piece )
+    remove_piece_marker( piece_position )
+  end
 
-  def player_turn_commands( player )
+  def player_turn_commands( player, enemy_player )
+    display_king_in_check_message( player, enemy_player )
     player_input = get_player_move.gsub( /\s+/, "" )
     piece_position = convert_to_position( player_input[0], player_input[1] )
+    piece = find_piece_on_board( piece_position )
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    if player_and_piece_same_team?( piece_position, player )
-      if check_move( piece_position, [target_file , target_rank] )
-        update_position( piece_position, target_file, target_rank )
-        update_piece_on_board( piece_position )
-        remove_piece_marker( piece_position )
+    if player_and_piece_same_team?( piece, player )
+      if check_move( piece, [target_file , target_rank] )
+        move_piece!( piece, target_file, target_rank, piece_position )
       else
-        puts "That is not a valid move that piece."
-        player_turn_commands( player )
+        display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
       end
     else
-      puts "That piece is not on your team."
-      player_turn_commands( player )
+      display_invalid_message( "That piece is not on your team.", player, enemy_player )
     end
   end
   
@@ -66,9 +67,22 @@ class Game
     board_interface.display_board
   end
 
-  def update_piece_on_board( piece_position )
-    piece = find_piece_on_board( piece_position )
+  def update_piece_on_board( piece )
     board.update_board( piece )
+  end
+  
+  def player_in_check?( player, enemy_player )
+    enemy_player_moves = enemy_player.team_pieces.map { |piece|
+      next if piece.piece_captured?
+      piece.determine_possible_moves
+    }.flatten( 1 )
+    player.king_piece.check? enemy_player_moves
+  end
+  
+  def display_king_in_check_message( player, enemy_player )
+    if player_in_check?( player, enemy_player )
+      puts "Your king is in check!"
+    end
   end
   
   def play!
@@ -76,11 +90,11 @@ class Game
     while true
       display_board
       puts "Player 1: "
-      player_turn_commands( player1 )
+      player_turn_commands( player1, player2 )
       clear_screen!
       display_board
       puts "Player 2: "
-      player_turn_commands( player2 )
+      player_turn_commands( player2, player1 )
       clear_screen!
     end
   end
@@ -127,6 +141,11 @@ class Game
 
   def place_pieces_on_board( player )
     board.place_pieces_on_board( player )
+  end
+  
+  def display_invalid_message( message, player, enemy_player )
+    puts message
+    player_turn_commands( player, enemy_player )
   end
 
   def clear_screen!
