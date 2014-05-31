@@ -32,7 +32,7 @@ describe BoardInterface do
   describe "#print_board" do
     it "prints the board" do
       expect( board_interface.new_board ).to receive( :each ).and_yield( row )
-      expect( row ).to receive( :join ).with( " " )
+      expect( row ).to receive( :join ).with( "  " )
       board_interface.print_board
     end
   end
