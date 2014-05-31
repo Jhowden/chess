@@ -48,7 +48,7 @@ class Game
   
   def move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
-      if check_move( piece, [target_file , target_rank] )
+      if check_move( piece, [target_file , target_rank] ) # insert method that creates while loop that uses a duplicate board and checks the move first, if not check, then does move_piece!
         move_piece!( piece, target_file, target_rank, piece_position )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
