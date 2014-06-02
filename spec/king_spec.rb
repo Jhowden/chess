@@ -23,9 +23,17 @@ describe King do
     end
   end
   
-  # describe "checkmate?" do
-  #   it "determines if the king is in checkmate" do
-  #     expect( king.checkmate?( [[3, 4], [4, 3], [5, 3], [5, 4], [4, 5], [3, 5], [4,4]] ) ).to be_true
-  #   end
-  # end
+  describe "#checkmated" do
+    it "changes the status of checkmate" do
+      expect( king.checkmate ).to be_false
+      king.checkmated
+      expect( king.checkmate ).to be_true
+    end
+  end
+  
+  describe "#checkmated?" do
+    it "checks to see if a king is in checkmate" do
+      expect( king.checkmated? ).to be_false
+    end
+  end
 end
