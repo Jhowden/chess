@@ -27,7 +27,7 @@ class Game
     piece.team == player.team
   end
 
-  def check_move( piece, target_location )
+  def check_move( piece, target_location ) # pass in option paramter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
   end
@@ -48,7 +48,7 @@ class Game
   
   def move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
-      if check_move( piece, [target_file , target_rank] ) # insert method that creates while loop that uses a duplicate board and checks the move first, if not check, then does move_piece!
+      if check_move( piece, [target_file , target_rank] )
         move_piece!( piece, target_file, target_rank, piece_position )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
@@ -64,6 +64,7 @@ class Game
     piece_position = convert_to_position( player_input[0], player_input[1] )
     piece = find_piece_on_board( piece_position )
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+    # if/else here that checks if player is in check, do normal move_piece?, otherwise pass in the array returned from the checkmate call
     move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
   end
   
@@ -79,7 +80,11 @@ class Game
     enemy_player_moves = enemy_player.team_pieces.map { |piece|
       next if piece.piece_captured?
       piece.determine_possible_moves
-    }.flatten( 1 )
+    }.flatten( 1 ).compact
+    check_king_for_check( player, enemy_player_moves )
+  end
+  
+  def check_king_for_check( player, enemy_player_moves)
     player.king_piece.check? enemy_player_moves
   end
   
@@ -107,7 +112,15 @@ class Game
     print "> "
     gets.chomp
   end
-
+  
+  def convert_to_position( file, rank )
+    Position.new( file, rank.to_i )
+  end
+  
+  def replace_board new_board
+    @board = new_board
+  end
+  
   private
 
   def set_player_team( team_color )
@@ -116,10 +129,6 @@ class Game
 
   def find_piece_on_board( piece_position )
     board.find_piece( piece_position )
-  end
-
-  def convert_to_position( file, rank )
-    Position.new( file, rank.to_i )
   end
 
   def convert_to_file_and_rank( file, rank )

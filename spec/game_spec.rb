@@ -4,6 +4,7 @@ describe Game do
 
   let(:game) { described_class.new( board ) }
   let(:board) { stub_const( "Board", Class.new ) }
+  let(:board2) { stub_const( "Board", Class.new ) }
   let(:player_1) { double( team: :white ) }
   let(:position) { double( file: "b", rank: 3 ) }
   let(:piece) { double( team: :white ) }
@@ -119,6 +120,14 @@ describe Game do
       expect( game ).to receive( :player_in_check? ).with( player_1, player_2 ).and_return true
       expect( game ).to receive( :puts )
       game.display_king_in_check_message( player_1, player_2 )
+    end
+  end
+  
+  describe "#replace_board" do
+    it "replaces the piece's board" do
+      expect( game.board ).to eq( board )
+      game.replace_board( board2 )
+      expect( game.board ).to eq( board2 )
     end
   end
 end

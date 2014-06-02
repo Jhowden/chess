@@ -25,6 +25,10 @@ class ChessPiece
     position.update_position( file, rank )
   end
   
+  def replace_board new_board
+    @board = new_board
+  end
+  
   private
   
   def new_file_position( navigation )
