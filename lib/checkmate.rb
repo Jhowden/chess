@@ -22,6 +22,19 @@ class Checkmate
     end
   end
   
+  def enemy_possible_moves_map( player, enemy_player )
+    possible_moves_map = {}
+    king = player.king_piece
+    enemy_player.team_pieces.each do |piece|
+      next if piece.piece_captured?
+      possible_moves = piece.determine_possible_moves
+      if possible_moves.include?( [king.position.file, king.position.rank] )
+        possible_moves_map[piece] = possible_moves
+      end
+    end
+    possible_moves_map
+  end
+  
   def replace_board_on_pieces_to_original( players_array, original_board )
     players_array.each do |team|
       team.team_pieces.each do |piece|
