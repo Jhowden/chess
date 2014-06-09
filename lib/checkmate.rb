@@ -23,7 +23,7 @@ class Checkmate
   end
   
   def capture_pieces_threatening_king( player, enemy_player )
-    enemy_pieces_threatening_king_collection = enemy_piece_collection( player, enemy_player )
+    enemy_pieces_threatening_king_collection = determine_enemy_piece_map( player, enemy_player ).keys
     return if enemy_pieces_threatening_king_collection.size >= 2 # can't capture two enemy pieces in one move
     original_board = make_copy_of_original_board
     player.team_pieces.select{ |piece| !piece.piece_captured? }.each do |piece|
@@ -43,16 +43,37 @@ class Checkmate
     end
   end
   
-  def enemy_piece_collection( player, enemy_player )
-    enemy_piece_collection = []
+  def block_enemy_piece( player, enemy_player )
+    possible_enemy_moves_collection = determine_enemy_piece_map( player, enemy_player )
+    return if possible_enemy_moves_collection.keys.size >= 2
+    original_board = make_copy_of_original_board
+    player.team_pieces.select{ |piece| !piece.piece_captured? }.each do |piece|
+      piece_possible_moves = piece.determine_possible_moves
+      possible_enemy_moves_collection.values.flatten( 1 ).each do |enemy_possible_move|
+    	  if piece_possible_moves.include?( enemy_possible_move )
+           target_file, target_rank = game.convert_to_file_and_rank( enemy_possible_move.first, 
+              enemy_possible_move.last )
+            game.move_piece!( piece, target_file, target_rank, piece.position )
+          if !check?( player, enemy_player )
+    	      possible_moves << [enemy_possible_move.first, enemy_possible_move.last]
+          end
+          replace_board_on_pieces_to_original( [player, enemy_player], original_board )
+          replace_board_on_game_to_original( original_board )
+    		end
+      end    
+    end
+  end
+  
+  def determine_enemy_piece_map( player, enemy_player )
+    enemy_piece_map = {}
     king = player.king_piece
     enemy_player.team_pieces.select{ |piece| !piece.piece_captured? }.each do |piece|
       possible_moves = piece.determine_possible_moves
       if possible_moves.include?( [king.position.file, king.position.rank] )
-        enemy_piece_collection << piece
+        enemy_piece_map[piece] = possible_moves
       end
     end
-    enemy_piece_collection
+    enemy_piece_map
   end
   
   def replace_board_on_pieces_to_original( players_array, original_board )
