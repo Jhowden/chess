@@ -1,3 +1,4 @@
+# Interface? This is an overloaded term in programming. Also, Ruby doesn't really have interfaces. Confusing name.  Seems like this makes a new board... Or some of it
 class BoardInterface
 
   attr_reader :new_board, :board
@@ -30,7 +31,8 @@ class BoardInterface
   def populate_new_board
     board.chess_board.each_with_index do |row, rank_index|
       row.each_with_index do |cell, file_index|
-        remove_marker( file_index + 2, rank_index,  ) # this is super ugly and I hate it.
+        # Are Markers blank spaces? Or just symbols?
+        remove_marker( file_index + 2, rank_index,  ) # this is super ugly and I hate it. #Yep. Not very clear. Perhaps, extract method to an informative name?
         if !cell.nil?  
           new_board[rank_index][file_index + 2] = cell.marker
         end

@@ -63,6 +63,7 @@ describe WhitePiecesFactory do
   
   describe "#build" do
     it "creates all of the white team's pieces" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( white_pieces_factory ).to receive( :create_pawns )
       expect( white_pieces_factory ).to receive( :create_rooks )
       expect( white_pieces_factory ).to receive( :create_knights )

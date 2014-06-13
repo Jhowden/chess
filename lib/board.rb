@@ -1,7 +1,7 @@
 require_relative 'determine_multiple_moves'
 require_relative 'move_validations'
 
-class Board
+class Board # Pretty good
   include DetermineMultipleMoves
   include MoveValidations
   

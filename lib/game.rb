@@ -1,5 +1,5 @@
 class Game
-  PIECES_FACTORY = "PiecesFactory"
+  PIECES_FACTORY = "PiecesFactory" # perhaps PIECES_FACTORY_SUFFIX
   attr_reader :player1, :player2, :board, :board_interface, :chess_board
 
   def initialize( board )

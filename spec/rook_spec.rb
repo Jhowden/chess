@@ -6,6 +6,7 @@ describe Rook do
   let(:rook) { described_class.new( "♜", "e", 4, :black, board ) }
   
   before (:each) do
+    # Mocking or stubbing the thing you are testing is FORBIDDEN!
     allow( rook.possible_moves ).to receive( :clear )
   end
 

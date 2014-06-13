@@ -11,6 +11,8 @@ describe DetermineMultipleMoves do
   
   describe "#find_surrounding_spaces" do
     it "finds the valid moves for a knight or king" do
+      # All these expects... shouldn't some be allows?
+      # What are you testing and what is merely necessary to get there?
       expect( piece ).to receive( :position ).twice.and_return piece
       expect( piece ).to receive( :file_position_converter ).and_return 3
       expect( piece ).to receive( :rank_position_converter ).and_return 3
@@ -36,6 +38,7 @@ describe DetermineMultipleMoves do
     end
     
     it "finds a space occupied by an enemy to the left of the piece" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( subject ).to receive( :legal_move? ).and_return( true )
       expect( subject ).to receive( :empty_space? ).and_return( false )
       expect( subject ).to receive( :different_team? ).and_return( true )
@@ -46,6 +49,7 @@ describe DetermineMultipleMoves do
     end
     
     it "does not track spaces that are occupied by a friendly piece" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( subject ).to receive( :legal_move? ).and_return( true )
       expect( subject ).to receive( :empty_space? ).and_return( false )
       expect( subject ).to receive( :different_team? ).and_return( false )
@@ -57,6 +61,7 @@ describe DetermineMultipleMoves do
   
   describe "#find_spaces_to_the_right" do
     it "finds all the empty spaces to the left of the piece" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( subject ).to receive( :legal_move? ).and_return( true, true, true, false )
       expect( subject ).to receive( :empty_space? ).and_return( true, true, true )
       expect( subject ).to receive( :convert_to_file_position ).exactly( 3 ).times.
@@ -68,6 +73,7 @@ describe DetermineMultipleMoves do
     end
     
     it "finds a space occupied by an enemy to the left of the piece" do
+      # And so on...
       expect( subject ).to receive( :legal_move? ).and_return( true )
       expect( subject ).to receive( :empty_space? ).and_return( false )
       expect( subject ).to receive( :different_team? ).and_return( true )

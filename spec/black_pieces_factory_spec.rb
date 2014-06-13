@@ -11,6 +11,7 @@ describe BlackPiecesFactory do
       expect( black_pieces_factory.pieces.size ).to eq( 8 )
       black_pieces_factory.pieces.each do |pawn|
         expect( pawn ).to be_an_instance_of Pawn
+        # Not really checking to see if pawn was created properly
       end
     end
   end
@@ -21,6 +22,7 @@ describe BlackPiecesFactory do
       expect( black_pieces_factory.pieces.size ).to eq( 2 )
       black_pieces_factory.pieces.each do |rook|
         expect( rook ).to be_an_instance_of Rook
+         # Not really checking to see if Rook was created properly
       end
     end
   end
@@ -31,6 +33,7 @@ describe BlackPiecesFactory do
       expect( black_pieces_factory.pieces.size ).to eq( 2 )
       black_pieces_factory.pieces.each do |bishop|
         expect( bishop ).to be_an_instance_of Bishop
+        # See prev comment
       end
     end
   end

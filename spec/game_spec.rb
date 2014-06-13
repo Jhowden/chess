@@ -15,6 +15,7 @@ describe Game do
 
   before(:each) do
     allow( board ).to receive( :create_board ).and_return Array.new( 8 ) { |cell| Array.new( 8 ) }
+    # Mocking or stubbing the thing you are testing is FORBIDDEN!
     allow( game ).to receive( :puts )
     allow( game ).to receive( :print )
     allow( game ).to receive( :gets ).and_return( game )
@@ -33,6 +34,7 @@ describe Game do
 
   describe "#get_player_teams" do
     it "gets the player's teams" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( game ).to receive( :gets ).exactly( 2 ).times.and_return( "white", "black" )
       expect( game ).to receive( :set_up_players_half_of_board ).with( "white", instance_of( Player ) )
       expect( game ).to receive( :set_up_players_half_of_board ).with( "black", instance_of( Player ) )

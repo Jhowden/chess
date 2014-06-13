@@ -1,3 +1,4 @@
+# Lots of duplication between this and BlackPiecesFactory
 class WhitePiecesFactory
   ROOKS_STARTING_POSITIONS = [["a", 8], ["h", 8]]
   BISHOPS_STARTING_POSITIONS = [["c",8], ["f",8]]

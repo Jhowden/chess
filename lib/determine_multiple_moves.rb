@@ -1,4 +1,4 @@
-module DetermineMultipleMoves
+module DetermineMultipleMoves #Interesting name. Not sure what it does.
   def find_surrounding_spaces( piece, modifier_array )
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
@@ -13,6 +13,7 @@ module DetermineMultipleMoves
     possible_moves
   end
   
+  #What is this supposed to return? possible_moves? not clear from looking at method where return points are
   def find_spaces_to_the_left( file, rank, piece )
     left_counter = 1
     while legal_move?( rank, file - left_counter )

@@ -12,12 +12,14 @@ class BlackPiecesFactory
 
   def create_pawns
     8.times do |file|
+      # Seems like a Pawn should know its own symbol.
       pieces << Pawn.new( "♟", Position::FILE_POSITIONS[file], 2, :black, board, :up )
     end
   end
 
   def create_rooks
     ROOKS_STARTING_POSITIONS.each do |file, rank|
+      # Ditto 6 lines ago comment
       pieces << Rook.new( "♜", file, rank, :black, board )
     end
   end

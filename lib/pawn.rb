@@ -1,3 +1,4 @@
+# Figure out how to add things to the path instead of having to rely on location aware requires
 require_relative 'chess_piece'
 
 class Pawn < ChessPiece

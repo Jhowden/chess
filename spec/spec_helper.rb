@@ -1,3 +1,4 @@
+# Why not use '*' to require everything in lib?
 require_relative '../lib/bishop'
 require_relative '../lib/board'
 require_relative '../lib/chess_piece'

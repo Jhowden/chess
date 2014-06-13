@@ -6,6 +6,7 @@ describe MoveValidations do
   
   describe "#valid_space?" do
     it "determines if a space can be occupied" do
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( subject ).to receive( :chess_board ).and_return ( Array.new( 8 ) { |cell| Array.new( 8 ) } )
       expect( subject.valid_space?( 3, 2, piece ) ).to be_true
     end

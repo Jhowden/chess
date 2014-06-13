@@ -9,6 +9,7 @@ describe BoardInterface do
   let(:board_interface) { described_class.new( board ) }
 
   before(:each) do
+    # Mocking or stubbing the thing you are testing is FORBIDDEN!
     allow( board_interface ).to receive( :puts )
     allow( board_interface ).to receive( :print )
     allow( board ).to receive( :chess_board ).and_return( board )

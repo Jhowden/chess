@@ -18,7 +18,9 @@ class Checkmate
         possible_moves << possible_move # pass in piece starting position and target position => ["a"3"b"4] so that I can ensure that when the player picks the king he chooses a correct spot
       end
       replace_board_on_pieces_to_original( [player, enemy_player], original_board )
+      # Having to remeber to put the board back to its original position is not good.  Use dupes and toss them away.
       replace_board_on_game_to_original( original_board )
+      # 
     end
   end
   

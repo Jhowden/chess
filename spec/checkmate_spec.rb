@@ -13,6 +13,7 @@ describe Checkmate do
   
   describe "#move_king_in_all_possible_spots" do
     it "checks to see where a king can move and not be in check" do
+      # Shouldn't some of these "expects" be "allows." How will the future programmer know what is important? 
       allow( player ).to receive( :team_pieces ).and_return [piece]
       expect( game ).to receive( :board ).and_return game
       expect( game ).to receive( :dup ).and_return( Array.new( 8 ) { |cell| Array.new( 8 ) } )
@@ -21,6 +22,7 @@ describe Checkmate do
       expect( king ).to receive( :position ).exactly( 6 ).times
       expect( king ).to receive( :determine_possible_moves ).and_return( [["c", 4], ["d", 3], ["e", 3], ["e", 4], ["d", 5], ["c", 5]] )
       expect( game ).to receive( :move_piece! ).exactly( 6 ).times
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( checkmate ).to receive( :check? ).exactly( 6 ).times
       expect( game ).to receive( :replace_board ).exactly( 6 ).times
       expect( piece ).to receive( :replace_board ).exactly( 6 ).times
@@ -62,6 +64,7 @@ describe Checkmate do
       expect( game ).to receive( :board ).and_return game
       expect( game ).to receive( :dup ).and_return( Array.new( 8 ) { |cell| Array.new( 8 ) } )
       expect( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( checkmate ).to receive( :determine_enemy_piece_map ).with( player, player2 ).
         and_return( { piece => [["a", 4], ["b", 4], ["d", 5]] } )
       expect( game ).to receive( :convert_to_file_and_rank ).and_return [0, 3]
@@ -89,6 +92,7 @@ describe Checkmate do
       expect( game ).to receive( :board ).and_return game
       expect( game ).to receive( :dup ).and_return( Array.new( 8 ) { |cell| Array.new( 8 ) } )
       expect( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
+      # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( checkmate ).to receive( :determine_enemy_piece_map ).with( player, player2 ).
         and_return( { piece => [["a", 4], ["a", 3], ["a", 2], ["a", 1]] } )
       expect( piece2 ).to receive( :determine_possible_moves ).and_return( [["a", 5], ["a", 4], ["a", 3], ["a", 2]] )

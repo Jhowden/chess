@@ -2,6 +2,7 @@ class ChessPiece
   
   FILE_POSITIONS = ["a", "b", "c", "d", "e", "f", "g", "h"]
   
+  #What is marker?
   attr_reader :marker, :captured, :position, :board, :team, :possible_moves
   
   def initialize( marker, file, rank, team, board )
@@ -13,6 +14,7 @@ class ChessPiece
     @possible_moves = []
   end
   
+  # Perhaps "capture!" is a better name. This seems like a question from its name
   def piece_captured
     @captured = true
   end
@@ -31,6 +33,7 @@ class ChessPiece
   
   private
   
+  # If only the Pawn uses this method why is it here?
   def new_file_position( navigation )
     if navigation == :previous
       FILE_POSITIONS[FILE_POSITIONS.index(position.file) - 1]
