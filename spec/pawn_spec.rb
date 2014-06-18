@@ -3,13 +3,12 @@ require "spec_helper"
 describe Pawn do
 
   let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
-  let(:pawn) { described_class.new( "♟", "b", 2, :black, board, :up ) }
-  let(:pawn2) { described_class.new( "♟", "b", 1, :black, board, :down ) }
+  let(:pawn) { described_class.new( "b", 2, :black, board, :up ) }
+  let(:pawn2) { described_class.new( "b", 1, :white, board, :down ) }
   
   before :each do
     allow( board ).to receive( :move_straight? )
     allow( board ).to receive( :move_forward_diagonally? ).twice
-    allow( pawn.possible_moves ).to receive( :clear )
   end
 
   describe "#determine_possible_moves" do
@@ -64,6 +63,25 @@ describe Pawn do
         pawn.determine_possible_moves
         expect( pawn.possible_moves.size ).to eq( 0 )
       end
+    end
+
+    it "clears possible moves when not empty" do
+      pawn.possible_moves << ["a", 3]
+      allow( board ).to receive( :move_straight? ).and_return( true )
+      pawn.determine_possible_moves
+      expect( pawn.possible_moves ).to eq( [["b", 3]] )
+    end
+  end
+
+  context "when a black piece" do
+    it "displays the correct board marker" do
+      expect( pawn.board_marker ).to eq( "♟" )
+    end
+  end
+
+  context "when a white piece" do
+    it "displays the correct board marker" do
+      expect( pawn2.board_marker ).to eq( "♙" )
     end
   end
 end

@@ -39,7 +39,7 @@ describe Board do
     context "when a space is occupied" do
       it "removes and replaces the opposing piece with new piece" do
         game_board.chess_board[3][5] = piece2
-        expect( piece2 ).to receive( :piece_captured )
+        expect( piece2 ).to receive( :captured! )
         game_board.update_board( piece )
         expect( game_board.chess_board[3][5] ).to eq( piece )
       end

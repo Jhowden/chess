@@ -5,9 +5,9 @@ describe Checkmate do
   let(:game) { double() }
   let(:checkmate) { described_class.new( game ) }
   let(:king) { double() }
-  let(:piece) { double( piece_captured?: false ) }
-  let(:piece2) { double( piece_captured?: false ) }
-  let(:piece3) { double( piece_captured?: false ) }
+  let(:piece) { double( captured?: false ) }
+  let(:piece2) { double( captured?: false ) }
+  let(:piece3) { double( captured?: false ) }
   let(:player) { double() }
   let(:player2) { double( team_pieces: [] ) }
   

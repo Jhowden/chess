@@ -3,6 +3,8 @@ class BlackPiecesFactory
   BISHOPS_STARTING_POSITIONS = [["c",1], ["f",1]]
   KNIGHTS_STARTING_POSITIONS = [["b",1], ["g",1]]
 
+  # create one class and pass in pawn rank, king/queen rank, amd color. Keep constants but put them in each respective piece class
+
   attr_reader :pieces, :board
 
   def initialize( board )
@@ -17,7 +19,7 @@ class BlackPiecesFactory
     end
   end
 
-  def create_rooks
+  def create_rooks # abstract the next three methods out into a parent class, put an argument that takes starting away
     ROOKS_STARTING_POSITIONS.each do |file, rank|
       # Ditto 6 lines ago comment
       pieces << Rook.new( "♜", file, rank, :black, board )

@@ -2,15 +2,16 @@ require_relative 'chess_piece'
 
 class King < ChessPiece
   
-  attr_reader :checkmate
+  attr_reader :checkmate, :board_marker
   
-  def initialize( marker, file, rank, team, board )
+  def initialize( file, rank, team, board )
     super
     @checkmate = false
+    @board_marker = determine_board_marker
   end
 
   def determine_possible_moves
-    possible_moves.clear unless possible_moves.empty?
+    clear_moves!
     possible_moves.concat( board.find_king_spaces( self ) )
 
     possible_moves
@@ -29,5 +30,9 @@ class King < ChessPiece
   
   def checkmated?
     checkmate
+  end
+
+  def determine_board_marker
+    team == :white ? "♔" : "♚"
   end
 end

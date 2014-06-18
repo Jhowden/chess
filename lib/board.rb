@@ -28,7 +28,7 @@ class Board # Pretty good
   def update_board( piece )
     file = piece.position.file_position_converter
     rank = piece.position.rank_position_converter
-    chess_board[rank][file].piece_captured unless chess_board[rank][file] == nil
+    chess_board[rank][file].captured! unless chess_board[rank][file] == nil
     chess_board[rank][file] = piece
   end
   

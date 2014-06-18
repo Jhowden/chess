@@ -3,12 +3,8 @@ require "spec_helper"
 describe Knight do
   
   let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
-  let(:knight) { described_class.new( "♞", "e", 4, :black, board ) }
-  let(:knight) { described_class.new( "♞", "g", 1, :black, board ) }
-  
-  before (:each) do
-    allow( knight.possible_moves ).to receive( :clear )
-  end
+  let(:knight) { described_class.new( "e", 4, :black, board ) }
+  let(:knight2) { described_class.new( "g", 1, :white, board ) }
   
   describe "#determine_possible_moves" do
     it "returns all possible moves" do
@@ -21,6 +17,25 @@ describe Knight do
       expect( board ).to receive( :find_knight_spaces ).with( knight ).and_return( [[6, 4], [5, 5], [5, 7]] )
       knight.determine_possible_moves
       expect( knight.possible_moves.size ).to eq ( 3 )
+    end
+
+    it "clears possible moves when not empty" do
+      knight.possible_moves << ["a", 3]
+      allow( board ).to receive( :find_knight_spaces ).and_return( [["c", 3]] )
+      knight.determine_possible_moves
+      expect( knight.possible_moves ).to eq( [["c", 3]] )
+    end
+  end
+
+  context "when a black piece" do
+    it "displays the correct board marker" do
+      expect( knight.board_marker ).to eq( "♞" )
+    end
+  end
+
+  context "when a white piece" do
+    it "displays the correct board marker" do
+      expect( knight2.board_marker ).to eq( "♘" )
     end
   end
 end

@@ -109,7 +109,7 @@ describe Game do
     it "checks to see if a player is in check" do
       expect( player_2 ).to receive( :team_pieces ).and_return players_pieces
       expect( players_pieces ).to receive( :map ).and_yield piece
-      expect( piece ).to receive( :piece_captured? ).and_return false
+      expect( piece ).to receive( :captured? ).and_return false
       expect( piece ).to receive( :determine_possible_moves ).and_return [[["a", 3], ["b",4]], [["c",5], ["c", 4], ["c",3]]]
       expect( player_1 ).to receive( :king_piece ).and_return( player_1 )
       expect( player_1 ).to receive( :check? ).with [["a", 3],["b",4],["c",5], ["c", 4],["c",3]]

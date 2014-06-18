@@ -78,7 +78,7 @@ class Game
   
   def player_in_check?( player, enemy_player ) # why not also check to see if the array includes the player's king's position
     enemy_player_moves = enemy_player.team_pieces.map { |piece|
-      next if piece.piece_captured? 
+      next if piece.captured? 
       piece.determine_possible_moves
     }.flatten( 1 ).compact
     check_king_for_check( player, enemy_player_moves )
