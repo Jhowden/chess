@@ -1,5 +1,4 @@
 class Game
-  PIECES_FACTORY = "PiecesFactory" # perhaps PIECES_FACTORY_SUFFIX
   attr_reader :player1, :player2, :board, :board_interface, :chess_board
 
   def initialize( board )
@@ -10,12 +9,12 @@ class Game
   def get_player_teams
     puts "Please choose your team player 1 (white or black):"
     player1_team_color = user_input
-    @player1 = set_player_team( player1_team_color )
-    set_up_players_half_of_board( player1_team_color, player1 )
+    @player1 = set_player_team( player1_team_color.to_sym )
+    set_up_players_half_of_board( player1_team_color.to_sym, player1 )
     puts "Please choose your team player 2 (white or black):"
     player2_team_color = user_input
-    @player2 = set_player_team( player2_team_color )
-    set_up_players_half_of_board( player2_team_color, player2 )
+    @player2 = set_player_team( player2_team_color.to_sym )
+    set_up_players_half_of_board( player2_team_color.to_sym, player2 )
   end
 
   def get_player_move
@@ -124,7 +123,7 @@ class Game
   private
 
   def set_player_team( team_color )
-    Player.new( team_color.to_sym )
+    Player.new( team_color )
   end
 
   def find_piece_on_board( piece_position )
@@ -141,8 +140,7 @@ class Game
   end
 
   def create_team( team_color )
-    team_color = Object.const_get( team_color.capitalize + PIECES_FACTORY )
-    team = team_color.new( board )
+    team = PiecesFactory.new( board, team_color )
     team.build
     team.pieces
   end
