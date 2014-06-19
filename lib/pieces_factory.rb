@@ -1,5 +1,5 @@
 class PiecesFactory
-  WHITE_ROOKS_STARTING_POSITIONS   = [["a", 8], ["h", 8]]
+  WHITE_ROOKS_STARTING_POSITIONS   = [["a", 8], ["h", 8]] # Find a new home for these variables...
   WHITE_BISHOPS_STARTING_POSITIONS = [["c",8], ["f",8]]
   WHITE_KNIGHTS_STARTING_POSITIONS = [["b",8], ["g",8]]
   BLACK_ROOKS_STARTING_POSITIONS   = [["a", 1], ["h", 1]]

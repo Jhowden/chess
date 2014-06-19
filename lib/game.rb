@@ -3,7 +3,7 @@ class Game
 
   def initialize( board )
     @board = board
-    @board_interface = BoardInterface.new( board )
+    @board_interface = BoardView.new( board )
   end
   
   def get_player_teams

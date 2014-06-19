@@ -36,8 +36,8 @@ describe Game do
     it "gets the player's teams" do
       # Mocking or stubbing the thing you are testing is FORBIDDEN!
       expect( game ).to receive( :gets ).exactly( 2 ).times.and_return( "white", "black" )
-      expect( game ).to receive( :set_up_players_half_of_board ).with( "white", instance_of( Player ) )
-      expect( game ).to receive( :set_up_players_half_of_board ).with( "black", instance_of( Player ) )
+      expect( game ).to receive( :set_up_players_half_of_board ).with( :white, instance_of( Player ) )
+      expect( game ).to receive( :set_up_players_half_of_board ).with( :black, instance_of( Player ) )
       game.get_player_teams
       expect( game.player1.team ).to eq( :white )
       expect( game.player2.team ).to eq( :black )

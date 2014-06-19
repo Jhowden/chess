@@ -1,6 +1,5 @@
 class ChessPiece
   
-  #What is marker?
   attr_reader :captured, :position, :board, :team, :possible_moves
   
   def initialize( file, rank, team, board )
@@ -28,6 +27,6 @@ class ChessPiece
   end
 
   def clear_moves!
-    possible_moves.clear unless possible_moves.empty?
+    possible_moves.clear
   end
 end
