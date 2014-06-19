@@ -34,14 +34,12 @@ class BoardInterface
         # Are Markers blank spaces? Or just symbols?
         remove_marker( file_index + 2, rank_index,  ) # this is super ugly and I hate it. #Yep. Not very clear. Perhaps, extract method to an informative name?
         if !cell.nil?  
-          new_board[rank_index][file_index + 2] = cell.marker
+          new_board[rank_index][file_index + 2] = cell.board_marker
         end
       end
     end
   end
   
-
-
   private 
 
   def set_horizontal_markers( markers, counter, rank_position )

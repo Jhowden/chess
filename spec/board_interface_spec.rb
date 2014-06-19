@@ -3,8 +3,8 @@ require_relative 'spec_helper'
 describe BoardInterface do
   
   let(:board) { Array.new( 8 ) { |cell| Array.new( 8 ) } }
-  let(:piece1) { double( marker: "♚") }
-  let(:piece2) { double( marker: "♔") }
+  let(:piece1) { double( board_marker: "♚") }
+  let(:piece2) { double( board_marker: "♔") }
   let(:row) { double() }
   let(:board_interface) { described_class.new( board ) }
 
