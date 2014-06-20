@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 
 describe DetermineMultipleMoves do
-  subject { Object.new.extend( described_class ) }
+  subject { Object.new.extend( described_class ) }# creating a new object that has those methods and stub those out
   
   let(:piece) { double() }
   
