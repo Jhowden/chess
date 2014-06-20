@@ -6,7 +6,7 @@ class BoardView
   VERTICAL_BORDER_MARKERS = ["║"] * 8 +  ["╚"]
   HORIZONTAL_BORDER_MARKERS = ["═"] * 8
 
-  def initialize( board )
+  def initialize( board, printer=BoardPrinter.new )
     @new_board = Array.new( 10 ) { |cell| Array.new( 10, "…" ) }
     @board = board
     set_vertical_markers( RANK_MARKERS, 0, 0)
