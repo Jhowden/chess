@@ -1,6 +1,6 @@
 class BoardView
 
-  attr_reader :new_board, :board
+  attr_reader :new_board, :board, :printer
   FILE_MARKERS = %w[ — — a b c d e f g h]
   RANK_MARKERS = [8, 7, 6, 5, 4, 3, 2, 1, "—"]
   VERTICAL_BORDER_MARKERS = ["║"] * 8 +  ["╚"]
@@ -9,6 +9,7 @@ class BoardView
   def initialize( board, printer=BoardPrinter.new )
     @new_board = Array.new( 10 ) { |cell| Array.new( 10, "…" ) }
     @board = board
+    @printer = printer
     set_vertical_markers( RANK_MARKERS, 0, 0)
     set_vertical_markers( VERTICAL_BORDER_MARKERS, 0, 1)
     set_horizontal_markers( FILE_MARKERS, 0, 9)
@@ -17,19 +18,13 @@ class BoardView
 
   def display_board
     populate_new_board
-    print_board
-  end
-
-  def print_board
-    new_board.each do |row|
-      print_row row
-    end
+    printer.print_board( new_board )
   end
 
   def populate_new_board
     board.chess_board.each_with_index do |row, rank_index|
       row.each_with_index do |cell, file_index|
-        clear_board_of_previous_markers( file_index + 2, rank_index  ) # this is super ugly and I hate it. #Yep. Not very clear. Perhaps, extract method to an informative name?
+        clear_board_of_previous_piece_markers( file_index + 2, rank_index  )
         if !cell.nil?  
           new_board[rank_index][file_index + 2] = cell.board_marker
         end
@@ -38,11 +33,6 @@ class BoardView
   end
   
   private 
-
-  def print_row( row )
-    print row.join( "  " )
-      puts
-  end
 
   def set_horizontal_markers( markers, counter, rank_position )
     markers.each do |marker|
@@ -58,7 +48,7 @@ class BoardView
     end
   end
   
-  def clear_board_of_previous_markers( file, rank )
+  def clear_board_of_previous_piece_markers( file, rank )
     new_board[rank][file] = "…"
   end
 end
