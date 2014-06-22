@@ -1,38 +1,41 @@
-class Game
-  attr_reader :player1, :player2, :board, :board_interface, :chess_board
+require_relative 'board_setup_helper'
+require_relative 'board_piece_locator'
 
-  def initialize( board )
+class Game
+  attr_reader :player1, :player2, :board, :board_interface, :chess_board, :user_commands
+
+  include BoardSetupHelper
+  include BoardPieceLocator
+
+  def initialize( board, user_commands = UserCommands.new )
     @board = board
     @board_interface = BoardView.new( board )
+    @user_commands = user_commands
   end
   
   def get_player_teams
     puts "Please choose your team player 1 (white or black):"
-    player1_team_color = user_input
+    player1_team_color = user_commands.user_input
     @player1 = set_player_team( player1_team_color.to_sym )
     set_up_players_half_of_board( player1_team_color.to_sym, player1 )
     puts "Please choose your team player 2 (white or black):"
-    player2_team_color = user_input
+    player2_team_color = user_commands.user_input
     @player2 = set_player_team( player2_team_color.to_sym )
     set_up_players_half_of_board( player2_team_color.to_sym, player2 )
   end
 
   def get_player_move
     puts "Please select a piece you would like to move and its new position (ex: b3 b6):"
-    user_input
+    user_commands.user_input
   end
 
   def player_and_piece_same_team?( piece, player )
     piece.team == player.team
   end
 
-  def check_move( piece, target_location ) # pass in option paramter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
+  def check_move?( piece, target_location ) # pass in option paramter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
-  end
-  
-  def remove_piece_marker( piece_position )
-    board.remove_marker( piece_position )
   end
 
   def update_position( piece, file, rank )
@@ -42,12 +45,12 @@ class Game
   def move_piece!( piece, target_file, target_rank, piece_position )
     update_position( piece, target_file, target_rank )
     update_piece_on_board( piece )
-    remove_piece_marker( piece_position )
+    remove_piece_old_position( piece_position )
   end
   
   def move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
-      if check_move( piece, [target_file , target_rank] )
+      if check_move?( piece, [target_file , target_rank] )
         move_piece!( piece, target_file, target_rank, piece_position )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
@@ -69,10 +72,6 @@ class Game
   
   def display_board
     board_interface.display_board
-  end
-
-  def update_piece_on_board( piece )
-    board.update_board( piece )
   end
   
   def player_in_check?( player, enemy_player ) # why not also check to see if the array includes the player's king's position
@@ -106,11 +105,6 @@ class Game
       clear_screen!
     end
   end
-
-  def user_input
-    print "> "
-    gets.chomp
-  end
   
   def convert_to_position( file, rank )
     Position.new( file, rank.to_i )
@@ -122,36 +116,8 @@ class Game
   
   private
 
-  def set_player_team( team_color )
-    Player.new( team_color )
-  end
-
-  def find_piece_on_board( piece_position )
-    board.find_piece( piece_position )
-  end
-
   def convert_to_file_and_rank( file, rank )
     return file, rank.to_i
-  end
-
-  def set_up_players_half_of_board( team_color, player )
-    set_players_team_pieces( player, create_team( team_color ) )
-    place_pieces_on_board( player )
-  end
-
-  def create_team( team_color )
-    team = PiecesFactory.new( board, team_color )
-    team.build
-    team.pieces
-  end
-
-  def set_players_team_pieces( player, pieces )
-    player.set_team_pieces( pieces )
-    player.find_king_piece
-  end
-
-  def place_pieces_on_board( player )
-    board.place_pieces_on_board( player )
   end
   
   def display_invalid_message( message, player, enemy_player )

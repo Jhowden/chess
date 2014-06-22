@@ -19,7 +19,7 @@ class Board # Pretty good
      Array.new( 8 ) { |cell| Array.new( 8 ) }
   end
   
-  def remove_marker( piece_position )
+  def remove_old_position( piece_position )
     file = piece_position.file_position_converter
     rank = piece_position.rank_position_converter
     chess_board[rank][file] = nil

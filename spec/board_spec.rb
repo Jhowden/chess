@@ -27,10 +27,10 @@ describe Board do
     end
   end
   
-  describe "#remove_marker" do
+  describe "#remove_old_position" do
     it "removes a pieces marker" do
       game_board.chess_board[3][5] = piece
-      game_board.remove_marker( Position.new( "f", 5 ) )
+      game_board.remove_old_position( Position.new( "f", 5 ) )
       expect( game_board.chess_board[3][5] ).to be_nil
     end
   end

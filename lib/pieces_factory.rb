@@ -1,10 +1,11 @@
+require_relative "rooks_starting_positions"
+require_relative "bishops_starting_positions"
+require_relative "knights_starting_positions"
+
 class PiecesFactory
-  WHITE_ROOKS_STARTING_POSITIONS   = [["a", 8], ["h", 8]] # Find a new home for these variables...
-  WHITE_BISHOPS_STARTING_POSITIONS = [["c",8], ["f",8]]
-  WHITE_KNIGHTS_STARTING_POSITIONS = [["b",8], ["g",8]]
-  BLACK_ROOKS_STARTING_POSITIONS   = [["a", 1], ["h", 1]]
-  BLACK_BISHOPS_STARTING_POSITIONS = [["c",1], ["f",1]]
-  BLACK_KNIGHTS_STARTING_POSITIONS = [["b",1], ["g",1]]
+  include RooksStartingPositions
+  include BishopsStartingPositions
+  include KnightsStartingPositions
 
   attr_reader :pieces, :board, :team
 
@@ -26,11 +27,11 @@ class PiecesFactory
 
   def create_rooks
     if team == :white
-      WHITE_ROOKS_STARTING_POSITIONS.each do |file, rank|
+      RooksStartingPositions::WHITE_ROOKS_STARTING_POSITIONS.each do |file, rank|
         pieces << Rook.new( file, rank, team, board )
       end
     else
-      BLACK_ROOKS_STARTING_POSITIONS.each do |file, rank|
+      RooksStartingPositions::BLACK_ROOKS_STARTING_POSITIONS.each do |file, rank|
         pieces << Rook.new( file, rank, team, board )
       end
     end
@@ -38,11 +39,11 @@ class PiecesFactory
 
   def create_bishops
     if team == :white
-      WHITE_BISHOPS_STARTING_POSITIONS.each do |file, rank|
+      BishopsStartingPositions::WHITE_BISHOPS_STARTING_POSITIONS.each do |file, rank|
         pieces << Bishop.new( file, rank, team, board )
       end
     else
-      BLACK_BISHOPS_STARTING_POSITIONS.each do |file, rank|
+      BishopsStartingPositions::BLACK_BISHOPS_STARTING_POSITIONS.each do |file, rank|
         pieces << Bishop.new( file, rank, team, board )
       end
     end
@@ -50,11 +51,11 @@ class PiecesFactory
 
   def create_knights
     if team == :white
-      WHITE_KNIGHTS_STARTING_POSITIONS.each do |file, rank|
+      KnightsStartingPositions::WHITE_KNIGHTS_STARTING_POSITIONS.each do |file, rank|
         pieces << Knight.new( file, rank, team, board )
       end
     else
-      BLACK_KNIGHTS_STARTING_POSITIONS.each do |file, rank|
+      KnightsStartingPositions::BLACK_KNIGHTS_STARTING_POSITIONS.each do |file, rank|
         pieces << Knight.new( file, rank, team, board )
       end
     end
