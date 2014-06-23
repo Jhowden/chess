@@ -3,6 +3,8 @@ require_relative 'chess_piece'
 class King < ChessPiece
   
   attr_reader :checkmate, :board_marker
+
+  KING_SPACE_MODIFIERS = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1,1], [0,1], [-1, 1]]
   
   def initialize( file, rank, team, board )
     super

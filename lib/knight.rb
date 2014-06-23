@@ -4,6 +4,8 @@ class Knight < ChessPiece
 
   attr_reader :board_marker
 
+  KNIGHT_SPACE_MODIFIERS = [[-1, -2], [-2, -1], [1, -2], [2, -1], [-1, 2], [-2, 1], [1, 2], [2, 1]]
+
   def initialize( file, rank, team, board )
     super
     @board_marker = determine_board_marker
