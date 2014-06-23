@@ -1,12 +1,9 @@
 require_relative 'determine_multiple_moves'
 require_relative 'move_validations'
 
-class Board # Pretty good
+class Board
   include DetermineMultipleMoves
   include MoveValidations
-  
-  KNIGHT_SPACE_MODIFIERS = [[-1, -2], [-2, -1], [1, -2], [2, -1], [-1, 2], [-2, 1], [1, 2], [2, 1] ]
-  KING_SPACE_MODIFIERS = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1,1], [0,1], [-1, 1]]
   
   attr_reader :chess_board, :possible_moves
   
@@ -28,8 +25,12 @@ class Board # Pretty good
   def update_board( piece )
     file = piece.position.file_position_converter
     rank = piece.position.rank_position_converter
-    chess_board[rank][file].captured! unless chess_board[rank][file] == nil
+    capture_piece( file, rank )
     chess_board[rank][file] = piece
+  end
+
+  def capture_piece( file, rank )
+    chess_board[rank][file].captured! unless chess_board[rank][file].nil?
   end
   
   def move_straight?( piece )
@@ -101,12 +102,12 @@ class Board # Pretty good
   
   def find_knight_spaces( piece )
     clear_possible_moves?
-    find_surrounding_spaces( piece, KNIGHT_SPACE_MODIFIERS )
+    find_surrounding_spaces( piece, Knight::KNIGHT_SPACE_MODIFIERS )
   end
   
   def find_king_spaces( piece )
     clear_possible_moves?
-    find_surrounding_spaces( piece, KING_SPACE_MODIFIERS )
+    find_surrounding_spaces( piece, King::KING_SPACE_MODIFIERS )
   end
   
   def convert_to_file_position( index )
