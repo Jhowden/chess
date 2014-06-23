@@ -23,21 +23,23 @@ describe Game do
   end
 
   describe "#get_player_teams" do
-    it "gets the player's teams" do
+    it "sets the player 2's team to white when player 1 is black" do
       allow( STDOUT ).to receive( :puts ).
         with( "Please choose your team player 1 (white or black):" )
       allow( STDOUT ).to receive( :puts ).
-        with( "Please choose your team player 2 (white or black):" )
-      expect( user_commands ).to receive( :user_input).twice.and_return( "white", "black")
+        with( "Player 2's team has been set to white" )
+      allow( user_commands ).to receive( :user_team_input ).and_return( "black" )
       game.get_player_teams
+      expect( game.player1.team ).to eq( :black )
+      expect( game.player2.team ).to eq( :white )
     end
 
-    it "sets the player's teams" do
+    it "sets the player 2's team to black when player 1 is white" do
       allow( STDOUT ).to receive( :puts ).
         with( "Please choose your team player 1 (white or black):" )
       allow( STDOUT ).to receive( :puts ).
-        with( "Please choose your team player 2 (white or black):" )
-      allow( user_commands ).to receive( :user_input).twice.and_return( "white", "black")
+        with( "Player 2's team has been set to black" )
+      allow( user_commands ).to receive( :user_team_input ).and_return( "white" )
       game.get_player_teams
       expect( game.player1.team ).to eq( :white )
       expect( game.player2.team ).to eq( :black )
@@ -48,7 +50,7 @@ describe Game do
     it "selects a piece and moves it to a new location" do
       allow( STDOUT ).to receive( :puts ).
         with( "Please select a piece you would like to move and its new position (ex: b3 b6):" )
-      expect( user_commands ).to receive( :user_input ).once
+      expect( user_commands ).to receive( :user_move_input ).once
       game.get_player_move
     end
   end
@@ -76,7 +78,7 @@ describe Game do
     context "when king not in check" do
       before(:each) do
         allow( player_1 ).to receive( :king_piece ).and_return piece
-        allow( user_commands ).to receive( :user_input ).and_return "a1 a2"
+        allow( user_commands ).to receive( :user_move_input ).and_return "a1 a2"
         allow( piece ).to receive( :update_piece_position ).with( "a", 2 )
         allow( board ).to receive( :update_board ).with( piece )
         allow( board ).to receive( :remove_old_position )
@@ -88,7 +90,7 @@ describe Game do
       end
 
       it "retrieves the player's input" do
-        expect( user_commands ).to receive( :user_input ).and_return "a1 a2"
+        expect( user_commands ).to receive( :user_move_input ).and_return "a1 a2"
         game.player_turn_commands( player_1, player_2 )
       end
 
