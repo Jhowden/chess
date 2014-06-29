@@ -2,14 +2,14 @@ require_relative 'board_setup_helper'
 require_relative 'board_piece_locator'
 
 class Game
-  attr_reader :player1, :player2, :board, :board_interface, :chess_board, :user_commands
+  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands
 
   include BoardSetupHelper
   include BoardPieceLocator
 
-  def initialize( board, user_commands = UserCommands.new )
+  def initialize( board, user_commands = UserCommands.new, board_view = BoardView.new )
     @board = board
-    @board_interface = BoardView.new( board )
+    @board_view = board_view
     @user_commands = user_commands
   end
   
@@ -33,7 +33,7 @@ class Game
     piece.team == player.team
   end
 
-  def check_move?( piece, target_location ) # pass in option paramter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
+  def check_move?( piece, target_location ) # pass in option parameter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
   end
@@ -42,16 +42,16 @@ class Game
     piece.update_piece_position( file, rank )
   end
   
-  def move_piece!( piece, target_file, target_rank, piece_position )
+  def update_the_board!( piece, target_file, target_rank, piece_position )
     update_position( piece, target_file, target_rank )
     update_piece_on_board( piece )
     remove_piece_old_position( piece_position )
   end
   
-  def move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
+  def move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
       if check_move?( piece, [target_file , target_rank] )
-        move_piece!( piece, target_file, target_rank, piece_position )
+        update_the_board!( piece, target_file, target_rank, piece_position )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
       end
@@ -60,18 +60,18 @@ class Game
     end
   end
 
-  def player_turn_commands( player, enemy_player )
+  def start_player_move( player, enemy_player )
     display_king_in_check_message( player, enemy_player )
     player_input = get_player_move.gsub( /\s+/, "" )
     piece_position = convert_to_position( player_input[0], player_input[1] )
     piece = find_piece_on_board( piece_position )
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    # if/else here that checks if player is in check, do normal move_piece?, otherwise pass in the array returned from the checkmate call
-    move_piece?( piece, player, enemy_player, target_file, target_rank, piece_position )
+    # if/else here that checks if player is in check, do normal move_piece, otherwise pass in the array returned from the checkmate call
+    move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
   end
   
   def display_board
-    board_interface.display_board
+    board_view.display_board( board )
   end
   
   def player_in_check?( player, enemy_player ) # why not also check to see if the array includes the player's king's position
@@ -95,15 +95,16 @@ class Game
   def play!
     get_player_teams
     while true
-      display_board
-      puts "Player 1: "
-      player_turn_commands( player1, player2 )
-      clear_screen!
-      display_board
-      puts "Player 2: "
-      player_turn_commands( player2, player1 )
-      clear_screen!
+      player_sequence( "Player 1: ", player1, player2 )
+      player_sequence( "Player 2: ", player2, player1 )
     end
+  end
+
+  def player_sequence( message, player, enemy_player )
+    display_board
+    puts message
+    start_player_move( player, enemy_player )
+    clear_screen!
   end
   
   def convert_to_position( file, rank )
@@ -122,7 +123,7 @@ class Game
   
   def display_invalid_message( message, player, enemy_player )
     puts message
-    player_turn_commands( player, enemy_player )
+    start_player_move( player, enemy_player )
   end
 
   def clear_screen!

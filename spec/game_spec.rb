@@ -11,8 +11,10 @@ describe Game do
   let(:player_2) { double( team: :black, team_pieces: [piece2] ) }
   let(:players_pieces) { [piece] * 16 }
   let(:user_commands) { double() }
-  let(:game) { described_class.new( board, user_commands ) }
+  let(:board_view) { double() }
   let(:chess_board ) { Array.new( 8 ) { |cell| Array.new( 8 ) } }
+  let(:null_piece) { stub_const( "NullPiece", Class.new ) }
+  let(:game) { described_class.new( board, user_commands, board_view ) }
 
   before(:each) do
     allow( board ).to receive( :create_board ).and_return chess_board
@@ -74,46 +76,126 @@ describe Game do
     end
   end
 
-  describe "#player_turn_commands" do
+  describe "#update_the_board!" do
+    before(:each) do
+      allow( piece ).to receive( :update_piece_position )
+      allow( board ).to receive( :update_board )
+      allow( board ).to receive( :remove_old_position )
+    end
+
+    it "updates the pieces position" do
+      expect( piece ).to receive( :update_piece_position ).with( "a", 2 )
+      game.update_the_board!( piece, "a", 2, position )
+    end
+
+    it "updates the piece location on the board" do
+      expect( board ).to receive( :update_board ).with piece
+      game.update_the_board!( piece, "a", 2, position )
+    end
+
+    it "removes the piece's old location from the board" do
+      expect( board ).to receive( :remove_old_position ).with position
+      game.update_the_board!( piece, "a", 2, position )
+    end
+  end
+
+  describe "#move_piece" do
+    before(:each) do
+      allow( piece ).to receive( :update_piece_position )
+      allow( board ).to receive( :update_board )
+      allow( board ).to receive( :remove_old_position )
+      allow( player_1 ).to receive( :king_piece ).and_return player_1
+      allow( user_commands ).to receive( :user_move_input ).and_return "b3 a3"
+      allow( piece ).to receive( :determine_possible_moves ).and_return( [["a", 3]] )
+    end
+
+    context "when piece and player are on the same team" do
+      context "when it is a legal move" do
+        it "updates the pieces position" do
+          expect( piece ).to receive( :update_piece_position ).with( "a", 3 )
+          game.move_piece( piece, player_1, player_2, "a", 3, position )
+        end
+
+        it "updates the pieces location on the board" do
+          expect( board ).to receive( :update_board ).with piece
+          game.move_piece( piece, player_1, player_2, "a", 3, position )
+        end
+
+        it "updates the pieces location on the board" do
+          expect( board ).to receive( :remove_old_position ).with position
+          game.move_piece( piece, player_1, player_2, "a", 3, position )
+        end
+      end
+
+      context "when it is an illegal move" do
+        it "starts the start_player_move again" do
+          allow( STDOUT ).to receive( :puts )
+          expect( player_1 ).to receive( :check? ).and_return false
+            game.move_piece( piece, player_1, player_2, "a", 2, position )
+        end
+      end
+    end
+
+    context "when piece and player are not the same team" do
+      it "starts the pstart_player_move again" do
+        allow( piece ).to receive( :team ).and_return( :black, :white)
+        allow( STDOUT ).to receive( :puts )
+        expect( player_1 ).to receive( :check? ).and_return false
+        game.move_piece( piece, player_1, player_2, "a", 2, position )
+      end
+    end
+  end
+
+  describe "#start_player_move" do
+    before(:each) do
+      allow( player_1 ).to receive( :king_piece ).and_return piece
+      allow( piece ).to receive( :check? ).and_return false
+      allow( STDOUT ).to receive( :puts )
+      allow( board ).to receive( :update_board ).with( piece )
+      allow( board ).to receive( :remove_old_position )
+    end
+
     context "when king not in check" do
       before(:each) do
-        allow( player_1 ).to receive( :king_piece ).and_return piece
         allow( user_commands ).to receive( :user_move_input ).and_return "a1 a2"
         allow( piece ).to receive( :update_piece_position ).with( "a", 2 )
-        allow( board ).to receive( :update_board ).with( piece )
-        allow( board ).to receive( :remove_old_position )
-        allow( piece ).to receive( :check? ).and_return false
-        allow( STDOUT ).to receive( :puts ).
-          with( "Please select a piece you would like to move and its new position (ex: b3 b6):" )
-        chess_board[0][0] = piece
-        chess_board[7][7] = piece2
       end
 
       it "retrieves the player's input" do
         expect( user_commands ).to receive( :user_move_input ).and_return "a1 a2"
-        game.player_turn_commands( player_1, player_2 )
+        game.start_player_move( player_1, player_2 )
       end
 
       it "updates the selected piece's position" do
         expect( piece ).to receive( :update_piece_position ).with( "a", 2 )
-        game.player_turn_commands( player_1, player_2 )
+        game.start_player_move( player_1, player_2 )
       end
 
       it "updates the piece's location on the board" do
         expect( board ).to receive( :update_board ).with( piece )
-        game.player_turn_commands( player_1, player_2 )
+        game.start_player_move( player_1, player_2 )
       end
 
       it "removes the piece's old location from the board" do
         expect( board ).to receive( :remove_old_position )
-        game.player_turn_commands( player_1, player_2 )
+        game.start_player_move( player_1, player_2 )
+      end
+    end
+
+    context "when piece returns a NullObject" do
+      it "goes through start_player_move twice and updates piece position" do
+        allow( user_commands ).to receive( :user_move_input ).and_return("a1 c2", "a1 a2")
+        allow( board ).to receive( :find_piece ).and_return( null_piece, piece )
+        allow( null_piece ).to receive( :team ).and_return false
+        expect( piece ).to receive( :update_piece_position ).with( "a", 2 )
+        game.start_player_move( player_1, player_2 )
       end
     end
   end
   
   describe "#display_board" do
     it "displays the board" do
-      expect( game.board_interface ).to receive( :display_board )
+      expect( board_view ).to receive( :display_board )
       game.display_board
     end
   end
@@ -127,11 +209,11 @@ describe Game do
   
   describe "#player_in_check?" do
     it "checks to see if a player is in check" do
-      expect( player_2 ).to receive( :team_pieces ).and_return players_pieces
-      expect( players_pieces ).to receive( :map ).and_yield piece
-      expect( piece ).to receive( :captured? ).and_return false
-      expect( piece ).to receive( :determine_possible_moves ).and_return [[["a", 3], ["b",4]], [["c",5], ["c", 4], ["c",3]]]
-      expect( player_1 ).to receive( :king_piece ).and_return( player_1 )
+      allow( player_2 ).to receive( :team_pieces ).and_return players_pieces
+      allow( players_pieces ).to receive( :map ).and_yield piece
+      allow( piece ).to receive( :captured? ).and_return false
+      allow( piece ).to receive( :determine_possible_moves ).and_return [[["a", 3], ["b",4]], [["c",5], ["c", 4], ["c",3]]]
+      allow( player_1 ).to receive( :king_piece ).and_return( player_1 )
       expect( player_1 ).to receive( :check? ).with [["a", 3],["b",4],["c",5], ["c", 4],["c",3]]
       game.player_in_check?( player_1, player_2 )
     end
