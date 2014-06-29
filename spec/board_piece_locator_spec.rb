@@ -8,9 +8,18 @@ describe BoardPieceLocator do
   let(:game) { Game.new( board ).extend( described_class ) }
 
   describe "#find_piece_on_board" do
-    it "finds the piece on the board" do
-      expect( board ).to receive( :find_piece ).with position
-      game.find_piece_on_board( position )
+    context "when a piece is found" do
+      it "finds the piece on the board" do
+        expect( board ).to receive( :find_piece ).with position
+        game.find_piece_on_board( position )
+      end
+    end
+
+    context "when not finding a piece" do
+      it "returns a NullPiece object" do
+         allow( board ).to receive( :find_piece ).with( position ).and_return nil
+         expect( game.find_piece_on_board( position ) ).to be_an_instance_of NullPiece
+      end
     end
   end
 

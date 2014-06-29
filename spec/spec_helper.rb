@@ -1,21 +1,4 @@
 # Why not use '*' to require everything in lib?
-require_relative '../lib/bishop'
-require_relative '../lib/board'
-require_relative '../lib/chess_piece'
-require_relative '../lib/king'
-require_relative '../lib/knight'
-require_relative '../lib/pawn'
-require_relative '../lib/player'
-require_relative '../lib/position'
-require_relative '../lib/queen'
-require_relative '../lib/rook'
-require_relative '../lib/board_view'
-require_relative '../lib/game'
-require_relative '../lib/pieces_factory'
-require_relative '../lib/move_validations'
-require_relative '../lib/checkmate'
-require_relative '../lib/determine_multiple_moves'
-require_relative '../lib/board_printer'
-require_relative '../lib/user_commands'
-require_relative '../lib/board_setup_helper'
-require_relative '../lib/board_piece_locator'
+Dir[File.expand_path( File.join( File.dirname( __FILE__ ), "..", "lib", "*.rb" ) )].each do |file|
+  require file unless file == "/Users/jonathanhowden/Desktop/chess/lib/play_game.rb"
+end
