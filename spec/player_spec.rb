@@ -24,4 +24,15 @@ describe Player do
     player.find_king_piece
     expect( player.king_piece ).to_not be_nil
   end
+
+  it "updates the team's checkmate state" do
+    player.checkmate!
+    expect( player.checkmate ).to be
+  end
+
+  it "checks the player's checkmate status" do
+    expect( player.checkmate? ).to be_false
+    player.checkmate!
+    expect( player.checkmate? ).to be
+  end
 end
