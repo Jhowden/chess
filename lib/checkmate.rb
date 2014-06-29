@@ -19,7 +19,7 @@ class Checkmate
     end
   end
   
-  def capture_pieces_threatening_king( player, enemy_player )
+  def capture_piece_threatening_king( player, enemy_player )
     enemy_pieces_collection = determine_enemy_piece_map( player, enemy_player ).keys
     return if enemy_pieces_collection.size >= 2 # can't capture two enemy pieces in one move
     original_board = make_copy_of_original_board
@@ -30,24 +30,21 @@ class Checkmate
 
   def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection, original_board )
     piece_possible_moves = piece.determine_possible_moves
-      if piece_possible_moves.include?( [enemy_pieces_collection.first.position.file, 
-          enemy_pieces_collection.last.position.rank] )
-        update_the_board!( piece, enemy_pieces_collection )
-        track_possible_moves( piece, enemy_pieces_collection ) unless check?( player, enemy_player )
-        return_board_to_original_state( player, enemy_player, original_board)
-      end
+    enemy_location = [enemy_pieces_collection.first.position.file, 
+                  enemy_pieces_collection.last.position.rank]
+    if piece_possible_moves.include?( enemy_location )
+      move_the_piece!( piece, enemy_location, player, enemy_player, original_board )
+    end
   end
 
-  def update_the_board!( piece, enemy_pieces_collection )
-    target_file, target_rank = game.convert_to_file_and_rank( enemy_pieces_collection.first.position.file, 
-      enemy_pieces_collection.last.position.rank )
+  def update_the_board!( piece, location )
+    target_file, target_rank = game.convert_to_file_and_rank( location )
     game.update_the_board!( piece, target_file, target_rank, piece.position )
   end
 
-  def track_possible_moves( piece, enemy_pieces_collection )
+  def track_possible_moves( piece, location )
     possible_moves << [piece.position.file, piece.position.rank].
-      concat( [enemy_pieces_collection.first.position.file, 
-      enemy_pieces_collection.last.position.rank] )
+      concat( location )
   end
 
   def return_board_to_original_state( player, enemy_player, original_board)
@@ -60,20 +57,30 @@ class Checkmate
     return if possible_enemy_moves_collection.keys.size >= 2
     original_board = make_copy_of_original_board
     player.team_pieces.select{ |piece| !piece.captured? }.each do |piece|
-      piece_possible_moves = piece.determine_possible_moves
-      possible_enemy_moves_collection.values.flatten( 1 ).each do |enemy_possible_move|
-    	  if piece_possible_moves.include?( enemy_possible_move )
-           target_file, target_rank = game.convert_to_file_and_rank( enemy_possible_move.first, 
-              enemy_possible_move.last )
-            game.update_the_board!( piece, target_file, target_rank, piece.position )
-          if !check?( player, enemy_player )
-    	      possible_moves << [piece.position.file, piece.position.rank].
-              concat( [enemy_possible_move.first, enemy_possible_move.last] )
-          end
-          return_board_to_original_state( player, enemy_player, original_board)
-    		end
-      end    
+      attempt_to_block_enemy_piece( player, enemy_player, piece, possible_enemy_moves_collection, original_board )
     end
+  end
+
+  def attempt_to_block_enemy_piece( player, enemy_player, piece, possible_enemy_moves_collection, original_board )
+    piece_possible_moves = piece.determine_possible_moves
+    possible_enemy_moves_collection.values.flatten( 1 ).each do |possible_enemy_move|
+      if piece_possible_moves.include?( possible_enemy_move )
+        move_the_piece!( piece, possible_enemy_move, player, enemy_player, original_board )
+      end
+    end
+  end
+
+  def move_the_piece!( piece, possible_enemy_move, player, enemy_player, original_board )
+    update_the_board!( piece, possible_enemy_move)
+    track_possible_moves( piece, possible_enemy_move ) unless check?( player, enemy_player )
+    return_board_to_original_state( player, enemy_player, original_board)
+  end
+
+  def find_checkmate_escape_moves( player, enemy_player )
+    move_king_in_all_possible_spots( player, enemy_player )
+    capture_piece_threatening_king( player, enemy_player )
+    block_enemy_piece( player, enemy_player )
+    possible_moves
   end
   
   def determine_enemy_piece_map( player, enemy_player )
