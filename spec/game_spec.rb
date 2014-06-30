@@ -219,15 +219,6 @@ describe Game do
     end
   end
   
-  describe "#display_king_in_check_message" do
-    it "displays a message to inform player he is in check" do
-      allow( player_1 ).to receive( :king_piece ).and_return piece
-      allow( piece ).to receive( :check? ).and_return true
-      expect( STDOUT ).to receive( :puts ).with( "Your king is in check!" )
-      game.display_king_in_check_message( player_1, player_2 )
-    end
-  end
-  
   describe "#replace_board" do
     it "replaces the piece's board" do
       expect( game.board ).to eq( board )

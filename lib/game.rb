@@ -1,8 +1,8 @@
-require_relative 'board_setup_helper'
-require_relative 'board_piece_locator'
+File.expand_path( File.join( File.dirname( __FILE__ ), 'board_setup_helper' ) )
+File.expand_path( File.join( File.dirname( __FILE__ ), 'board_piece_locator' ) )
 
 class Game
-  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands
+  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate
 
   include BoardSetupHelper
   include BoardPieceLocator
@@ -11,6 +11,7 @@ class Game
     @board = board
     @board_view = board_view
     @user_commands = user_commands
+    @checkmate = Checkmate.new( self )
   end
   
   def get_player_teams
@@ -61,12 +62,24 @@ class Game
   end
 
   def start_player_move( player, enemy_player )
-    display_king_in_check_message( player, enemy_player )
+    if player_in_check?( player, enemy_player )
+      puts "Your king is in check!"
+      player_input = get_player_move.gsub( /\s+/, "" )
+      piece_position = convert_to_position( player_input[0], player_input[1] )
+      piece = find_piece_on_board( piece_position )
+      target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+      # pass in the array returned from the checkmate call
+      move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
+    else
+      move_without_checkmate( player, enemy_player )
+    end
+  end
+
+  def move_without_checkmate( player, enemy_player )
     player_input = get_player_move.gsub( /\s+/, "" )
     piece_position = convert_to_position( player_input[0], player_input[1] )
     piece = find_piece_on_board( piece_position )
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    # if/else here that checks if player is in check, do normal move_piece, otherwise pass in the array returned from the checkmate call
     move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
   end
   
@@ -84,12 +97,6 @@ class Game
   
   def check_king_for_check( player, enemy_player_moves)
     player.king_piece.check? enemy_player_moves
-  end
-  
-  def display_king_in_check_message( player, enemy_player )
-    if player_in_check?( player, enemy_player )
-      puts "Your king is in check!"
-    end
   end
   
   def play!
