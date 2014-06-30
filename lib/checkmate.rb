@@ -80,7 +80,7 @@ class Checkmate
     move_king_in_all_possible_spots( player, enemy_player )
     capture_piece_threatening_king( player, enemy_player )
     block_enemy_piece( player, enemy_player )
-    possible_moves
+    possible_moves.map { |move| move.join }
   end
   
   def determine_enemy_piece_map( player, enemy_player )

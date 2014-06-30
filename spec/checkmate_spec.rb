@@ -178,8 +178,7 @@ describe Checkmate do
       allow( game ).to receive( :convert_to_file_and_rank ).
         and_return( [[2, 4], [2, 5]] )
       expect( checkmate.find_checkmate_escape_moves( player, player2 ) ).
-        to eq( [["b", 4, "e", 6], ["b", 4, "f", 6], ["d", 5, "a", 5], ["d", 5, "a", 4], ["d", 5, "a", 3], 
-              ["d", 5, "a", 2], ["c", 4, "a", 4]] )
+        to eq( ["b4e6", "b4f6", "d5a5", "d5a4", "d5a3", "d5a2", "c4a4"] )
     end
   end
 end
