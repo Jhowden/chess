@@ -49,6 +49,13 @@ class Checkmate
     enemy_piece_map
   end
   
+  def find_checkmate_escape_moves( player, enemy_player )
+    move_king_in_all_possible_spots( player, enemy_player )
+    capture_piece_threatening_king( player, enemy_player )
+    block_enemy_piece( player, enemy_player )
+    possible_moves.map { |move| move.join }
+  end
+  
   private 
   
   def make_copy_of_original_board
@@ -92,13 +99,6 @@ class Checkmate
     update_the_board!( piece, possible_enemy_move)
     track_possible_moves( piece, possible_enemy_move ) unless check?( player, enemy_player )
     return_board_to_original_state( player, enemy_player, original_board)
-  end
-  
-  def find_checkmate_escape_moves( player, enemy_player )
-    move_king_in_all_possible_spots( player, enemy_player )
-    capture_piece_threatening_king( player, enemy_player )
-    block_enemy_piece( player, enemy_player )
-    possible_moves.map { |move| move.join }
   end
   
   def replace_board_on_pieces_to_original( players_array, original_board )
