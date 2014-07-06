@@ -1,4 +1,6 @@
 class UserCommands
+  
+  VALID_USER_INPUT = /^[a-h]{1}[1-8]{1}\s{1}[a-h]{1}[1-8]{1}/
 
   def user_input
     print "> "
@@ -7,7 +9,8 @@ class UserCommands
 
   def user_team_input
     input = user_input
-    if input.downcase == "white" || input.downcase == "black"
+    # ["white", "black"].any? {} instead of using the || in line 11
+    if ["white", "black"].any? { |color| color == input.downcase}
       input.downcase
     else
       puts "That is not a valid color. Please choose again (white or black):"
@@ -17,7 +20,7 @@ class UserCommands
 
   def user_move_input
     input = user_input
-    if input =~ /^[a-h]{1}[1-8]{1}\s{1}[a-h]{1}[1-8]{1}/
+    if input =~ VALID_USER_INPUT
       input
     else
       puts "Please enter a correctly formated move (ex: b3 b6):"
