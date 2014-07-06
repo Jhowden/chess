@@ -1,6 +1,6 @@
 class NullPiece
 
   def team
-    false
+    nil
   end
 end
