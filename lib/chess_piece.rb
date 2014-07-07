@@ -11,7 +11,7 @@ class ChessPiece
   end
   
   def captured!
-    @captured = true
+    @captured = !captured
   end
   
   def captured?

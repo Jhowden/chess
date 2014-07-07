@@ -17,6 +17,12 @@ describe ChessPiece do
       piece.captured!
       expect( piece.captured ).to be 
     end
+    
+    it "reverts @captured back to false if called again" do
+      piece.captured!
+      piece.captured!
+      expect( piece.captured ).to be_false
+    end
   end
   
   describe "#update_piece_position" do
