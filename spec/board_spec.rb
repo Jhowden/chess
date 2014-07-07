@@ -57,14 +57,6 @@ describe Board do
         expect( game_board.chess_board[3][5] ).to eq( piece )
       end
     end
-    
-    context "when passed in the conditional argument" do
-      it "does not capture a piece" do
-        game_board.chess_board[3][5] = piece2
-        expect( piece2 ).to_not receive( :captured! )
-        game_board.update_board( piece, true )
-      end
-    end
   end
   
   describe "#move_straight?" do

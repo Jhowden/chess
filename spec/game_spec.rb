@@ -74,7 +74,7 @@ describe Game do
         end
 
         it "updates the pieces location on the board" do
-          expect( board ).to receive( :update_board ).with piece
+          expect( board ).to receive( :update_board ).with( piece )
           game.move_piece( piece, player_1, player_2, "a", 3, position )
         end
 

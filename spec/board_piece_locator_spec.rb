@@ -25,7 +25,7 @@ describe BoardPieceLocator do
 
   describe "#update_piece_on_board" do
     it "updates the piece on the board" do
-      expect( board ).to receive( :update_board ).with piece
+      expect( board ).to receive( :update_board ).with( piece )
       game.update_piece_on_board piece 
     end
   end
