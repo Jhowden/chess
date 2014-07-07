@@ -15,9 +15,7 @@ class Checkmate
       game.update_the_board!( king, target_file, target_rank, king.position )
       possible_moves << [kings_starting_position.file, kings_starting_position.rank].
         concat( possible_move ) unless check?( player, enemy_player )
-    # kings_temporary_position = king.position.dup
-    # game.update_the_board!( king, kings_starting_position.file, kings_starting_position.rank, kings_temporary_position )
-    restore_piece_to_original_position( king, kings_starting_position )
+      restore_piece_to_original_position( king, kings_starting_position )
     end
   end
   
@@ -59,11 +57,26 @@ class Checkmate
     move_king_in_all_possible_spots( player, enemy_player )
     capture_piece_threatening_king( player, enemy_player )
     # block_enemy_piece( player, enemy_player )
-    puts "POSSIBLE MOVES: #{possible_moves.inspect}"
     possible_moves.map { |move| move.join }
   end
   
   private 
+  
+  def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection )
+    piece_possible_moves = piece.determine_possible_moves
+    enemy_location = [enemy_pieces_collection.first.position.file, 
+                  enemy_pieces_collection.last.position.rank]
+    if piece_possible_moves.include?( enemy_location )
+      move_the_piece!( piece, enemy_location, player, enemy_player )
+      restore_captured_piece_on_board enemy_pieces_collection.first
+    end
+  end
+  
+  def restore_captured_piece_on_board( enemy_piece )
+    file, rank = enemy_piece.position.file_position_converter, enemy_piece.position.rank_position_converter
+    game.board.chess_board[rank][file] = enemy_piece
+    enemy_piece.captured!
+  end
   
   def attempt_to_block_enemy_piece( player, enemy_player, piece, possible_enemy_moves_collection )
     piece_possible_moves = piece.determine_possible_moves
@@ -74,30 +87,19 @@ class Checkmate
     end
   end
   
-  def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection )
-    piece_possible_moves = piece.determine_possible_moves
-    enemy_location = [enemy_pieces_collection.first.position.file, 
-                  enemy_pieces_collection.last.position.rank]
-    if piece_possible_moves.include?( enemy_location )
-      move_the_piece!( piece, enemy_location, player, enemy_player )
-    end
-  end
-  
   def update_the_board!( piece, file, rank, piece_starting_position )
-    # target_file, target_rank = file, rank
     game.update_the_board!( piece, file, rank, piece_starting_position )
   end
   
   def track_possible_moves( piece, location, piece_starting_position )
     possible_moves << [piece_starting_position.file, piece_starting_position.rank].
-      concat( location )
+      concat( location ) 
   end
   
   def move_the_piece!( piece, possible_enemy_move, player, enemy_player )
     piece_starting_position = piece.position.dup
     update_the_board!( piece, possible_enemy_move.first, possible_enemy_move.last, piece_starting_position )
     track_possible_moves( piece, possible_enemy_move, piece_starting_position ) unless check?( player, enemy_player )
-    # have to still replace the captured piece back on the chess_board as it becomes nil when captured
     restore_piece_to_original_position( piece, piece_starting_position )
   end
   

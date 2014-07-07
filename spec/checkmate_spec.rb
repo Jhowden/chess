@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe Checkmate do
   
   let(:game) { double() }
-  let(:board) { double() }
+  let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
   let(:king) { double() }
   let(:position) {double( file: "b", rank: 4)}
   let(:piece) { double( captured?: false ) }
@@ -71,7 +71,6 @@ describe Checkmate do
       allow( piece ).to receive( :position ).and_return piece
       allow( piece ).to receive( :file ).and_return "a"
       allow( piece ).to receive( :rank ).and_return 5
-      # allow( piece ).to receive( :dup ).and_return piece
       allow( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
       allow( player2 ).to receive( :team_pieces ).and_return [piece]
       allow( piece ).to receive( :determine_possible_moves ).
@@ -83,6 +82,9 @@ describe Checkmate do
       allow( piece2 ).to receive( :dup ).and_return piece2
       allow( piece2 ).to receive( :file ).and_return "d"
       allow( piece2 ).to receive( :rank ).and_return 5
+      allow( piece ).to receive( :file_position_converter ).and_return 3
+      allow( piece ).to receive( :rank_position_converter ).and_return 5
+      allow( piece ).to receive( :captured! )
       checkmate.capture_piece_threatening_king( player, player2 )
       expect( checkmate.possible_moves ).to eq( [["d", 5, "a", 5]] )
     end
