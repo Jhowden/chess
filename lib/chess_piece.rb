@@ -21,10 +21,6 @@ class ChessPiece
   def update_piece_position( file, rank )
     position.update_position( file, rank )
   end
-  
-  def replace_board new_board
-    @board = new_board
-  end
 
   def clear_moves!
     possible_moves.clear
