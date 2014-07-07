@@ -69,10 +69,6 @@ class Game
     clear_screen!
   end
   
-  def convert_to_file_and_rank( file, rank )
-    return file, rank.to_i
-  end
-  
   def update_the_board!( piece, target_file, target_rank, piece_position )
     update_position( piece, target_file, target_rank )
     update_piece_on_board( piece )
@@ -88,6 +84,10 @@ class Game
   end
   
   private
+  
+  def convert_to_file_and_rank( file, rank )
+    return file, rank.to_i
+  end
   
   def display_invalid_message( message, player, enemy_player )
     puts message
