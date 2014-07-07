@@ -89,29 +89,29 @@ describe Checkmate do
       expect( checkmate.possible_moves ).to eq( [["d", 5, "a", 5]] )
     end
 
-    # it "exits out of the method if there are more than one enemy piece that has the king in check" do
-    #   allow( player2 ).to receive( :team_pieces ).and_return [piece, piece3]
-    #   allow( piece ).to receive( :determine_possible_moves ).and_return [["b", 4], ["d", 5]]
-    #   allow( piece3 ).to receive( :determine_possible_moves ).and_return [["a", 4], ["b", 4]]
-    #   expect( player ).to_not receive( :team_pieces )
-    #   checkmate.capture_piece_threatening_king( player, player2 )
-    # end
-    #
-    # it "returns an empty array if no pieces can capture enemy piece" do
-    #   allow( piece ).to receive( :position ).and_return piece
-    #   allow( piece ).to receive( :file ).and_return "a"
-    #   allow( piece ).to receive( :rank ).and_return 5
-    #   allow( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
-    #   allow( player2 ).to receive( :team_pieces ).and_return [piece]
-    #   allow( piece ).to receive( :determine_possible_moves ).
-    #     and_return( [["a", 4], ["b", 4], ["d", 5]])
-    #   allow( piece2 ).to receive( :determine_possible_moves ).
-    #     and_return( [["b", 5], ["a", 4], ["a", 3], ["a", 2], ["a", 1]] )
-    #   allow( piece3 ).to receive( :determine_possible_moves ).
-    #     and_return( [["b", 4], ["b", 3], ["c", 2], ["d", 1]] )
-    #   checkmate.capture_piece_threatening_king( player, player2 )
-    #   expect( checkmate.possible_moves ).to eq( [] )
-    # end
+    it "exits out of the method if there are more than one enemy piece that has the king in check" do
+      allow( player2 ).to receive( :team_pieces ).and_return [piece, piece3]
+      allow( piece ).to receive( :determine_possible_moves ).and_return [["b", 4], ["d", 5]]
+      allow( piece3 ).to receive( :determine_possible_moves ).and_return [["a", 4], ["b", 4]]
+      expect( player ).to_not receive( :team_pieces )
+      checkmate.capture_piece_threatening_king( player, player2 )
+    end
+
+    it "returns an empty array if no pieces can capture enemy piece" do
+      allow( piece ).to receive( :position ).and_return piece
+      allow( piece ).to receive( :file ).and_return "a"
+      allow( piece ).to receive( :rank ).and_return 5
+      allow( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
+      allow( player2 ).to receive( :team_pieces ).and_return [piece]
+      allow( piece ).to receive( :determine_possible_moves ).
+        and_return( [["a", 4], ["b", 4], ["d", 5]])
+      allow( piece2 ).to receive( :determine_possible_moves ).
+        and_return( [["b", 5], ["a", 4], ["a", 3], ["a", 2], ["a", 1]] )
+      allow( piece3 ).to receive( :determine_possible_moves ).
+        and_return( [["b", 4], ["b", 3], ["c", 2], ["d", 1]] )
+      checkmate.capture_piece_threatening_king( player, player2 )
+      expect( checkmate.possible_moves ).to eq( [] )
+    end
   end
 
  #  describe "#block_enemy_piece" do
@@ -153,29 +153,29 @@ describe Checkmate do
  #    end
  #  end
  #
- #  describe "#find_checkmate_escape_moves" do
- #    it "finds all the possible moves to escape checkmate" do
- #      allow( piece ).to receive( :position ).and_return piece
- #      allow( piece ).to receive( :file ).and_return "a"
- #      allow( piece ).to receive( :rank ).and_return 5
- #      allow( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
- #      allow( player2 ).to receive( :team_pieces ).and_return [piece]
- #      allow( piece ).to receive( :determine_possible_moves ).
- #        and_return( [["a", 4], ["a", 3], ["a", 2], ["a", 1], ["b", 4]] )
- #      allow( game ).to receive( :convert_to_file_and_rank ).and_return [0, 3]
- #      allow( piece2 ).to receive( :determine_possible_moves ).and_return( [["a", 5], ["a", 4], ["a", 3], ["a", 2]] )
- #      allow( piece3 ).to receive( :determine_possible_moves ).and_return( [["a", 4], ["b", 3], ["c", 2], ["d", 1]] )
- #      allow( piece2 ).to receive( :file ).and_return "d"
- #      allow( piece2 ).to receive( :rank ).and_return 5
- #      allow( piece3 ).to receive( :position ).and_return piece3
- #      allow( piece3 ).to receive( :file ).and_return "c"
- #      allow( piece3 ).to receive( :rank ).and_return 4
- #      allow( king ).to receive( :determine_possible_moves ).
- #        and_return( [["e", 6], ["f", 6]] )
- #      allow( game ).to receive( :convert_to_file_and_rank ).
- #        and_return( [[2, 4], [2, 5]] )
- #      expect( checkmate.find_checkmate_escape_moves( player, player2 ) ).
- #        to eq( ["b4e6", "b4f6", "d5a5", "d5a4", "d5a3", "d5a2", "c4a4"] )
- #    end
- #  end
+  # describe "#find_checkmate_escape_moves" do
+  #   it "finds all the possible moves to escape checkmate" do
+  #     allow( piece ).to receive( :position ).and_return piece
+  #     allow( piece ).to receive( :file ).and_return "a"
+  #     allow( piece ).to receive( :rank ).and_return 5
+  #     allow( player ).to receive( :team_pieces ).and_return( [piece2, piece3] )
+  #     allow( player2 ).to receive( :team_pieces ).and_return [piece]
+  #     allow( piece ).to receive( :determine_possible_moves ).
+  #       and_return( [["a", 4], ["a", 3], ["a", 2], ["a", 1], ["b", 4]] )
+  #     allow( game ).to receive( :convert_to_file_and_rank ).and_return [0, 3]
+  #     allow( piece2 ).to receive( :determine_possible_moves ).and_return( [["a", 5], ["a", 4], ["a", 3], ["a", 2]] )
+  #     allow( piece3 ).to receive( :determine_possible_moves ).and_return( [["a", 4], ["b", 3], ["c", 2], ["d", 1]] )
+  #     allow( piece2 ).to receive( :file ).and_return "d"
+  #     allow( piece2 ).to receive( :rank ).and_return 5
+  #     allow( piece3 ).to receive( :position ).and_return piece3
+  #     allow( piece3 ).to receive( :file ).and_return "c"
+  #     allow( piece3 ).to receive( :rank ).and_return 4
+  #     allow( king ).to receive( :determine_possible_moves ).
+  #       and_return( [["e", 6], ["f", 6]] )
+  #     allow( game ).to receive( :convert_to_file_and_rank ).
+  #       and_return( [[2, 4], [2, 5]] )
+  #     expect( checkmate.find_checkmate_escape_moves( player, player2 ) ).
+  #       to eq( ["b4e6", "b4f6", "d5a5", "d5a4", "d5a3", "d5a2", "c4a4"] )
+  #   end
+  # end
 end

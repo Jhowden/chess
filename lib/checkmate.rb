@@ -19,11 +19,6 @@ class Checkmate
     end
   end
   
-  def restore_piece_to_original_position( king, kings_starting_position )
-    kings_temporary_position = king.position.dup
-    game.update_the_board!( king, kings_starting_position.file, kings_starting_position.rank, kings_temporary_position )
-  end
-  
   def capture_piece_threatening_king( player, enemy_player )
     enemy_pieces_collection = determine_enemy_piece_map( player, enemy_player ).keys
     return if enemy_pieces_collection.size >= 2 # can't capture two enemy pieces in one move
@@ -61,6 +56,11 @@ class Checkmate
   end
   
   private 
+  
+  def restore_piece_to_original_position( piece, pieces_starting_position )
+    pieces_temporary_position = piece.position.dup
+    game.update_the_board!( piece, pieces_starting_position.file, pieces_starting_position.rank, pieces_temporary_position )
+  end
   
   def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection )
     piece_possible_moves = piece.determine_possible_moves
