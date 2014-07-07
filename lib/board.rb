@@ -22,10 +22,10 @@ class Board
     chess_board[rank][file] = nil
   end
   
-  def update_board( piece )
+  def update_board( piece, restore_board_to_original = false )
     file = piece.position.file_position_converter
     rank = piece.position.rank_position_converter
-    capture_piece( file, rank )
+    capture_piece( file, rank ) unless restore_board_to_original
     chess_board[rank][file] = piece
   end
 
