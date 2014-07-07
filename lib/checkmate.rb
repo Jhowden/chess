@@ -19,6 +19,8 @@ class Checkmate
     end
   end
   
+  # check if the possible_move space is nil, if so proceed as normal. If not, find and log the piece that is at the possible_move space and put it back afterwards
+  
   def capture_piece_threatening_king( player, enemy_player )
     enemy_pieces_collection = determine_enemy_piece_map( player, enemy_player ).keys
     return if enemy_pieces_collection.size >= 2 # can't capture two enemy pieces in one move
