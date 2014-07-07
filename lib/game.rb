@@ -25,28 +25,9 @@ class Game
     set_up_players_half_of_board( player2_team_color.to_sym, player2 )
   end
 
-  def get_player_move
-    puts "Please select a piece you would like to move and its new position (ex: b3 b6):"
-    user_commands.user_move_input
-  end
-
-  def player_and_piece_same_team?( piece, player )
-    piece.team == player.team
-  end
-
   def check_move?( piece, target_location ) # pass in option parameter for legal check moves and use that if passed in, otherwise use #determine_possible_moves
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
-  end
-
-  def update_position( piece, file, rank )
-    piece.update_piece_position( file, rank )
-  end
-  
-  def update_the_board!( piece, target_file, target_rank, piece_position )
-    update_position( piece, target_file, target_rank )
-    update_piece_on_board( piece )
-    remove_piece_old_position( piece_position )
   end
   
   def move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
@@ -63,45 +44,19 @@ class Game
 
   def start_player_move( player, enemy_player )
     if player_in_check?( player, enemy_player )
-      puts "Your king is in check!"
-      player_input = get_player_move.gsub( /\s+/, "" )
-      piece_position = convert_to_position( player_input[0], player_input[1] )
-      piece = find_piece_on_board( piece_position )
-      target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-      # pass in the array returned from the checkmate call
-      move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
+      escape_check_moves = checkmate.find_checkmate_escape_moves( player, enemy_player )
+      check_for_checkmate( player, escape_check_moves )
+      return if player.checkmate?
+      king_in_check_sequence( escape_check_moves, player, enemy_player )
     else
-      move_without_checkmate( player, enemy_player )
+      player_input = get_player_move.gsub( /\s+/, "" )
+      move_piece_sequence( player, enemy_player, player_input )
     end
-  end
-
-  def move_without_checkmate( player, enemy_player )
-    player_input = get_player_move.gsub( /\s+/, "" )
-    piece_position = convert_to_position( player_input[0], player_input[1] )
-    piece = find_piece_on_board( piece_position )
-    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
-  end
-  
-  def display_board
-    board_view.display_board( board )
-  end
-  
-  def player_in_check?( player, enemy_player ) # why not also check to see if the array includes the player's king's position
-    enemy_player_moves = enemy_player.team_pieces.map { |piece|
-      next if piece.captured? 
-      piece.determine_possible_moves
-    }.flatten( 1 ).compact
-    check_king_for_check( player, enemy_player_moves )
-  end
-  
-  def check_king_for_check( player, enemy_player_moves)
-    player.king_piece.check? enemy_player_moves
   end
   
   def play!
     get_player_teams
-    while true
+    until finished?
       player_sequence( "Player 1: ", player1, player2 )
       player_sequence( "Player 2: ", player2, player1 )
     end
@@ -114,19 +69,25 @@ class Game
     clear_screen!
   end
   
-  def convert_to_position( file, rank )
-    Position.new( file, rank.to_i )
-  end
-  
-  def replace_board new_board
-    @board = new_board
-  end
-  
-  private
-
   def convert_to_file_and_rank( file, rank )
     return file, rank.to_i
   end
+  
+  def update_the_board!( piece, target_file, target_rank, piece_position )
+    update_position( piece, target_file, target_rank )
+    update_piece_on_board( piece )
+    remove_piece_old_position( piece_position )
+  end
+  
+  def player_in_check?( player, enemy_player ) # why not also check to see if the array includes the player's king's position
+    enemy_player_moves = enemy_player.team_pieces.map { |piece|
+      next if piece.captured? 
+      piece.determine_possible_moves
+    }.flatten( 1 ).compact
+    check_king_for_check( player, enemy_player_moves )
+  end
+  
+  private
   
   def display_invalid_message( message, player, enemy_player )
     puts message
@@ -135,5 +96,58 @@ class Game
 
   def clear_screen!
     print "\e[H\e[2J"
+  end
+  
+  def get_player_move
+    puts "Please select a piece you would like to move and its new position (ex: b3 b6):"
+    user_commands.user_move_input
+  end
+  
+  def player_and_piece_same_team?( piece, player )
+    piece.team == player.team
+  end
+  
+  def update_position( piece, file, rank )
+    piece.update_piece_position( file, rank )
+  end
+  
+  def convert_to_position( file, rank )
+    Position.new( file, rank.to_i )
+  end
+  
+  def check_king_for_check( player, enemy_player_moves)
+    player.king_piece.check? enemy_player_moves
+  end
+  
+  def display_board
+    board_view.display_board( board )
+  end
+  
+  def move_piece_sequence( player, enemy_player, player_input )
+    piece_position = convert_to_position( player_input[0], player_input[1] )
+    piece = find_piece_on_board( piece_position )
+    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+    move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
+  end
+  
+  def finished?
+    [player1, player2].any? { |player| player.checkmate? }
+  end
+  
+  def check_for_checkmate( player, possible_moves_list )
+    if possible_moves_list.empty?
+      player.checkmate!
+    end
+  end
+  
+  def king_in_check_sequence( possible_moves_list, player, enemy_player )
+    puts "Your king is in check!"
+    player_input = get_player_move.gsub( /\s+/, "" )
+    if possible_moves_list.include? player_input
+      move_piece_sequence( player, enemy_player, player_input )
+    else
+      puts "Your king is still in check! Please select a valid move."
+      start_player_move( player, enemy_player )
+    end
   end
 end
