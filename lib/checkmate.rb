@@ -12,14 +12,15 @@ class Checkmate
     kings_starting_position = king.position.dup
     king.determine_possible_moves.each do |possible_move|
       target_file, target_rank = possible_move.first, possible_move.last
-      game.update_the_board!( king, target_file, target_rank, king.position )
-      possible_moves << [kings_starting_position.file, kings_starting_position.rank].
-        concat( possible_move ) unless check?( player, enemy_player )
-      restore_piece_to_original_position( king, kings_starting_position )
+      piece = captured_a_piece?( target_file, target_rank )
+      if piece
+        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
+        restore_captured_piece_on_board piece
+      else
+        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
+      end
     end
   end
-  
-  # check if the possible_move space is nil, if so proceed as normal. If not, find and log the piece that is at the possible_move space and put it back afterwards
   
   def capture_piece_threatening_king( player, enemy_player )
     enemy_pieces_collection = determine_enemy_piece_map( player, enemy_player ).keys
@@ -107,5 +108,18 @@ class Checkmate
   
   def check?( player, enemy_player )
     game.player_in_check?( player, enemy_player )
+  end
+  
+  def captured_a_piece?( file, rank )
+    location = Position.new( file, rank )
+    piece = game.find_piece_on_board( location )
+    piece.team ? piece : false
+  end
+  
+  def attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
+    game.update_the_board!( king, target_file, target_rank, king.position )
+    possible_moves << [kings_starting_position.file, kings_starting_position.rank].
+      concat( possible_move ) unless check?( player, enemy_player )
+    restore_piece_to_original_position( king, kings_starting_position )
   end
 end

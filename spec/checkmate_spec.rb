@@ -11,6 +11,7 @@ describe Checkmate do
   let(:piece3) { double( captured?: false ) }
   let(:player) { double() }
   let(:player2) { double( team_pieces: [] ) }
+  let(:null_piece) { stub_const( "NullPiece", Class.new ) }
   let(:checkmate) { described_class.new( game ) }
 
   before(:each) do
@@ -26,16 +27,40 @@ describe Checkmate do
   end
   
   describe "#move_king_in_all_possible_spots" do
+    
     context "when king has possible moves" do
-      it "checks to see where a king can move and not be in check" do
-        allow( king ).to receive( :determine_possible_moves ).
-          and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
-        allow( position ).to receive( :rank ).and_return 3
-        checkmate.move_king_in_all_possible_spots( player, player2 )
-        expect( checkmate.possible_moves ).
-          to eq( [["b", 3, "e", 6], ["b", 3, "f", 6], ["b", 3, "g", 6], 
-                  ["b", 3, "e", 5], ["b", 3, "g", 5], ["b", 3, "e", 4], 
-                  ["b", 3, "f", 4], ["b", 3, "g", 4]] )
+      context "when king does not capture an enemy piece with move" do
+        it "checks to see where a king can move and not be in check" do
+          allow( game ).to receive( :find_piece_on_board ).and_return piece
+          allow( piece ).to receive( :team ).and_return :black
+          allow( piece ).to receive( :position ).and_return piece
+          allow( piece ).to receive( :file_position_converter ).and_return 3
+          allow( piece ).to receive( :rank_position_converter ).and_return 4
+          allow( piece ).to receive( :captured! ).and_return false
+          allow( king ).to receive( :determine_possible_moves ).
+            and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
+          allow( position ).to receive( :rank ).and_return 3
+          checkmate.move_king_in_all_possible_spots( player, player2 )
+          expect( checkmate.possible_moves ).
+            to eq( [["b", 3, "e", 6], ["b", 3, "f", 6], ["b", 3, "g", 6],
+                    ["b", 3, "e", 5], ["b", 3, "g", 5], ["b", 3, "e", 4],
+                    ["b", 3, "f", 4], ["b", 3, "g", 4]] )
+        end
+      end
+      
+      context "when king does capture an enemy piece with move" do
+        it "checks to see where a king can move and not be in check" do
+          allow( game ).to receive( :find_piece_on_board ).and_return piece
+          allow( piece ).to receive( :team ).and_return nil
+          allow( king ).to receive( :determine_possible_moves ).
+            and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
+          allow( position ).to receive( :rank ).and_return 3
+          checkmate.move_king_in_all_possible_spots( player, player2 )
+          expect( checkmate.possible_moves ).
+            to eq( [["b", 3, "e", 6], ["b", 3, "f", 6], ["b", 3, "g", 6],
+                    ["b", 3, "e", 5], ["b", 3, "g", 5], ["b", 3, "e", 4],
+                    ["b", 3, "f", 4], ["b", 3, "g", 4]] )
+        end
       end
     end
 
