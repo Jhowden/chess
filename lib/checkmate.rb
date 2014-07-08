@@ -54,7 +54,7 @@ class Checkmate
     possible_moves.clear
     move_king_in_all_possible_spots( player, enemy_player )
     capture_piece_threatening_king( player, enemy_player )
-    # block_enemy_piece( player, enemy_player )
+    block_enemy_piece( player, enemy_player )
     possible_moves.map { |move| move.join }
   end
   
@@ -85,7 +85,7 @@ class Checkmate
     piece_possible_moves = piece.determine_possible_moves
     possible_enemy_moves_collection.values.flatten( 1 ).each do |possible_enemy_move|
       if piece_possible_moves.include?( possible_enemy_move )
-        move_the_piece!( piece, possible_enemy_move, player, enemy_player, original_board )
+        move_the_piece!( piece, possible_enemy_move, player, enemy_player )
       end
     end
   end
