@@ -76,8 +76,7 @@ class Checkmate
   end
   
   def restore_captured_piece_on_board( enemy_piece )
-    file, rank = enemy_piece.position.file_position_converter, enemy_piece.position.rank_position_converter
-    game.board.chess_board[rank][file] = enemy_piece
+    game.board.update_board enemy_piece
     enemy_piece.captured!
   end
   

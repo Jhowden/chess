@@ -27,7 +27,6 @@ describe Checkmate do
   end
   
   describe "#move_king_in_all_possible_spots" do
-    
     context "when king has possible moves" do
       context "when king does not capture an enemy piece with move" do
         it "checks to see where a king can move and not be in check" do
@@ -55,6 +54,7 @@ describe Checkmate do
           allow( king ).to receive( :determine_possible_moves ).
             and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
           allow( position ).to receive( :rank ).and_return 3
+          allow( board ).to receive( :update_board )
           checkmate.move_king_in_all_possible_spots( player, player2 )
           expect( checkmate.possible_moves ).
             to eq( [["b", 3, "e", 6], ["b", 3, "f", 6], ["b", 3, "g", 6],
@@ -110,6 +110,7 @@ describe Checkmate do
       allow( piece ).to receive( :file_position_converter ).and_return 3
       allow( piece ).to receive( :rank_position_converter ).and_return 5
       allow( piece ).to receive( :captured! )
+      allow( board ).to receive( :update_board )
       checkmate.capture_piece_threatening_king( player, player2 )
       expect( checkmate.possible_moves ).to eq( [["d", 5, "a", 5]] )
     end
@@ -204,6 +205,7 @@ describe Checkmate do
       allow( piece3 ).to receive( :rank ).and_return 4
       allow( king ).to receive( :determine_possible_moves ).
         and_return( [["e", 6], ["f", 6]] )
+        allow( board ).to receive( :update_board )
       expect( checkmate.find_checkmate_escape_moves( player, player2 ) ).
         to eq( ["b4e6", "b4f6", "d5a5", "d5a4", "d5a3", "d5a2", "c4a4"] )
     end
@@ -234,6 +236,7 @@ describe Checkmate do
       allow( piece3 ).to receive( :rank ).and_return 4
       allow( king ).to receive( :determine_possible_moves ).
         and_return( [["e", 6], ["f", 6]] )
+        allow( board ).to receive( :update_board )
       expect( checkmate.find_checkmate_escape_moves( player, player2 ) ).
         to eq( ["b4e6", "b4f6", "d5a5", "d5a4", "d5a3", "d5a2", "c4a4"] )
     end
