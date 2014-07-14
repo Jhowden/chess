@@ -20,7 +20,7 @@ describe Checkmate do
     allow( position ).to receive( :dup ).and_return position
     allow( game ).to receive( :board ).and_return board
     allow( player ).to receive( :king_piece ).and_return king
-    allow( game ).to receive( :player_in_check? ).with( player, player2).
+    allow( game ).to receive( :player_in_check? ).with( player, player2 ).
       and_return false
     allow( piece2 ).to receive( :position ).and_return piece2
     allow( game ).to receive( :update_the_board! )
@@ -31,15 +31,15 @@ describe Checkmate do
       context "when king does not capture an enemy piece with move" do
         it "checks to see where a king can move and not be in check" do
           allow( game ).to receive( :find_piece_on_board ).and_return null_piece
-          allow( null_piece ).to receive( :team ).and_return nil
+          allow( game ).to receive( :player_in_check? ).with( player, player2 ).
+      and_return false, true, false, false, false, false, false, false
           allow( king ).to receive( :determine_possible_moves ).
             and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
           allow( position ).to receive( :rank ).and_return 3
           checkmate.move_king_in_all_possible_spots( player, player2 )
           expect( checkmate.possible_moves ).
-            to eq( [["b", 3, "e", 6], ["b", 3, "f", 6], ["b", 3, "g", 6],
-                    ["b", 3, "e", 5], ["b", 3, "g", 5], ["b", 3, "e", 4],
-                    ["b", 3, "f", 4], ["b", 3, "g", 4]] )
+            to eq( [["b", 3, "e", 6], ["b", 3, "g", 6], ["b", 3, "e", 5], 
+                     ["b", 3, "g", 5], ["b", 3, "e", 4], ["b", 3, "f", 4], ["b", 3, "g", 4]] )
         end
       end
       

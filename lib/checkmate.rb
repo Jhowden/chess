@@ -9,15 +9,14 @@ class Checkmate
     
   def move_king_in_all_possible_spots( player, enemy_player )
     king = player.king_piece
-    kings_starting_position = king.position.dup
     king.determine_possible_moves.each do |possible_move|
       target_file, target_rank = possible_move.first, possible_move.last
       piece = captured_a_piece?( target_file, target_rank )
       if piece
-        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
+        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player )
         restore_captured_piece_on_board piece
       else
-        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
+        attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player )
       end
     end
   end
@@ -42,9 +41,9 @@ class Checkmate
     enemy_piece_map = {}
     king = player.king_piece
     enemy_player.team_pieces.select{ |piece| !piece.captured? }.each do |piece|
-      possible_moves = piece.determine_possible_moves
-      if possible_moves.include?( [king.position.file, king.position.rank] )
-        enemy_piece_map[piece] = possible_moves
+      possible_piece_moves = piece.determine_possible_moves
+      if possible_piece_moves.include?( [king.position.file, king.position.rank] )
+        enemy_piece_map[piece] = possible_piece_moves
       end
     end
     enemy_piece_map
@@ -55,14 +54,14 @@ class Checkmate
     move_king_in_all_possible_spots( player, enemy_player )
     capture_piece_threatening_king( player, enemy_player )
     block_enemy_piece( player, enemy_player )
-    possible_moves.map { |move| move.join }
+    possible_moves.uniq.map { |move| move.join }
   end
   
   private 
   
-  def restore_piece_to_original_position( piece, pieces_starting_position )
+  def restore_piece_to_original_position( piece, piece_starting_position )
     pieces_temporary_position = piece.position.dup
-    game.update_the_board!( piece, pieces_starting_position.file, pieces_starting_position.rank, pieces_temporary_position )
+    game.update_the_board!( piece, piece_starting_position.file, piece_starting_position.rank, pieces_temporary_position )
   end
   
   def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection )
@@ -110,15 +109,12 @@ class Checkmate
   end
   
   def captured_a_piece?( file, rank )
-    location = Position.new( file, rank )
-    piece = game.find_piece_on_board( location )
-    piece.team ? piece : false
+    position = Position.new( file, rank )
+    piece = game.find_piece_on_board( position )
+    piece.respond_to?( :determine_possible_moves ) ? piece : false
   end
   
-  def attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player, kings_starting_position, possible_move )
-    game.update_the_board!( king, target_file, target_rank, king.position )
-    possible_moves << [kings_starting_position.file, kings_starting_position.rank].
-      concat( possible_move ) unless check?( player, enemy_player )
-    restore_piece_to_original_position( king, kings_starting_position )
+  def attempt_to_move_out_of_check( king, target_file, target_rank, player, enemy_player )
+    move_the_piece!( king, [target_file, target_rank], player, enemy_player )
   end
 end
