@@ -121,8 +121,10 @@ class Game
         enemy_piece = self.find_piece_on_board( convert_to_position( target_file, target_rank ) )
         update_the_board!( piece, target_file, target_rank, piece_position )
         if player_in_check?( player, enemy_player )
-          restore_board_to_original( piece, piece_original_position, convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
+          restore_board_to_original( piece, piece_original_position, 
+                                      convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
         end
+        increase_piece_move_counter( piece )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
       end
@@ -178,5 +180,9 @@ class Game
   def winner
     winner = [player1, player2].reject { |player| player.checkmate? }
     puts "#{winner.first.team.capitalize} team is the winner!"
+  end
+
+  def increase_piece_move_counter( piece )
+    piece.increase_move_counter!
   end
 end

@@ -14,8 +14,8 @@ describe Game do
   let(:board_view) { double() }
   let(:chess_board ) { Array.new( 8 ) { |cell| Array.new( 8 ) } }
   let(:null_piece) { stub_const( "NullPiece", Class.new ) }
+  let(:king) { double() } 
   let(:game) { described_class.new( board, user_commands, board_view ) }
-  let(:king) { double() }
 
   before(:each) do
     stub_const( "Checkmate", Class.new )
@@ -43,6 +43,47 @@ describe Game do
       game.play!
       expect( game.player1.team ).to eq( :black )
       expect( game.player2.team ).to eq( :white )
+    end
+  end
+
+  describe "#{}update_the_board!" do
+    before( :each ) do
+      allow( board ).to receive( :update_board )
+      allow( board ).to receive( :remove_old_position )
+      allow( piece ).to receive( :update_piece_position )
+    end
+    
+    it "updates the position of the piece" do
+      expect( piece ).to receive( :update_piece_position ).with( "d", 3 )
+      game.update_the_board!( piece, "d", 3, position )
+    end
+
+    it "updates the board" do
+      expect( board ).to receive( :update_board ).with piece
+      game.update_the_board!( piece, "d", 3, position )
+    end
+
+    it "removes the piece's old location from the board" do
+      expect( board ).to receive( :remove_old_position ).with position
+      game.update_the_board!( piece, "d", 3, position )
+    end
+  end
+
+  describe "#player_in_check?" do
+    before(:each) do
+      allow( piece2 ).to receive( :determine_possible_moves ).and_return [["c", 3], ["c",4], ["c", 5], ["c", 6]]
+      allow( king ).to receive( :check? )
+      allow( player_1 ).to receive( :king_piece ).and_return king
+    end
+
+    it "returns the player's king piece" do
+      expect( player_1 ).to receive( :king_piece ).and_return king
+      game.player_in_check?( player_1, player_2 )
+    end
+
+    it "checks to see if a king piece is in check" do
+      expect( king ).to receive( :check? ).with [["c", 3], ["c",4], ["c", 5], ["c", 6]]
+      game.player_in_check?( player_1, player_2 )
     end
   end
 
@@ -208,11 +249,4 @@ describe Game do
   #     end
   #   end
   # end
-
-  describe "#update_piece_on_board" do
-    it "updates the piece position on the board" do
-      expect( board ).to receive( :update_board ).with( piece )
-      game.update_piece_on_board( piece )
-    end
-  end
 end
