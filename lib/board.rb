@@ -1,9 +1,11 @@
 require_relative 'determine_multiple_moves'
 require_relative 'move_validations'
+require_relative 'pawn_board_moves'
 
 class Board
   include DetermineMultipleMoves
   include MoveValidations
+  include PawnBoardMoves
   
   attr_reader :chess_board, :possible_moves
   
@@ -31,35 +33,6 @@ class Board
 
   def capture_piece( file, rank )
     chess_board[rank][file].captured! unless chess_board[rank][file].nil?
-  end
-  
-  def move_straight?( piece )
-    file = piece.position.file_position_converter
-    rank = piece.position.rank_position_converter
-    if piece.orientation == :up
-      legal_move?( file, rank - 1 ) && empty_space?( file, rank - 1 )
-    else
-      legal_move?( file, rank + 1 ) && empty_space?( file, rank + 1 )
-    end
-  end
-  
-  def move_forward_diagonally?( piece, direction )
-    file = piece.position.file_position_converter 
-    rank = piece.position.rank_position_converter
-    
-    if piece.orientation == :up
-      if direction == :left
-        legal_move?( file - 1, rank - 1 ) && !empty_space?( file - 1, rank - 1 ) && different_team?( file - 1, rank - 1, piece ) 
-      else
-        legal_move?( file + 1, rank - 1 ) && !empty_space?( file + 1, rank - 1 ) && different_team?( file + 1, rank - 1, piece )
-      end
-    else
-      if direction == :left
-        legal_move?( file + 1, rank + 1 ) && !empty_space?( file + 1, rank + 1 ) && different_team?( file + 1, rank + 1, piece )
-      else
-        legal_move?( file - 1, rank + 1 ) && !empty_space?( file - 1, rank + 1 ) && different_team?( file - 1, rank + 1, piece )
-      end
-    end
   end
   
   def find_horizontal_spaces( piece )

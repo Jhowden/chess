@@ -3,10 +3,14 @@ require "spec_helper"
 describe Board do
     
   let(:game_board) { described_class.new }
-  let(:piece) { double( position: Position.new( "f", 5 ), team: :black, orientation: :up ) }
-  let(:piece2) { double( position: Position.new( "a", 8 ), team: :white, orientation: :up ) }
-  let(:piece3) { double( team: :black ) }
-  let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down ) }
+  let(:piece) { double( position: Position.new( "f", 5 ), team: :black, orientation: :up, 
+                        starting_location: ["f", 5] ) }
+  let(:piece2) { double( position: Position.new( "a", 8 ), team: :white, orientation: :up,
+                        starting_location: ["a", 8] ) }
+  let(:piece3) { double( position: Position.new( "f", 1 ), team: :black, orientation: :down,
+                         starting_location: ["f", 1] ) }
+  let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down, 
+                         starting_location: ["f", 5] ) }
   let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
   let(:piece6) { double( position: Position.new( "g", 1 ), team: :black ) }
   let(:position) { Position.new( "c", 1 ) }
@@ -59,27 +63,74 @@ describe Board do
     end
   end
   
-  describe "#move_straight?" do
+  describe "#move_straight_one_space?" do
     context "when moving from bottom to top" do
       it "checks if a piece can move straight" do
-        expect( game_board.move_straight?( piece ) ).to be_true
+        expect( game_board.move_straight_one_space?( piece ) ).to be_true
       end
       
-      it "does NOT let a piece go off the board" do
-        expect( game_board.move_straight?( piece2 ) ).to be_false
+      it "prevents the piece from moving off the board" do
+        expect( game_board.move_straight_one_space?( piece2 ) ).to be_false
       end
     end
     
     context "when moving from top to bottom" do
       it "checks if a piece can move straight" do
         game_board.chess_board[4][5] = piece2
-        expect( game_board.move_straight?( piece4 ) ).to be_false
+        expect( game_board.move_straight_one_space?( piece4 ) ).to be_false
       end
     end
     
     context "when at the edge of the board" do
       it "prevents the piece from moving off the board" do
-        expect( game_board.move_straight?( piece2 )).to be_false
+        expect( game_board.move_straight_one_space?( piece3 )).to be_false
+      end
+    end
+  end
+
+  describe "#move_straight_two_spaces?" do
+    context "when moving from bottom to top" do
+      it "checks if a piece can move straight two spaces" do
+        expect( game_board.move_straight_two_spaces?( piece ) ).to be_true
+      end
+
+      it "prevents the piece from moving off the board" do
+        expect( game_board.move_straight_two_spaces?( piece2 ) ).to be_false
+      end
+
+      it "doesn't allow a player to skip through another piece" do
+        game_board.chess_board[2][5] = piece3
+        expect( game_board.move_straight_two_spaces?( piece2 ) ).to be_false
+      end
+
+      it "doesn't allow the piece to move if the space is occupied by another piece" do
+        game_board.chess_board[1][5] = piece3
+        expect( game_board.move_straight_two_spaces?( piece2 ) ).to be_false
+      end
+    end
+
+    context "when moving from top to bottom" do
+      it "checks if a piece can move straight two spaces" do
+        expect( game_board.move_straight_two_spaces?( piece4 ) ).to be_true
+      end
+
+      it "prevents the piece from moving off the board" do
+        expect( game_board.move_straight_two_spaces?( piece3 ) ).to be_false
+      end
+
+      it "doesn't allow a player to skip through another piece" do
+        game_board.chess_board[4][5] = piece2
+        expect( game_board.move_straight_two_spaces?( piece4 ) ).to be_false
+      end
+
+      it "doesn't allow the piece to move if the space is occupied by another piece" do
+        game_board.chess_board[5][5] = piece2
+        expect( game_board.move_straight_two_spaces?( piece4 ) ).to be_false
+      end
+
+      it "returns false if the starting location is different from the current position" do
+        allow( piece3 ).to receive( :position ).and_return Position.new( "g", 4 )
+        expect( game_board.move_straight_two_spaces?( piece3 ) ).to be_false
       end
     end
   end
@@ -96,7 +147,7 @@ describe Board do
         end
         
         it "doesn't allow for an illegal move" do
-          expect( game_board.move_straight?( piece2 )).to be_false
+          expect( game_board.move_straight_one_space?( piece2 )).to be_false
         end
       end
     
