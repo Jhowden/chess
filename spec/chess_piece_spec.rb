@@ -40,4 +40,11 @@ describe ChessPiece do
       expect( piece.possible_moves.size ).to eq( 0 )
     end
   end
+
+  describe "#increase_move_counter!" do
+    it "increases the piece's move counter by one" do
+      piece.increase_move_counter!
+      expect( piece.move_counter ).to eq 1
+    end
+  end
 end

@@ -1,6 +1,6 @@
 class ChessPiece
   
-  attr_reader :captured, :position, :board, :team, :possible_moves
+  attr_reader :captured, :position, :board, :team, :possible_moves, :move_counter
   
   def initialize( file, rank, team, board )
     @position = Position.new( file, rank )
@@ -8,6 +8,7 @@ class ChessPiece
     @team = team
     @captured = false
     @possible_moves = []
+    @move_counter = 0
   end
   
   def captured!
@@ -24,5 +25,9 @@ class ChessPiece
 
   def clear_moves!
     possible_moves.clear
+  end
+
+  def increase_move_counter!
+    @move_counter += 1
   end
 end
