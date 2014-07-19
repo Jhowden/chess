@@ -61,7 +61,7 @@ class Checkmate
   
   def restore_piece_to_original_position( piece, piece_starting_position )
     pieces_temporary_position = piece.position.dup
-    game.update_the_board!( piece, piece_starting_position.file, piece_starting_position.rank, pieces_temporary_position )
+    update_the_board!( piece, piece_starting_position.file, piece_starting_position.rank, pieces_temporary_position )
   end
   
   def attempt_to_capture_enemy_piece( player, enemy_player, piece, enemy_pieces_collection )
