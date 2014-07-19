@@ -1,4 +1,5 @@
-FILE_PATH_PARTIAL = /lib\/play_game.rb/
+require_relative "../lib/helpers/excluded_file_partial"
+
 Dir[File.expand_path( File.join( File.dirname( __FILE__ ), "..", "lib", "*.rb" ) )].each do |file|
-  require file unless file =~ FILE_PATH_PARTIAL
+  require file unless file =~ ExcludedFilePartial::FILE_PATH_PARTIAL
 end
