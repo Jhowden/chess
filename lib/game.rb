@@ -2,7 +2,7 @@ File.expand_path( File.join( File.dirname( __FILE__ ), 'board_setup_helper' ) )
 File.expand_path( File.join( File.dirname( __FILE__ ), 'board_piece_locator' ) )
 
 class Game
-  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate
+  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle
 
   include BoardSetupHelper
   include BoardPieceLocator
@@ -12,6 +12,7 @@ class Game
     @board_view = board_view
     @user_commands = user_commands
     @checkmate = Checkmate.new( self )
+    @castle = Castle.new( self )
   end
   
   def play!
@@ -23,6 +24,24 @@ class Game
     end
     display_board
     winner
+  end
+
+  def start_player_move( player, enemy_player )
+    if player_in_check?( player, enemy_player )
+      escape_check_moves = checkmate.find_checkmate_escape_moves( player, enemy_player )
+      check_for_checkmate( player, escape_check_moves )
+      return if player.checkmate?
+      king_in_check_sequence( escape_check_moves, player, enemy_player )
+    else
+      player_input = get_player_move.gsub( /\s+/, "" )
+      if player_input =~ UserCommands::VALID_QUEENSIDE_CASTLING_INPUT
+        castle.castle_queenside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
+                                  player, enemy_player )
+      # elsif player_input =~ UserCommands::VALID_KINGSIDE_CASTLING_INPUT
+      else
+        move_piece_sequence( player, enemy_player, player_input )
+      end
+    end
   end
   
   def update_the_board!( piece, target_file, target_rank, piece_position )
@@ -37,6 +56,14 @@ class Game
       piece.determine_possible_moves
     }.flatten( 1 ).compact
     check_king_for_check( player, enemy_player_moves )
+  end
+
+  def restore_piece_to_original_position( piece, piece_original_position, new_position )
+    update_the_board!( piece, piece_original_position.file, piece_original_position.rank, new_position )
+  end
+
+  def increase_piece_move_counter( piece )
+    piece.increase_move_counter!
   end
   
   private
@@ -140,10 +167,6 @@ class Game
     start_player_move( player, enemy_player )
   end
 
-  def restore_piece_to_original_position( piece, piece_original_position, new_position )
-    update_the_board!( piece, piece_original_position.file, piece_original_position.rank, new_position )
-  end
-
   def restore_captured_piece_on_board( enemy_piece )
     board.update_board enemy_piece
     enemy_piece.captured!
@@ -165,24 +188,8 @@ class Game
     set_up_players_half_of_board( player2_team_color.to_sym, player2 )
   end
 
-  def start_player_move( player, enemy_player )
-    if player_in_check?( player, enemy_player )
-      escape_check_moves = checkmate.find_checkmate_escape_moves( player, enemy_player )
-      check_for_checkmate( player, escape_check_moves )
-      return if player.checkmate?
-      king_in_check_sequence( escape_check_moves, player, enemy_player )
-    else
-      player_input = get_player_move.gsub( /\s+/, "" )
-      move_piece_sequence( player, enemy_player, player_input )
-    end
-  end
-
   def winner
     winner = [player1, player2].reject { |player| player.checkmate? }
     puts "#{winner.first.team.capitalize} team is the winner!"
-  end
-
-  def increase_piece_move_counter( piece )
-    piece.increase_move_counter!
   end
 end
