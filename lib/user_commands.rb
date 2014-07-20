@@ -1,6 +1,9 @@
 class UserCommands
   
-  VALID_USER_INPUT = /^[a-h]{1}[1-8]{1}\s{1}[a-h]{1}[1-8]{1}/
+  VALID_USER_MOVE_INPUT = /^[a-h]{1}[1-8]{1}\s{1}[a-h]{1}[1-8]{1}/
+  VALID_QUEENSIDE_CASTLING_INPUT = /^0-0-0$/
+  VALID_KINGSIDE_CASTLING_INPUT = /^0-0$/
+  EXPRESSION_ARRAY = [VALID_USER_MOVE_INPUT, VALID_QUEENSIDE_CASTLING_INPUT, VALID_KINGSIDE_CASTLING_INPUT]
 
   def user_input
     print "> "
@@ -9,7 +12,6 @@ class UserCommands
 
   def user_team_input
     input = user_input
-    # ["white", "black"].any? {} instead of using the || in line 11
     if ["white", "black"].any? { |color| color == input.downcase}
       input.downcase
     else
@@ -20,10 +22,11 @@ class UserCommands
 
   def user_move_input
     input = user_input
-    if input =~ VALID_USER_INPUT
+    
+    if EXPRESSION_ARRAY.any? { |expression| input =~ expression }
       input
     else
-      puts "Please enter a correctly formated move (ex: b3 b6):"
+      puts "Please enter a correctly formated move (ex: b3 b6, 0-0 to castle kingside, or 0-0-0 to castle queenside):"
       user_move_input
     end
   end

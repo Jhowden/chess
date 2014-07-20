@@ -40,7 +40,7 @@ describe UserCommands do
   describe "#user_move_input" do
     it "asks the player to input move in the correct format" do
       allow( user_commands ).to receive( :gets ).and_return( "a33 b5", "a3 b5" )
-      allow( STDOUT ).to receive( :puts ).with( "Please enter a correctly formated move (ex: b3 b6):" )
+      allow( STDOUT ).to receive( :puts ).with( "Please enter a correctly formated move (ex: b3 b6, 0-0 to castle kingside, or 0-0-0 to castle queenside):" )
       expect( user_commands.user_move_input ).to eq( "a3 b5" )
     end
 
@@ -48,6 +48,21 @@ describe UserCommands do
       allow( user_commands ).to receive( :gets ).and_return "a3 b5"
       expect( user_commands.user_move_input ).to eq( "a3 b5" )
     end
-  end
 
+    it "accepts kingside castling as a correct format" do
+      allow( user_commands ).to receive( :gets ).and_return "0-0"
+      expect( user_commands.user_move_input ).to eq( "0-0" )
+    end
+
+    it "accepts queenside castling as a correct format" do
+      allow( user_commands ).to receive( :gets ).and_return "0-0-0"
+      expect( user_commands.user_move_input ).to eq( "0-0-0" )
+    end
+
+    it "rejects improperly cofigured castle input" do
+      allow( STDOUT ).to receive( :puts )
+      allow( user_commands ).to receive( :gets ).and_return( "0-0-1", "0-1", "0-0-0" )
+      expect( user_commands.user_move_input ).to eq( "0-0-0" )
+    end
+  end
 end
