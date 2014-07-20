@@ -18,7 +18,10 @@
 class Castle
 
   TEAM_COLOR_CASTLE_RANK_MAP = {black: 1, white: 8}
-  CASTILE_QUEENSIDE_FILE_CONTAINER = ["d", "c"]
+
+  CASTLE_QUEENSIDE_FILE_CONTAINER = ["d", "c"]
+  CASTLE_KINGSIDE_FILE_CONTAINER = ["f", "g"]
+
   POSSIBLE_ROOK_FILE_CONTAINER = ["a", "h"]
 
   attr_reader :game
@@ -31,15 +34,37 @@ class Castle
     rook = find_rook_on_board( POSSIBLE_ROOK_FILE_CONTAINER.first, rank )
     if legal_to_castle?( king.move_counter, rook.move_counter )
       kings_starting_position = copy_piece_position king
-      update_the_board!( king, CASTILE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( king ) )
+      update_the_board!( king, CASTLE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( king ) )
       if check?( player, enemy_player )
-        restart_player_turn( king, kings_starting_position, king.position, player, enemy_player )
+        restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
       else
-        update_the_board!( king, CASTILE_QUEENSIDE_FILE_CONTAINER.last, rank, copy_piece_position( king ) )
+        update_the_board!( king, CASTLE_QUEENSIDE_FILE_CONTAINER.last, rank, copy_piece_position( king ) )
         if check?( player, enemy_player )
-          restart_player_turn( king, kings_starting_position, king.position, player, enemy_player )
+          restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
         else
-          update_the_board!( rook, CASTILE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( rook ) )
+          update_the_board!( rook, CASTLE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( rook ) )
+          increase_king_and_rook_move_counters( king, rook )
+        end
+      end
+    else
+      piece_already_moved_message
+      get_player_move_again( player, enemy_player )
+    end
+  end
+
+  def castle_kingside( king, rank, player, enemy_player )
+    rook = find_rook_on_board( POSSIBLE_ROOK_FILE_CONTAINER.last, rank )
+    if legal_to_castle?( king.move_counter, rook.move_counter )
+      kings_starting_position = copy_piece_position king
+      update_the_board!( king, CASTLE_KINGSIDE_FILE_CONTAINER.first, rank, copy_piece_position( king ) )
+      if check?( player, enemy_player )
+        restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
+      else
+        update_the_board!( king, CASTLE_KINGSIDE_FILE_CONTAINER.last, rank, copy_piece_position( king ) )
+        if check?( player, enemy_player )
+          restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
+        else
+          update_the_board!( rook, CASTLE_KINGSIDE_FILE_CONTAINER.first, rank, copy_piece_position( rook ) )
           increase_king_and_rook_move_counters( king, rook )
         end
       end
@@ -60,7 +85,7 @@ class Castle
   end
 
   def restart_player_turn( king, kings_starting_position, king_current_position, player, enemy_player )
-    restore_board_to_original( king, kings_starting_position, king.position )
+    restore_board_to_original( king, kings_starting_position, king_current_position )
     illegal_to_castle_message
     get_player_move_again( player, enemy_player )
   end

@@ -37,7 +37,9 @@ class Game
       if player_input =~ UserCommands::VALID_QUEENSIDE_CASTLING_INPUT
         castle.castle_queenside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
                                   player, enemy_player )
-      # elsif player_input =~ UserCommands::VALID_KINGSIDE_CASTLING_INPUT
+      elsif player_input =~ UserCommands::VALID_KINGSIDE_CASTLING_INPUT
+        castle.castle_kingside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
+                                  player, enemy_player )
       else
         move_piece_sequence( player, enemy_player, player_input )
       end
