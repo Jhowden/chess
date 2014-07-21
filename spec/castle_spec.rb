@@ -5,6 +5,7 @@ describe Castle do
   let(:game) { double() }
   let(:king) { double( position: position ) }
   let(:rook) { double( position: position ) }
+  let(:piece) { double() }
   let(:position) { double() }
   let(:copied_position) { double() }
   let(:player) { double() }
@@ -14,7 +15,7 @@ describe Castle do
   describe "#castle_queenside" do
     before(:each) do
       allow( STDOUT ).to receive( :puts )
-      allow( game ).to receive( :find_piece_on_board ).and_return rook
+      allow( game ).to receive( :find_piece_on_board ).and_return( rook, piece )
       allow( position ).to receive( :dup ).and_return copied_position
       allow( game ).to receive( :update_the_board! )
       allow( game ).to receive( :player_in_check? )
@@ -45,6 +46,14 @@ describe Castle do
 
       it "starts the player's move over again" do
         allow( game ).to receive( :player_in_check? ).and_return true
+        expect( game ).to receive( :start_player_move ).with( player, enemy_player )
+        castle.castle_queenside( king, 8, player, enemy_player ) 
+      end
+    end
+
+    context "when the space is occupied" do
+      it "starts the player's move over again" do
+        allow( piece ).to receive( :respond_to? ).and_return true
         expect( game ).to receive( :start_player_move ).with( player, enemy_player )
         castle.castle_queenside( king, 8, player, enemy_player ) 
       end
@@ -104,7 +113,7 @@ describe Castle do
   describe "#castle_kingside" do
     before(:each) do
       allow( game ).to receive( :update_the_board! )
-      allow( game ).to receive( :find_piece_on_board ).and_return rook
+      allow( game ).to receive( :find_piece_on_board ).and_return( rook, piece )
       allow( game ).to receive( :player_in_check? )
       allow( position ).to receive( :dup ).and_return copied_position
       allow( game ).to receive( :start_player_move )
@@ -135,6 +144,14 @@ describe Castle do
 
       it "starts the player's move over again" do
         allow( game ).to receive( :player_in_check? ).and_return true
+        expect( game ).to receive( :start_player_move ).with( player, enemy_player )
+        castle.castle_kingside( king, 1, player, enemy_player ) 
+      end
+    end
+
+    context "when the space is occupied" do
+      it "starts the player's move over again" do
+        allow( piece ).to receive( :respond_to? ).and_return true
         expect( game ).to receive( :start_player_move ).with( player, enemy_player )
         castle.castle_kingside( king, 1, player, enemy_player ) 
       end

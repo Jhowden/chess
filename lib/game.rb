@@ -34,12 +34,8 @@ class Game
       king_in_check_sequence( escape_check_moves, player, enemy_player )
     else
       player_input = get_player_move.gsub( /\s+/, "" )
-      if player_input =~ UserCommands::VALID_QUEENSIDE_CASTLING_INPUT
-        castle.castle_queenside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
-                                  player, enemy_player )
-      elsif player_input =~ UserCommands::VALID_KINGSIDE_CASTLING_INPUT
-        castle.castle_kingside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
-                                  player, enemy_player )
+      if UserCommands::VALID_CASTLING_EXPRESSION.any? { |expression| player_input =~ expression }
+        castle_move_sequence( player_input, player, enemy_player )
       else
         move_piece_sequence( player, enemy_player, player_input )
       end
@@ -159,6 +155,16 @@ class Game
       end
     else
       display_invalid_message( "That piece is not on your team.", player, enemy_player )
+    end
+  end
+
+  def castle_move_sequence( player_input, player, enemy_player )
+    if player_input =~ UserCommands::VALID_QUEENSIDE_CASTLING_INPUT
+        castle.castle_queenside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
+                                  player, enemy_player )
+    else 
+        castle.castle_kingside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
+                                  player, enemy_player )
     end
   end
 

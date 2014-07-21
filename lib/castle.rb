@@ -1,25 +1,8 @@
-# new class that takes in board
-# check to see if in check and if rook and king have moved before
-#   move king one space over, check if in check
-#     if not in check
-#       move over one more space
-#         if not in check
-#           move rook to the correct spot
-#         else
-#           don't allow move, reset board
-#     else
-#       don't allow move, reset board
-# else
-#   don't allow move, reset board
-
-# what do I want input for castling be? (castle queenside/kingside)
-# the only difference between teams is the rank (ie 1 for white, 8 for black), the files are the same
-
 class Castle
 
   TEAM_COLOR_CASTLE_RANK_MAP = {black: 1, white: 8}
 
-  CASTLE_QUEENSIDE_FILE_CONTAINER = ["d", "c"]
+  CASTLE_QUEENSIDE_FILE_CONTAINER = ["d", "c", "b"]
   CASTLE_KINGSIDE_FILE_CONTAINER = ["f", "g"]
 
   POSSIBLE_ROOK_FILE_CONTAINER = ["a", "h"]
@@ -31,21 +14,11 @@ class Castle
   end
 
   def castle_queenside( king, rank, player, enemy_player )
-    rook = find_rook_on_board( POSSIBLE_ROOK_FILE_CONTAINER.first, rank )
-    if legal_to_castle?( king.move_counter, rook.move_counter )
+    rook = find_piece_on_board( POSSIBLE_ROOK_FILE_CONTAINER.first, rank )
+    if legal_to_castle?( king.move_counter, rook.move_counter ) && queen_side_spaces_unoccupied?( rank )
       kings_starting_position = copy_piece_position king
-      update_the_board!( king, CASTLE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( king ) )
-      if check?( player, enemy_player )
-        restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
-      else
-        update_the_board!( king, CASTLE_QUEENSIDE_FILE_CONTAINER.last, rank, copy_piece_position( king ) )
-        if check?( player, enemy_player )
-          restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
-        else
-          update_the_board!( rook, CASTLE_QUEENSIDE_FILE_CONTAINER.first, rank, copy_piece_position( rook ) )
-          increase_king_and_rook_move_counters( king, rook )
-        end
-      end
+      attempt_to_castle( king, rook, CASTLE_QUEENSIDE_FILE_CONTAINER.first, CASTLE_QUEENSIDE_FILE_CONTAINER[1],
+        rank, kings_starting_position, player, enemy_player )
     else
       piece_already_moved_message
       get_player_move_again( player, enemy_player )
@@ -53,21 +26,11 @@ class Castle
   end
 
   def castle_kingside( king, rank, player, enemy_player )
-    rook = find_rook_on_board( POSSIBLE_ROOK_FILE_CONTAINER.last, rank )
-    if legal_to_castle?( king.move_counter, rook.move_counter )
+    rook = find_piece_on_board( POSSIBLE_ROOK_FILE_CONTAINER.last, rank )
+    if legal_to_castle?( king.move_counter, rook.move_counter ) && king_side_spaces_unoccupied?( rank )
       kings_starting_position = copy_piece_position king
-      update_the_board!( king, CASTLE_KINGSIDE_FILE_CONTAINER.first, rank, copy_piece_position( king ) )
-      if check?( player, enemy_player )
-        restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
-      else
-        update_the_board!( king, CASTLE_KINGSIDE_FILE_CONTAINER.last, rank, copy_piece_position( king ) )
-        if check?( player, enemy_player )
-          restart_player_turn( king, kings_starting_position, copy_piece_position( king ), player, enemy_player )
-        else
-          update_the_board!( rook, CASTLE_KINGSIDE_FILE_CONTAINER.first, rank, copy_piece_position( rook ) )
-          increase_king_and_rook_move_counters( king, rook )
-        end
-      end
+      attempt_to_castle( king, rook, CASTLE_KINGSIDE_FILE_CONTAINER.first, CASTLE_KINGSIDE_FILE_CONTAINER[1], 
+        rank, kings_starting_position, player, enemy_player )
     else
       piece_already_moved_message
       get_player_move_again( player, enemy_player )
@@ -79,6 +42,21 @@ class Castle
   end
 
   private
+
+  def attempt_to_castle( king, rook, first_file_move, second_file_move, rank, original_position, player, enemy_player )
+    update_the_board!( king, first_file_move, rank, copy_piece_position( king ) )
+    if check?( player, enemy_player )
+      restart_player_turn( king, original_position, copy_piece_position( king ), player, enemy_player )
+    else
+      update_the_board!( king, second_file_move, rank, copy_piece_position( king ) )
+      if check?( player, enemy_player )
+        restart_player_turn( king, original_position, copy_piece_position( king ), player, enemy_player )
+      else
+        update_the_board!( rook, first_file_move, rank, copy_piece_position( rook ) )
+        increase_king_and_rook_move_counters( king, rook )
+      end
+    end
+  end
 
   def copy_piece_position( piece )
     piece.position.dup
@@ -101,7 +79,7 @@ class Castle
   end
 
   def piece_already_moved_message
-    puts "You can no longer castle as you have already moved either your rook or king."
+    puts "Invalid attempt to castle."
   end
 
   def illegal_to_castle_message
@@ -112,7 +90,7 @@ class Castle
     game.update_the_board!( piece, file, rank, piece_starting_position )
   end
 
-  def find_rook_on_board( file, rank )
+  def find_piece_on_board( file, rank )
     game.find_piece_on_board( convert_file_and_rank_to_position( file, rank ) )
   end
 
@@ -126,5 +104,22 @@ class Castle
 
   def restore_board_to_original( king, original_position, current_position )
     game.restore_piece_to_original_position( king, original_position, current_position )
+  end
+
+  def unoccupied_space?( file, rank )
+    piece = find_piece_on_board( file, rank )
+    piece.respond_to?( :determine_possible_moves ) ? false : true
+  end
+
+  def king_side_spaces_unoccupied?( rank )
+    CASTLE_KINGSIDE_FILE_CONTAINER.map { |file|
+      unoccupied_space?( file, rank )
+    }.all? { |boolean| boolean }
+  end
+
+  def queen_side_spaces_unoccupied?( rank )
+    CASTLE_QUEENSIDE_FILE_CONTAINER.map { |file|
+      unoccupied_space?( file, rank ) 
+      }.all? { |boolean| boolean }
   end
 end
