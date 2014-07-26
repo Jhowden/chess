@@ -64,5 +64,10 @@ describe UserCommands do
       allow( user_commands ).to receive( :gets ).and_return( "0-0-1", "0-1", "0-0-0" )
       expect( user_commands.user_move_input ).to eq( "0-0-0" )
     end
+    
+    it "accepts en_passant as correct format" do
+      allow( user_commands ).to receive( :gets ).and_return "b4 c3 e.p."
+      expect( user_commands.user_move_input ).to eq "b4 c3 e.p."
+    end
   end
 end

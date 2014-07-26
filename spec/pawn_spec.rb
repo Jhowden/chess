@@ -3,13 +3,16 @@ require "spec_helper"
 describe Pawn do
 
   let(:board) { double( chess_board: Array.new( 8 ) { |cell| Array.new( 8 ) } ) }
-  let(:pawn) { described_class.new( "b", 2, :black, board, :up ) }
-  let(:pawn2) { described_class.new( "b", 1, :white, board, :down ) }
+  let(:pawn) { described_class.new( "b", 2, :black, board, :up, enpassant ) }
+  let(:pawn2) { described_class.new( "b", 1, :white, board, :down, enpassant ) }
+  let(:enpassant) { double() }
   
   before :each do
     allow( board ).to receive( :move_straight_one_space? )
     allow( board ).to receive( :move_straight_two_spaces? )
     allow( board ).to receive( :move_forward_diagonally? )
+    allow( enpassant ).to receive( :en_passant? )
+    allow( enpassant ).to receive( :capture_pawn_en_passant! )
   end
 
   describe "#determine_possible_moves" do
@@ -71,6 +74,25 @@ describe Pawn do
         expect( pawn.possible_moves.size ).to eq( 1 )
       end
     end
+    
+    context "when en passant" do
+      it "checks to see if the pawn can perform en passant to the left" do
+        expect( enpassant ).to receive( :en_passant? ).with( pawn, :previous )
+        pawn.determine_possible_moves
+      end
+      
+      it "checks to see if the pawn can perform en passant to the right" do
+        expect( enpassant ).to receive( :en_passant? ).with( pawn, :next )
+        pawn.determine_possible_moves
+      end
+      
+      it "returns the possible move for en_passant" do
+        expect( enpassant ).to receive( :en_passant? ).and_return true
+        allow( enpassant ).to receive( :capture_pawn_en_passant! ).and_return( ["d", 3, "e.p."] )
+        pawn.determine_possible_moves
+        expect( pawn.possible_moves ).to eq( [["d", 3, "e.p."]] )
+      end
+    end
 
     it "clears possible moves when not empty" do
       pawn.possible_moves << ["a", 3]
@@ -90,6 +112,24 @@ describe Pawn do
   context "when a white piece" do
     it "displays the correct board marker" do
       expect( pawn2.board_marker ).to eq( "♙" )
+    end
+  end
+  
+  describe "update_en_passant!" do
+    it "updates the status of the pawn's en_passant" do
+      pawn.update_en_passant_status!
+      expect( pawn.capture_through_en_passant ).to be_false
+    end
+  end
+
+  describe "#can_be_captured_en_passant?" do
+    it "returns true if the pawn can be captured through en passant" do
+      expect( pawn.can_be_captured_en_passant? ).to be_true
+    end
+    
+    it "returns false if the pawn can't be captured through en passant" do
+      pawn.update_en_passant_status!
+      expect( pawn.can_be_captured_en_passant? ).to be_false
     end
   end
 
