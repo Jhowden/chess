@@ -35,43 +35,9 @@ class Game
       king_in_check_sequence( escape_check_moves, player, enemy_player )
     else
       player_input = get_player_move.gsub( /\s+/, "" )
-      if UserCommands::VALID_CASTLING_EXPRESSION.any? { |expression| player_input =~ expression }
-        castle_move_sequence( player, enemy_player, player_input )
-      elsif player_input =~ UserCommands::VALID_EN_PASSANT_EXPRESSION
-        en_passant_move_sequence( player, enemy_player, player_input )
-      else
-        move_piece_sequence( player, enemy_player, player_input )
-      end
+      select_correct_move_sequence( player_input, player, enemy_player )
     end
     update_enemy_pawn_status_for_en_passant( enemy_player.team_pieces, enemy_player.team )
-  end
-  
-  def en_passant_move_sequence( player, enemy_player, player_input )
-    piece_position = convert_to_position( player_input[0], player_input[1] )
-    piece = find_piece_on_board( piece_position )
-    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    if player_and_piece_same_team?( piece, player )
-      if check_move?( piece, [target_file , target_rank, "e.p."] )
-        piece_original_position = piece_position.dup
-        if piece.orientation == :up
-          enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i - 1 ) )
-        else
-          enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i +  1 ) )
-        end
-          enemy_piece.captured!
-          board.remove_old_position( enemy_piece.position )
-          update_the_board!( piece, target_file, target_rank, piece_position )
-          if player_in_check?( player, enemy_player )
-            restore_board_to_original( piece, piece_original_position,
-                                      convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
-          end
-          increase_piece_move_counter( piece )
-        else
-          display_invalid_message( "You cannot perform an en passant at this time.", player, enemy_player )
-      end
-    else
-      display_invalid_message( "That piece is not on your team.", player, enemy_player )
-    end
   end
   
   def update_the_board!( piece, target_file, target_rank, piece_position )
@@ -170,23 +136,68 @@ class Game
       start_player_move( player, enemy_player )
     end
   end
+  
+  def en_passant_move_sequence( player, enemy_player, player_input )
+    piece_position = convert_to_position( player_input[0], player_input[1] )
+    piece = find_piece_on_board( piece_position )
+    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+    if player_and_piece_same_team?( piece, player )
+      if check_move?( piece, [target_file , target_rank, EnPassant::EN_PASSANT_WORD_MARKER] )
+          perform_en_passant_move( piece, player, enemy_player, target_file, target_rank, piece_position )
+        else
+          display_invalid_message( "You cannot perform an en passant at this time.", player, enemy_player )
+      end
+    else
+      display_invalid_message( "That piece is not on your team.", player, enemy_player )
+    end
+  end
+  
+  def perform_en_passant_move( piece, player, enemy_player, target_file, target_rank, piece_position )
+    piece_original_position = piece_position.dup
+    enemy_piece = find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
+    capture_the_piece enemy_piece
+    remove_piece_old_position( enemy_piece.position )
+    update_the_board!( piece, target_file, target_rank, piece_position )
+    check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
+    increase_piece_move_counter( piece )
+  end
+  
+  def capture_the_piece( piece )
+    piece.captured!
+  end
+  
+  def find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
+    if piece.orientation == :up
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i - 1 ) )
+    else
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i +  1 ) )
+    end
+  end
 
   def move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
     if player_and_piece_same_team?( piece, player )
       if check_move?( piece, [target_file , target_rank] )
-        piece_original_position = piece_position.dup
-        enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank ) )
-        update_the_board!( piece, target_file, target_rank, piece_position )
-        if player_in_check?( player, enemy_player )
-          restore_board_to_original( piece, piece_original_position, 
-                                      convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
-        end
-        increase_piece_move_counter( piece )
+        perform_move( piece, player, enemy_player, target_file, target_rank, piece_position )
       else
         display_invalid_message( "That is not a valid move for that piece.", player, enemy_player )
       end
     else
       display_invalid_message( "That piece is not on your team.", player, enemy_player )
+    end
+  end
+  
+  def perform_move( piece, player, enemy_player, target_file, target_rank, piece_position )
+    piece_original_position = piece_position.dup
+    enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank ) )
+    update_the_board!( piece, target_file, target_rank, piece_position )
+    check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
+    increase_piece_move_counter( piece )
+  end
+  
+  def check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
+    if player_in_check?( player, enemy_player )
+      restore_board_to_original( piece, piece_original_position, 
+                                  convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
     end
   end
 
@@ -230,6 +241,16 @@ class Game
   
   def update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
     en_passant.update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
+  end
+  
+  def select_correct_move_sequence( player_input, player, enemy_player )
+    if UserCommands::VALID_CASTLING_EXPRESSION.any? { |expression| player_input =~ expression }
+      castle_move_sequence( player, enemy_player, player_input )
+    elsif player_input =~ UserCommands::VALID_EN_PASSANT_EXPRESSION
+      en_passant_move_sequence( player, enemy_player, player_input )
+    else
+      move_piece_sequence( player, enemy_player, player_input )
+    end
   end
 
   def winner

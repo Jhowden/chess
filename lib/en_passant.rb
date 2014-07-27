@@ -4,6 +4,8 @@ class EnPassant
   include MoveValidations
   attr_reader :game
   
+  EN_PASSANT_WORD_MARKER = "e.p."
+  
   DOWN_EN_PASSANT_RANK_COLLECTION = [4, 3]
   UP_EN_PASSANT_RANK_COLLECTION = [5, 6]
   
@@ -45,7 +47,7 @@ class EnPassant
   end
   
   def possible_move( pawn, navigation, rank )
-    [pawn.new_file_position( navigation ), rank, "e.p."]
+    [pawn.new_file_position( navigation ), rank, EN_PASSANT_WORD_MARKER]
   end
   
   def check_for_enpassant( pawn, navigation, rank )
