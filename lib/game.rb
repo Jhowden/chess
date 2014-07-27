@@ -1,11 +1,13 @@
 File.expand_path( File.join( File.dirname( __FILE__ ), 'board_setup_helper' ) )
 File.expand_path( File.join( File.dirname( __FILE__ ), 'board_piece_locator' ) )
+File.expand_path( File.join( File.dirname( __FILE__ ), 'finished' ) )
 
 class Game
   attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle, :en_passant
 
   include BoardSetupHelper
   include BoardPieceLocator
+  include Finished
 
   def initialize( board, user_commands = UserCommands.new, board_view = BoardView.new )
     @board = board
@@ -107,10 +109,6 @@ class Game
     piece = find_piece_on_board( piece_position )
     target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
     move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
-  end
-  
-  def finished?
-    [player1, player2].any? { |player| player.checkmate? }
   end
   
   def check_for_checkmate( player, possible_moves_list )
@@ -251,10 +249,5 @@ class Game
     else
       move_piece_sequence( player, enemy_player, player_input )
     end
-  end
-
-  def winner
-    winner = [player1, player2].reject { |player| player.checkmate? }
-    puts "#{winner.first.team.capitalize} team is the winner!"
   end
 end
