@@ -15,7 +15,7 @@ module BoardSetupHelper
   end
 
   def create_team( team_color )
-    team = PiecesFactory.new( board, team_color )
+    team = PiecesFactory.new( board, team_color, en_passant )
     team.build
     team.pieces
   end

@@ -11,7 +11,7 @@ describe Pawn do
     allow( board ).to receive( :move_straight_one_space? )
     allow( board ).to receive( :move_straight_two_spaces? )
     allow( board ).to receive( :move_forward_diagonally? )
-    allow( enpassant ).to receive( :en_passant? )
+    allow( enpassant ).to receive( :can_en_passant? )
     allow( enpassant ).to receive( :capture_pawn_en_passant! )
   end
 
@@ -77,17 +77,17 @@ describe Pawn do
     
     context "when en passant" do
       it "checks to see if the pawn can perform en passant to the left" do
-        expect( enpassant ).to receive( :en_passant? ).with( pawn, :previous )
+        expect( enpassant ).to receive( :can_en_passant? ).with( pawn, :previous )
         pawn.determine_possible_moves
       end
       
       it "checks to see if the pawn can perform en passant to the right" do
-        expect( enpassant ).to receive( :en_passant? ).with( pawn, :next )
+        expect( enpassant ).to receive( :can_en_passant? ).with( pawn, :next )
         pawn.determine_possible_moves
       end
       
       it "returns the possible move for en_passant" do
-        expect( enpassant ).to receive( :en_passant? ).and_return true
+        expect( enpassant ).to receive( :can_en_passant? ).and_return true
         allow( enpassant ).to receive( :capture_pawn_en_passant! ).and_return( ["d", 3, "e.p."] )
         pawn.determine_possible_moves
         expect( pawn.possible_moves ).to eq( [["d", 3, "e.p."]] )

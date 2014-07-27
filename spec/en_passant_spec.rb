@@ -1,4 +1,4 @@
-require_relative "spec_helper"
+require "spec_helper"
 
 describe EnPassant do
   
@@ -12,7 +12,7 @@ describe EnPassant do
     stub_const "Pawn", Class.new
   end
   
-  describe "#en_passant?" do
+  describe "#can_en_passant?" do
     context "when pawn is traveling down" do
       context "when en_passant can be performed by a pawn" do
         it "returns true" do
@@ -20,11 +20,11 @@ describe EnPassant do
           allow( pawn ).to receive( :orientation ).and_return :down
           allow( game ).to receive( :find_piece_on_board ).and_return( enemy_pawn )
           allow( pawn ).to receive( :new_file_position ).and_return "f"
-          allow( pawn ).to receive( :position ).and_return Position.new("e", 4)
+          allow( pawn ).to receive( :position ).and_return Position.new( "e", 4 )
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 1
           allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return true
-          expect( enpassant.en_passant?( pawn, :next ) ).to be
+          expect( enpassant.can_en_passant?( pawn, :next ) ).to be
         end
       end
     
@@ -38,7 +38,7 @@ describe EnPassant do
         it "returns false when finding a null piece" do
           allow( game ).to receive( :find_piece_on_board ).and_return( NullPiece.new )
           allow( pawn ).to receive( :new_file_position ).and_return "d"
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
         
         it "returns false when enemy_pawn has moved more than once" do
@@ -46,7 +46,7 @@ describe EnPassant do
           allow( pawn ).to receive( :new_file_position ).and_return "d"
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 2
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
         
         it "returns false when enemy pawn can longer be captured through en passant" do
@@ -55,7 +55,7 @@ describe EnPassant do
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 1
           allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return false
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
       end
     
@@ -63,8 +63,8 @@ describe EnPassant do
         it "returns false" do
           allow( pawn ).to receive( :orientation ).and_return :down
           allow( game ).to receive( :legal_move? ).and_return false
-          allow( pawn ).to receive( :position ).and_return Position.new("a", 4)
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          allow( pawn ).to receive( :position ).and_return Position.new( "a", 4 )
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
       end
     end
@@ -76,11 +76,11 @@ describe EnPassant do
           allow( pawn ).to receive( :orientation ).and_return :up
           allow( game ).to receive( :find_piece_on_board ).and_return( enemy_pawn )
           allow( pawn ).to receive( :new_file_position ).and_return "f"
-          allow( pawn ).to receive( :position ).and_return Position.new("e", 4)
+          allow( pawn ).to receive( :position ).and_return Position.new( "e", 4 )
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 1
           allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return true
-          expect( enpassant.en_passant?( pawn, :next ) ).to be
+          expect( enpassant.can_en_passant?( pawn, :next ) ).to be
         end
       end
       
@@ -88,13 +88,13 @@ describe EnPassant do
         before( :each ) do
           allow( game ).to receive( :legal_move? ).and_return true
           allow( pawn ).to receive( :orientation ).and_return :up
-          allow( pawn ).to receive( :position ).and_return Position.new("e", 4)
+          allow( pawn ).to receive( :position ).and_return Position.new( "e", 4 )
         end
         it "returns false when finding a null piece" do
           
           allow( game ).to receive( :find_piece_on_board ).and_return( NullPiece.new )
           allow( pawn ).to receive( :new_file_position ).and_return "d"
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
         
         it "returns false when the enemy piece has moved more than once" do
@@ -102,7 +102,7 @@ describe EnPassant do
           allow( pawn ).to receive( :new_file_position ).and_return "d"
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 2
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
         
         it "returns false when enemy pawn can longer be captured through en passant" do
@@ -111,7 +111,7 @@ describe EnPassant do
           allow( enemy_pawn ).to receive( :is_a? ).and_return true
           allow( enemy_pawn ).to receive( :move_counter ).and_return 1
           allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return false
-          expect( enpassant.en_passant?( pawn, :previous ) ).to be_false
+          expect( enpassant.can_en_passant?( pawn, :previous ) ).to be_false
         end
       end
       
@@ -119,8 +119,8 @@ describe EnPassant do
         it "returns false" do
           allow( pawn ).to receive( :orientation ).and_return :up
           allow( game ).to receive( :legal_move? ).and_return false
-          allow( pawn ).to receive( :position ).and_return Position.new("h", 4)
-          expect( enpassant.en_passant?( pawn, :next ) ).to be_false
+          allow( pawn ).to receive( :position ).and_return Position.new( "h", 4 )
+          expect( enpassant.can_en_passant?( pawn, :next ) ).to be_false
         end
       end
     end
@@ -145,9 +145,28 @@ describe EnPassant do
   end
   
   describe "#update_enemy_piece_status_for_en_passant" do
-    it "changes the status of en passant for an enemy piece that could be captured through en passant" do
-      expect( pawn ).to receive( :update_en_passant_status! )
-      enpassant.update_enemy_piece_status_for_en_passant( pawn )
+    context "for black pieces" do
+      it "changes the status of en passant for an enemy piece that could be captured through en passant" do
+        allow( enemy_pawn ).to receive( :is_a? ).and_return true
+        allow( enemy_pawn ).to receive( :move_counter ).and_return 1
+        allow( enemy_pawn ).to receive( :captured? ).and_return false
+        allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return true
+        allow( enemy_pawn ).to receive( :position ).and_return Position.new( "a", 4 )
+        expect( enemy_pawn ).to receive( :update_en_passant_status! )
+        enpassant.update_enemy_pawn_status_for_en_passant( [enemy_pawn], :black )
+      end
+    end
+    
+    context "for white pieces" do
+      it "changes the status of en passant for an enemy piece that could be captured through en passant" do
+        allow( enemy_pawn ).to receive( :is_a? ).and_return true
+        allow( enemy_pawn ).to receive( :move_counter ).and_return 1
+        allow( enemy_pawn ).to receive( :captured? ).and_return false
+        allow( enemy_pawn ).to receive( :can_be_captured_en_passant? ).and_return true
+        allow( enemy_pawn ).to receive( :position ).and_return Position.new( "a", 5 )
+        expect( enemy_pawn ).to receive( :update_en_passant_status! )
+        enpassant.update_enemy_pawn_status_for_en_passant( [enemy_pawn], :white )
+      end
     end
   end
 end

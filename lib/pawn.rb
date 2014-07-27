@@ -23,8 +23,8 @@ class Pawn < ChessPiece
     possible_moves << piece_move_forward_two_spaces( STRAIGHT_TWO_MOVE_MODIFIER )
     possible_moves << piece_move_forward_diagonally( :left )
     possible_moves << piece_move_forward_diagonally( :right )
-    possible_moves << en_passant.capture_pawn_en_passant!( self, :previous ) if en_passant.en_passant?( self, :previous )
-    possible_moves << en_passant.capture_pawn_en_passant!( self, :next ) if en_passant.en_passant?( self, :next )
+    possible_moves << en_passant.capture_pawn_en_passant!( self, :previous ) if en_passant.can_en_passant?( self, :previous )
+    possible_moves << en_passant.capture_pawn_en_passant!( self, :next ) if en_passant.can_en_passant?( self, :next )
     
     possible_moves.compact!
   end

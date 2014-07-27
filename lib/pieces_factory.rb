@@ -7,20 +7,21 @@ class PiecesFactory
   include BishopsStartingPositions
   include KnightsStartingPositions
 
-  attr_reader :pieces, :board, :team
+  attr_reader :pieces, :board, :team, :en_passant
 
-  def initialize( board, team )
+  def initialize( board, team, en_passant )
     @board = board
     @team = team
+    @en_passant = en_passant
     @pieces = []
   end
 
   def create_pawns
     8.times do |file|
       if team == :white
-        pieces << Pawn.new( Position::FILE_POSITIONS[file], 7, team, board, :down )
+        pieces << Pawn.new( Position::FILE_POSITIONS[file], 7, team, board, :down, en_passant )
       else
-        pieces << Pawn.new( Position::FILE_POSITIONS[file], 2, team, board, :up )
+        pieces << Pawn.new( Position::FILE_POSITIONS[file], 2, team, board, :up, en_passant )
       end
     end
   end

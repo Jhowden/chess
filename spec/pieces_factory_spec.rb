@@ -3,8 +3,9 @@ require "spec_helper"
 describe PiecesFactory do
 
   let(:board) { double() }
-  let(:white_pieces_factory) { described_class.new( board, :white ) }
-  let(:black_pieces_factory) { described_class.new( board, :black ) }
+  let(:en_passant) { double() }
+  let(:white_pieces_factory) { described_class.new( board, :white, en_passant ) }
+  let(:black_pieces_factory) { described_class.new( board, :black, en_passant ) }
 
   describe "#create_pawns" do
 
@@ -40,6 +41,10 @@ describe PiecesFactory do
 
       it "creates a pawn with the correct orientation" do
         expect( @first_pawn.orientation ).to eq( :down )
+      end
+      
+      it "creates a pawn with an en_passant object" do
+        expect( @first_pawn.en_passant ).to eq( en_passant )
       end
     end
 

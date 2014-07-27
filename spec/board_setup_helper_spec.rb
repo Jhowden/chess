@@ -5,7 +5,7 @@ describe BoardSetupHelper do
   let(:board) { double() }
   let(:player) { double() }
   let(:piece) { double() }
-  let(:game) { Game.new( board ).extend( described_class) }
+  let(:game) { Game.new( board ).extend( described_class ) }
 
   describe "#set_player_team" do
     it "instantiates a player object" do
@@ -26,6 +26,7 @@ describe BoardSetupHelper do
       expect( pawn.position.rank ).to eq( 2 )
       expect( pawn.board_marker ).to eq( "♟" )
       expect( pawn.orientation ).to eq( :up )
+      expect( pawn.en_passant ).to be_an_instance_of EnPassant
     end
   end
 

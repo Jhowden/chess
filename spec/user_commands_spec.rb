@@ -40,7 +40,8 @@ describe UserCommands do
   describe "#user_move_input" do
     it "asks the player to input move in the correct format" do
       allow( user_commands ).to receive( :gets ).and_return( "a33 b5", "a3 b5" )
-      allow( STDOUT ).to receive( :puts ).with( "Please enter a correctly formated move (ex: b3 b6, 0-0 to castle kingside, or 0-0-0 to castle queenside):" )
+      allow( STDOUT ).to receive( :puts ).
+        with( "Please enter a correctly formated move (ex: b3 b6, 0-0 to castle kingside, 0-0-0 to castle queenside), or b4 c3 e.p. to perform en_passant:" )
       expect( user_commands.user_move_input ).to eq( "a3 b5" )
     end
 

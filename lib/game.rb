@@ -2,7 +2,7 @@ File.expand_path( File.join( File.dirname( __FILE__ ), 'board_setup_helper' ) )
 File.expand_path( File.join( File.dirname( __FILE__ ), 'board_piece_locator' ) )
 
 class Game
-  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle
+  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle, :en_passant
 
   include BoardSetupHelper
   include BoardPieceLocator
@@ -13,6 +13,7 @@ class Game
     @user_commands = user_commands
     @checkmate = Checkmate.new( self )
     @castle = Castle.new( self )
+    @en_passant = EnPassant.new( self )
   end
   
   def play!
@@ -35,10 +36,41 @@ class Game
     else
       player_input = get_player_move.gsub( /\s+/, "" )
       if UserCommands::VALID_CASTLING_EXPRESSION.any? { |expression| player_input =~ expression }
-        castle_move_sequence( player_input, player, enemy_player )
+        castle_move_sequence( player, enemy_player, player_input )
+      elsif player_input =~ UserCommands::VALID_EN_PASSANT_EXPRESSION
+        en_passant_move_sequence( player, enemy_player, player_input )
       else
         move_piece_sequence( player, enemy_player, player_input )
       end
+    end
+    update_enemy_pawn_status_for_en_passant( enemy_player.team_pieces, enemy_player.team )
+  end
+  
+  def en_passant_move_sequence( player, enemy_player, player_input )
+    piece_position = convert_to_position( player_input[0], player_input[1] )
+    piece = find_piece_on_board( piece_position )
+    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
+    if player_and_piece_same_team?( piece, player )
+      if check_move?( piece, [target_file , target_rank, "e.p."] )
+        piece_original_position = piece_position.dup
+        if piece.orientation == :up
+          enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i - 1 ) )
+        else
+          enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i +  1 ) )
+        end
+          enemy_piece.captured!
+          board.remove_old_position( enemy_piece.position )
+          update_the_board!( piece, target_file, target_rank, piece_position )
+          if player_in_check?( player, enemy_player )
+            restore_board_to_original( piece, piece_original_position,
+                                      convert_to_position( target_file, target_rank ), enemy_piece, player, enemy_player )
+          end
+          increase_piece_move_counter( piece )
+        else
+          display_invalid_message( "You cannot perform an en passant at this time.", player, enemy_player )
+      end
+    else
+      display_invalid_message( "That piece is not on your team.", player, enemy_player )
     end
   end
   
@@ -143,7 +175,7 @@ class Game
     if player_and_piece_same_team?( piece, player )
       if check_move?( piece, [target_file , target_rank] )
         piece_original_position = piece_position.dup
-        enemy_piece = self.find_piece_on_board( convert_to_position( target_file, target_rank ) )
+        enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank ) )
         update_the_board!( piece, target_file, target_rank, piece_position )
         if player_in_check?( player, enemy_player )
           restore_board_to_original( piece, piece_original_position, 
@@ -158,7 +190,7 @@ class Game
     end
   end
 
-  def castle_move_sequence( player_input, player, enemy_player )
+  def castle_move_sequence( player, enemy_player, player_input )
     if player_input =~ UserCommands::VALID_QUEENSIDE_CASTLING_INPUT
         castle.castle_queenside( player.king_piece, Castle::TEAM_COLOR_CASTLE_RANK_MAP[player.team], 
                                   player, enemy_player )
@@ -194,6 +226,10 @@ class Game
     puts "Player 2's team has been set to #{player2_team_color}"
     @player2 = set_player_team( player2_team_color.to_sym )
     set_up_players_half_of_board( player2_team_color.to_sym, player2 )
+  end
+  
+  def update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
+    en_passant.update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
   end
 
   def winner
