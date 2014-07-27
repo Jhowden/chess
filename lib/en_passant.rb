@@ -70,20 +70,16 @@ class EnPassant
   
   def is_legal_move?( position, navigation )
     if navigation == :previous
-      file = check_space_to_the_left position
+      file = check_space_adjacent_space( position, -1  )
       rank = position.rank_position_converter
     else
-      file = check_space_to_the_right position
+      file = check_space_adjacent_space( position, 1 )
       rank = position.rank_position_converter
     end
     legal_move?( file, rank )
   end
   
-  def check_space_to_the_left position
-    position.file_position_converter - 1
-  end
-  
-  def check_space_to_the_right position
-    position.file_position_converter + 1
+  def check_space_adjacent_space( position, counter )
+    position.file_position_converter + counter
   end
 end
