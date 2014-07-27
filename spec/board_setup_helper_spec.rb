@@ -5,7 +5,8 @@ describe BoardSetupHelper do
   let(:board) { double() }
   let(:player) { double() }
   let(:piece) { double() }
-  let(:game) { Game.new( board ).extend( described_class ) }
+  let(:user_commands) { double() }
+  let(:game) { Game.new( board, user_commands ).extend( described_class ) }
 
   describe "#set_player_team" do
     it "instantiates a player object" do
@@ -64,6 +65,27 @@ describe BoardSetupHelper do
       expect( player ).to receive( :set_team_pieces )
       expect( player ).to receive( :find_king_piece )
       game.set_up_players_half_of_board( :black, player )
+    end
+  end
+  
+  describe "#get_player_teams" do
+    before( :each ) do
+      allow( STDOUT ).to receive( :puts )
+      allow( Player ).to receive( :set_team_pieces )
+      allow( Player ).to receive( :find_king_piece )
+      allow( board ).to receive( :place_pieces_on_board )
+      allow( user_commands ).to receive( :user_team_input ).and_return "black"
+    end
+    
+    it "gets the team color" do
+      expect( user_commands ).to receive( :user_team_input ).and_return "black"
+      game.get_player_teams
+    end
+    
+    it "sets the team color for each player" do
+      game.get_player_teams
+      expect( game.player1.team ).to eq( :black )
+      expect( game.player2.team ).to eq( :white )
     end
   end
 end

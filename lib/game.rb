@@ -53,7 +53,7 @@ class Game
       next if piece.captured? 
       piece.determine_possible_moves
     }.flatten( 1 ).compact
-    check_king_for_check( player, enemy_player_moves )
+    check_king_for_check( player.king_piece, enemy_player_moves )
   end
 
   def restore_piece_to_original_position( piece, piece_original_position, new_position )
@@ -96,8 +96,8 @@ class Game
     Position.new( file, rank.to_i )
   end
   
-  def check_king_for_check( player, enemy_player_moves)
-    player.king_piece.check? enemy_player_moves
+  def check_king_for_check( king, enemy_player_moves)
+    king.check? enemy_player_moves
   end
   
   def display_board
@@ -166,10 +166,14 @@ class Game
   
   def find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
     if piece.orientation == :up
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i - 1 ) )
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, -1 ) ) )
     else
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank.to_i +  1 ) )
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, 1 ) ) )
     end
+  end
+  
+  def check_adjacent_space( rank, counter )
+    rank.to_i + counter
   end
 
   def move_piece( piece, player, enemy_player, target_file, target_rank, piece_position )
@@ -212,7 +216,7 @@ class Game
   def restore_board_to_original( piece, piece_original_position, piece_position, enemy_piece, player, enemy_player )
     restore_piece_to_original_position( piece, piece_original_position, piece_position )
     restore_captured_piece_on_board( enemy_piece ) if enemy_piece.respond_to? :determine_possible_moves
-    puts "That is an invalid move as it puts your king in check. Select another move..."
+    puts "That is an invalid move as it puts your king in check. Select another move."
     start_player_move( player, enemy_player )
   end
 
@@ -224,17 +228,6 @@ class Game
   def check_move?( piece, target_location )
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
-  end
-
-  def get_player_teams
-    puts "Please choose your team player 1 (white or black):"
-    player1_team_color = user_commands.user_team_input
-    @player1 = set_player_team( player1_team_color.to_sym )
-    set_up_players_half_of_board( player1_team_color.to_sym, player1 )
-    player2_team_color = player1.team == :white ? "black" : "white"
-    puts "Player 2's team has been set to #{player2_team_color}"
-    @player2 = set_player_team( player2_team_color.to_sym )
-    set_up_players_half_of_board( player2_team_color.to_sym, player2 )
   end
   
   def update_enemy_pawn_status_for_en_passant( enemy_pieces, team )

@@ -46,7 +46,7 @@ describe Game do
     end
   end
 
-  describe "#{}update_the_board!" do
+  describe "#update_the_board!" do
     before( :each ) do
       allow( board ).to receive( :update_board )
       allow( board ).to receive( :remove_old_position )
@@ -77,7 +77,7 @@ describe Game do
     end
 
     it "returns the player's king piece" do
-      expect( player_1 ).to receive( :king_piece ).and_return king
+      expect( king ).to receive( :check? )
       game.player_in_check?( player_1, player_2 )
     end
 

@@ -23,4 +23,19 @@ module BoardSetupHelper
   def set_player_team( team_color )
     Player.new( team_color )
   end
+  
+  def get_player_teams
+    puts "Please choose your team player 1 (white or black):"
+    player1_team_color = user_commands.user_team_input
+    @player1 = set_player_team( player1_team_color.to_sym )
+    set_up_players_half_of_board( player1_team_color.to_sym, player1 )
+    player2_team_color = determine_second_player_color
+    puts "Player 2's team has been set to #{player2_team_color}"
+    @player2 = set_player_team( player2_team_color.to_sym )
+    set_up_players_half_of_board( player2_team_color.to_sym, player2 )
+  end
+  
+  def determine_second_player_color
+    player1.team == :white ? "black" : "white"
+  end
 end
