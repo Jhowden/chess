@@ -1,6 +1,7 @@
-File.expand_path( File.join( File.dirname( __FILE__ ), 'board_setup_helper' ) )
-File.expand_path( File.join( File.dirname( __FILE__ ), 'board_piece_locator' ) )
-File.expand_path( File.join( File.dirname( __FILE__ ), 'finished' ) )
+$LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
+require "board_setup_helper"
+require "board_piece_locator"
+require "finished"
 
 class Game
   attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle, :en_passant

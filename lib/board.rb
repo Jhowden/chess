@@ -1,6 +1,7 @@
-require_relative 'determine_multiple_moves'
-require_relative 'move_validations'
-require_relative 'pawn_board_moves'
+$LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
+require 'determine_multiple_moves'
+require 'move_validations'
+require 'pawn_board_moves'
 
 class Board
   include DetermineMultipleMoves

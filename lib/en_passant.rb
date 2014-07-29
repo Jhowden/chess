@@ -1,4 +1,5 @@
-require_relative "move_validations"
+$LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
+require "move_validations"
 
 class EnPassant
   include MoveValidations

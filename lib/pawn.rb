@@ -1,5 +1,5 @@
-# Figure out how to add things to the path instead of having to rely on location aware requires
-require_relative 'chess_piece'
+$LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
+require 'chess_piece'
 
 class Pawn < ChessPiece
   STRAIGHT_ONE_MOVE_MODIFIER = [-1, 1]

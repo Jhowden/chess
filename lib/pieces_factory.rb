@@ -1,6 +1,7 @@
-require_relative "rooks_starting_positions"
-require_relative "bishops_starting_positions"
-require_relative "knights_starting_positions"
+$LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
+require "rooks_starting_positions"
+require "bishops_starting_positions"
+require "knights_starting_positions"
 
 class PiecesFactory
   include RooksStartingPositions
