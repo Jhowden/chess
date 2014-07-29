@@ -1,12 +1,13 @@
 $LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
-require "board_setup_helper"
+require "board_setup_commands"
 require "board_piece_locator"
 require "finished"
 
 class Game
-  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, :checkmate, :castle, :en_passant
+  attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, 
+              :checkmate, :castle, :en_passant
 
-  include BoardSetupHelper
+  include BoardSetupCommands
   include BoardPieceLocator
   include Finished
 
@@ -22,9 +23,9 @@ class Game
   def play!
     get_player_teams
     until finished?
-      player_sequence( "Player 1: ", player1, player2 )
+      player_sequence( player1, player2 )
       break if finished?
-      player_sequence( "Player 2: ", player2, player1 )
+      player_sequence( player2, player1 )
     end
     display_board
     winner
@@ -75,10 +76,6 @@ class Game
     puts message
     start_player_move( player, enemy_player )
   end
-
-  def clear_screen!
-    print "\e[H\e[2J"
-  end
   
   def get_player_move
     puts "Please select a piece you would like to move and its new position (ex: b3 b6):"
@@ -118,11 +115,11 @@ class Game
     end
   end
 
-  def player_sequence( message, player, enemy_player )
+  def player_sequence( player, enemy_player )
     display_board
-    puts message
+    puts "#{player.team.capitalize} team's turn: "
     start_player_move( player, enemy_player )
-    clear_screen!
+    ScreenClear.clear_screen!
   end
   
   def king_in_check_sequence( possible_moves_list, player, enemy_player )
