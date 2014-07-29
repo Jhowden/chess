@@ -1,12 +1,14 @@
 $LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_PATH.include?( File.expand_path(File.dirname( __FILE__ ) ) )
-require 'determine_multiple_moves'
+require 'move_multiple_spaces'
 require 'move_validations'
 require 'pawn_board_moves'
 
 class Board
-  include DetermineMultipleMoves
+  include MoveMultipleSpaces
   include MoveValidations
   include PawnBoardMoves
+
+  HORIZONTAL_AND_VERTICAL_SPACE_MOVEMENT = [-1, 1]
   
   attr_reader :chess_board, :possible_moves
   
@@ -41,10 +43,11 @@ class Board
     
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
-    
-    find_spaces_to_the_left( file, rank, piece )
-    find_spaces_to_the_right( file, rank, piece )
-     
+
+    HORIZONTAL_AND_VERTICAL_SPACE_MOVEMENT.each do |horizontal_space|
+      find_possible_horizontal_spaces( file, rank, piece, horizontal_space )
+    end
+
     possible_moves
   end
   
@@ -53,10 +56,11 @@ class Board
     
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
-    
-    find_spaces_above( file, rank, piece )
-    find_spaces_below( file, rank, piece )
-    
+
+    HORIZONTAL_AND_VERTICAL_SPACE_MOVEMENT.each do |vertical_space|
+      find_possible_vertical_spaces( file, rank, piece, vertical_space )
+    end
+
     possible_moves
   end
   
@@ -65,12 +69,13 @@ class Board
     
     file = piece.position.file_position_converter 
     rank = piece.position.rank_position_converter
-    
-    find_spaces_diagonally_top_left( file, rank, piece )
-    find_spaces_diagonally_top_right( file, rank, piece )
-    find_spaces_diagonally_bottom_left( file, rank, piece )
-    find_spaces_diagonally_bottom_right( file, rank, piece )
-   
+
+    HORIZONTAL_AND_VERTICAL_SPACE_MOVEMENT.each do |vertical_space|
+      HORIZONTAL_AND_VERTICAL_SPACE_MOVEMENT.each do |horizontal_space|
+        find_possible_diagonally_spaces( file, rank, piece, vertical_space, horizontal_space )
+      end
+    end
+
     possible_moves
   end
   
