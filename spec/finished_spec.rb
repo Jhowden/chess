@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Finished do
-  class FakeClass
+  class FakeGameClass
     
     attr_reader :player1, :player2
     def initialize( player1, player2 )
@@ -12,7 +12,7 @@ describe Finished do
   
   let(:player1) { double() }
   let(:player2) { double() }
-  let(:fake_class) { FakeClass.new( player1, player2 ).extend( described_class ) }
+  let(:fake_class) { FakeGameClass.new( player1, player2 ).extend( described_class ) }
   
   describe "#finished?" do
     it "returns false when neither player is in checkmate" do

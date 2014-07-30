@@ -2,13 +2,15 @@ $LOAD_PATH.unshift( File.expand_path(File.dirname( __FILE__ ) ) ) unless $LOAD_P
 require "board_setup_commands"
 require "board_piece_locator"
 require "finished"
+require "en_passant_moves"
 
 class Game
   attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, 
               :checkmate, :castle, :en_passant
 
-  include BoardSetupCommands
   include BoardPieceLocator
+  include BoardSetupCommands
+  include EnPassantMoves
   include Finished
 
   def initialize( board, user_commands = UserCommands.new, board_view = BoardView.new )
@@ -110,9 +112,7 @@ class Game
   end
   
   def check_for_checkmate( player, possible_moves_list )
-    if possible_moves_list.empty?
-      player.checkmate!
-    end
+    player.checkmate! if possible_moves_list.empty?
   end
 
   def player_sequence( player, enemy_player )
@@ -133,40 +133,15 @@ class Game
     end
   end
   
-  def en_passant_move_sequence( player, enemy_player, player_input )
-    piece_position = convert_to_position( player_input[0], player_input[1] )
-    piece = find_piece_on_board( piece_position )
-    target_file, target_rank = convert_to_file_and_rank( player_input[2], player_input[3] )
-    if player_and_piece_same_team?( piece, player )
-      if check_move?( piece, [target_file , target_rank, EnPassant::EN_PASSANT_WORD_MARKER] )
-          perform_en_passant_move( piece, player, enemy_player, target_file, target_rank, piece_position )
-        else
-          display_invalid_message( "You cannot perform an en passant at this time.", player, enemy_player )
-      end
-    else
-      display_invalid_message( "That piece is not on your team.", player, enemy_player )
-    end
-  end
-  
-  def perform_en_passant_move( piece, player, enemy_player, target_file, target_rank, piece_position )
-    piece_original_position = piece_position.dup
-    enemy_piece = find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
-    capture_the_piece enemy_piece
-    remove_piece_old_position( enemy_piece.position )
-    update_the_board!( piece, target_file, target_rank, piece_position )
-    check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
-    increase_piece_move_counter( piece )
-  end
-  
   def capture_the_piece( piece )
     piece.captured!
   end
   
   def find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
     if piece.orientation == :up
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, -1 ) ) )
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::DOWN_SPACE ) ) )
     else
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, 1 ) ) )
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::UP_SPACE ) ) )
     end
   end
   
@@ -226,10 +201,6 @@ class Game
   def check_move?( piece, target_location )
     possible_moves = piece.determine_possible_moves
     possible_moves.include?( target_location )
-  end
-  
-  def update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
-    en_passant.update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
   end
   
   def select_correct_move_sequence( player_input, player, enemy_player )

@@ -34,7 +34,6 @@ describe Game do
       allow( Player ).to receive( :team ).and_return( :black, :white, :black, :white )
       allow( user_commands ).to receive( :user_team_input ).and_return( "black" )
       allow( Player ).to receive( :new ).and_return Player
-      allow( Player ).to receive( :checkmate? ).and_return true, false
       allow( board_view ).to receive( :display_board )
       allow( user_commands ).to receive( :user_move_input ).and_return "a3 b4"
       allow( piece ).to receive( :increase_move_counter! )
@@ -49,12 +48,14 @@ describe Game do
     end
 
     it "sets the player's teams" do
+      allow( Player ).to receive( :checkmate? ).and_return true, false
       game.play!
       expect( game.player1.team ).to eq( :black )
       expect( game.player2.team ).to eq( :white )
     end
 
     it "displays who is the winner" do
+      allow( Player ).to receive( :checkmate? ).and_return true, false
       expect( STDOUT ).to receive( :puts ).with( "White team is the winner!")
       game.play!
     end

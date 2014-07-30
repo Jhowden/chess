@@ -10,6 +10,9 @@ class EnPassant
   DOWN_EN_PASSANT_RANK_COLLECTION = [4, 3]
   UP_EN_PASSANT_RANK_COLLECTION = [5, 6]
   
+  DOWN_SPACE = -1
+  UP_SPACE = 1
+  
   def initialize( game )
     @game = game
   end
