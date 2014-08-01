@@ -109,7 +109,7 @@ class Checkmate
   end
   
   def captured_a_piece?( file, rank )
-    position = Position.new( file, rank )
+    position = game.convert_to_position( file, rank )
     piece = game.find_piece_on_board( position )
     piece.respond_to?( :determine_possible_moves ) ? piece : false
   end

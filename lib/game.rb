@@ -68,6 +68,10 @@ class Game
     piece.increase_move_counter!
   end
   
+  def convert_to_position( file, rank )
+    Position.new( file, rank.to_i )
+  end
+  
   private
   
   def convert_to_file_and_rank( file, rank )
@@ -90,10 +94,6 @@ class Game
   
   def update_position( piece, file, rank )
     piece.update_piece_position( file, rank )
-  end
-  
-  def convert_to_position( file, rank )
-    Position.new( file, rank.to_i )
   end
   
   def check_king_for_check( king, enemy_player_moves)
@@ -135,14 +135,6 @@ class Game
   
   def capture_the_piece( piece )
     piece.captured!
-  end
-  
-  def find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
-    if piece.orientation == :up
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::DOWN_SPACE ) ) )
-    else
-      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::UP_SPACE ) ) )
-    end
   end
   
   def check_adjacent_space( rank, counter )

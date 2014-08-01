@@ -27,4 +27,12 @@
   def update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
     en_passant.update_enemy_pawn_status_for_en_passant( enemy_pieces, team )
   end
+  
+  def find_enemy_pawn_for_en_passant( piece, target_file, target_rank )
+    if piece.orientation == :up
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::DOWN_SPACE ) ) )
+    else
+      enemy_piece = find_piece_on_board( convert_to_position( target_file, check_adjacent_space( target_rank, EnPassant::UP_SPACE ) ) )
+    end
+  end
 end

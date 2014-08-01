@@ -138,4 +138,12 @@ describe Game do
       game.increase_piece_move_counter( piece )
     end
   end
+  
+  describe "#convert_to_position" do
+    it "convers a file and rank into a position" do
+      position = game.convert_to_position( "a", "3" )
+      expect( position.file ).to eq( "a" )
+      expect( position.rank ).to eq( 3 )
+    end
+  end
 end

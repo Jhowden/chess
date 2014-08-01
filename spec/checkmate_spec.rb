@@ -24,6 +24,7 @@ describe Checkmate do
       and_return false
     allow( piece2 ).to receive( :position ).and_return piece2
     allow( game ).to receive( :update_the_board! )
+    allow( game ).to receive( :convert_to_position ).and_return Position.new( "e", 6 )
   end
   
   describe "#move_king_in_all_possible_spots" do
@@ -32,7 +33,7 @@ describe Checkmate do
         it "checks to see where a king can move and not be in check" do
           allow( game ).to receive( :find_piece_on_board ).and_return null_piece
           allow( game ).to receive( :player_in_check? ).with( player, player2 ).
-      and_return false, true, false, false, false, false, false, false
+            and_return false, true, false, false, false, false, false, false
           allow( king ).to receive( :determine_possible_moves ).
             and_return( [["e", 6], ["f", 6], ["g", 6], ["e", 5], ["g", 5], ["e", 4], ["f", 4], ["g", 4]] )
           allow( position ).to receive( :rank ).and_return 3
