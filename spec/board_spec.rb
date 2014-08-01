@@ -4,13 +4,13 @@ describe Board do
     
   let(:game_board) { described_class.new }
   let(:piece) { double( position: Position.new( "f", 5 ), team: :black, orientation: :up, 
-                        starting_location: ["f", 5] ) }
+                        move_counter: 0 ) }
   let(:piece2) { double( position: Position.new( "a", 8 ), team: :white, orientation: :up,
-                        starting_location: ["a", 8] ) }
+                        move_counter: 1 ) }
   let(:piece3) { double( position: Position.new( "f", 1 ), team: :black, orientation: :down,
-                         starting_location: ["f", 1] ) }
+                         move_counter: 1 ) }
   let(:piece4) { double( position: Position.new( "f", 5 ), team: :black, orientation: :down, 
-                         starting_location: ["f", 5] ) }
+                         move_counter: 0 ) }
   let(:piece5) { double( position: Position.new( "e", 4 ), team: :black ) }
   let(:piece6) { double( position: Position.new( "g", 1 ), team: :black ) }
   let(:position) { Position.new( "c", 1 ) }
@@ -94,6 +94,10 @@ describe Board do
         expect( game_board.move_straight_two_spaces?( piece ) ).to be_true
       end
 
+      it "prevents a piece from moving two spaces if already moved" do
+        expect( game_board.move_straight_two_spaces?( piece2 ) ).to be_false
+      end
+
       it "prevents the piece from moving off the board" do
         expect( game_board.move_straight_two_spaces?( piece2 ) ).to be_false
       end
@@ -115,6 +119,10 @@ describe Board do
       end
 
       it "prevents the piece from moving off the board" do
+        expect( game_board.move_straight_two_spaces?( piece3 ) ).to be_false
+      end
+
+      it "prevents a piece from moving two spaces if already moved" do
         expect( game_board.move_straight_two_spaces?( piece3 ) ).to be_false
       end
 

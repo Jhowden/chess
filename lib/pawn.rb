@@ -12,7 +12,6 @@ class Pawn < ChessPiece
     @orientation = orientation
     @en_passant = en_passant
     @board_marker = determine_board_marker
-    @starting_location = determine_starting_location
     @capture_through_en_passant = true
   end
   
@@ -85,9 +84,5 @@ class Pawn < ChessPiece
         [new_file_position( :previous ), position.rank - 1]
       end
     end
-  end
-
-  def determine_starting_location
-    [position.file, position.rank]
   end
 end

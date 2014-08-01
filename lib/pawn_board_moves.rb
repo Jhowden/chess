@@ -54,15 +54,15 @@ module PawnBoardMoves
 
   def can_move_two_spaces?( orientation, piece )
     piece.orientation == orientation && move_straight_one_space?( piece ) && 
-        current_position_same_as_starting_position?( piece )
+        pawn_first_move?( piece.move_counter )
   end
 
   def can_move_straight?( file, rank, move_modifier )
     legal_move?( file, rank + move_modifier.first ) && empty_space?( file, rank + move_modifier.last )
   end
 
-  def current_position_same_as_starting_position?( piece )
-    [piece.position.file, piece.position.rank] == piece.starting_location
+  def pawn_first_move?( piece_move_counter )
+    piece_move_counter == 0
   end
 
   def can_move_diagonally?( file, rank, move_modifier, piece )
