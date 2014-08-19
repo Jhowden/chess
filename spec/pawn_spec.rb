@@ -132,8 +132,4 @@ describe Pawn do
       expect( pawn.can_be_captured_en_passant? ).to be_false
     end
   end
-
-  it "finds the pawn's starting location" do
-    expect( pawn.starting_location ).to eq( ["b", 2] )
-  end
 end
