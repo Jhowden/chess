@@ -3,21 +3,6 @@ require 'spec_helper'
 describe UserCommands do
 
   let(:user_commands) { described_class.new }
-  # how do I mock out gets?
-
-  # describe "#user_input" do
-  #   it "asks for a player's input" do
-  #     expect( Kernel ).to receive( :gets ).and_return "white"
-  #     user_commands.user_input
-  #   end
-  # end
-
-  describe "#user_input" do
-    it "asks for a player's input" do
-      expect( user_commands ).to receive( :gets ).and_return "white"
-      user_commands.user_input
-    end
-  end
 
   describe "#user_team_input" do
     it "checks to see if a player puts in the correct team color" do
@@ -41,7 +26,7 @@ describe UserCommands do
     it "asks the player to input move in the correct format" do
       allow( user_commands ).to receive( :gets ).and_return( "a33 b5", "a3 b5" )
       allow( STDOUT ).to receive( :puts ).
-        with( "Please enter a correctly formated move (ex: b3 b6, 0-0 to castle kingside, 0-0-0 to castle queenside), or b4 c3 e.p. to perform en_passant:" )
+        with( "Please enter a correctly formatted move (ex: b3 b6, 0-0 to castle kingside, 0-0-0 to castle queenside), or b4 c3 e.p. to perform en_passant:" )
       expect( user_commands.user_move_input ).to eq( "a3 b5" )
     end
 
@@ -69,6 +54,34 @@ describe UserCommands do
     it "accepts en_passant as correct format" do
       allow( user_commands ).to receive( :gets ).and_return "b4 c3 e.p."
       expect( user_commands.user_move_input ).to eq "b4 c3 e.p."
+    end
+  end
+
+  describe "#piece_promotion_input" do
+    it "accepts queen as a valid piece replacement" do
+      allow( user_commands ).to receive( :gets ).and_return "Queen"
+      expect( user_commands.piece_promotion_input ).to eq "Queen"
+    end
+
+    it "accepts knight as a valid piece replacement" do
+      allow( user_commands ).to receive( :gets ).and_return "knight"
+      expect( user_commands.piece_promotion_input ).to eq "Knight"
+    end
+
+    it "accepts rook as a valid piece replacement" do
+      allow( user_commands ).to receive( :gets ).and_return "Rook"
+      expect( user_commands.piece_promotion_input ).to eq "Rook"
+    end
+
+    it "accepts bishop as a valid piece replacement" do
+      allow( user_commands ).to receive( :gets ).and_return "bishop"
+      expect( user_commands.piece_promotion_input ).to eq "Bishop"
+    end
+
+    it "doesn't accept an invalid piece replacement input" do
+      allow( STDOUT ).to receive( :puts )
+      allow( user_commands ).to receive( :gets ).and_return( "pawn", "bishop" )
+      expect( user_commands.piece_promotion_input ).to eq "Bishop"
     end
   end
 end
