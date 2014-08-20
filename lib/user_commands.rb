@@ -28,7 +28,6 @@ class UserCommands
 
   def user_move_input
     input = user_input
-    
     if VALID_EXPRESSIONS_COLLECTION.any? { |expression| input =~ expression }
       input
     else
@@ -38,6 +37,7 @@ class UserCommands
   end
 
   def piece_promotion_input
+    puts "Choose between Queen, Rook, Bishop, and Knight to replace your pawn."
     input = user_input
     if VALID_REPLACEMENT_EXPRESSIONS.any? { |expression| input.capitalize =~ expression }
       input.capitalize

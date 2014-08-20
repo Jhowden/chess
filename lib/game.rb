@@ -3,6 +3,7 @@ require "board_setup_commands"
 require "board_piece_locator"
 require "finished"
 require "en_passant_moves"
+require "piece_promotion"
 
 class Game
   attr_reader :player1, :player2, :board, :board_view, :chess_board, :user_commands, 
@@ -12,6 +13,7 @@ class Game
   include BoardSetupCommands
   include EnPassantMoves
   include Finished
+  include PiecePromotion
 
   def initialize( board, user_commands = UserCommands.new, board_view = BoardView.new )
     @board = board
@@ -159,6 +161,16 @@ class Game
     update_the_board!( piece, target_file, target_rank, piece_position )
     check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
     increase_piece_move_counter( piece )
+    check_for_pawn_promotion player
+  end
+
+  def check_for_pawn_promotion player
+    pawn_pieces = player.team_pieces.select{ |piece| !piece.captured? && piece.is_a?( Pawn ) }
+    pawn_pieces.each do |pawn|
+      if pawn_can_be_promoted? pawn
+        replace_pawn_with_promoted_piece pawn
+      end
+    end
   end
   
   def check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )

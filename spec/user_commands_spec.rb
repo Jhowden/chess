@@ -58,6 +58,10 @@ describe UserCommands do
   end
 
   describe "#piece_promotion_input" do
+
+    before( :each ) do
+      allow( STDOUT ).to receive( :puts )
+    end
     it "accepts queen as a valid piece replacement" do
       allow( user_commands ).to receive( :gets ).and_return "Queen"
       expect( user_commands.piece_promotion_input ).to eq "Queen"
@@ -79,7 +83,6 @@ describe UserCommands do
     end
 
     it "doesn't accept an invalid piece replacement input" do
-      allow( STDOUT ).to receive( :puts )
       allow( user_commands ).to receive( :gets ).and_return( "pawn", "bishop" )
       expect( user_commands.piece_promotion_input ).to eq "Bishop"
     end
