@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PiecePromotion do
-  class FakeGameClass
+  class FakeClass
     attr_reader :user_commands, :board
     
     def initialize
@@ -11,7 +11,7 @@ describe PiecePromotion do
   end
 
   let(:game) { double() }
-  let(:piece_promotion) { FakeGameClass.new.extend( described_class ) }
+  let(:piece_promotion) { FakeClass.new.extend( described_class ) }
   let(:position) { double( file: "e", rank: 1 ) }
   let(:white_pawn) { double( position: position, team: :white ) }
   let(:black_pawn) { double( team: :black) }
