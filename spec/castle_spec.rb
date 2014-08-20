@@ -19,11 +19,13 @@ describe Castle do
       allow( position ).to receive( :dup ).and_return copied_position
       allow( game ).to receive( :update_the_board! )
       allow( game ).to receive( :player_in_check? )
-      allow( game ).to receive( :increase_piece_move_counter )
+      # allow( game ).to receive( :increase_piece_move_counter )
       allow( game ).to receive( :start_player_move )
       allow( game ).to receive( :restore_piece_to_original_position )
+      allow( king ).to receive( :increase_move_counter! )
       allow( king ).to receive( :move_counter ).and_return 0
       allow( rook ).to receive( :move_counter ).and_return 0
+      allow( rook ).to receive( :increase_move_counter! )
     end
 
     it "expect the the board to be updated" do
@@ -89,14 +91,18 @@ describe Castle do
 
       it "updates the move counter on the king" do
         allow( game ).to receive( :player_in_check? ).and_return( false, false )
-        expect( game ).to receive( :increase_piece_move_counter ).with( king )
+        
         castle.castle_queenside( king, 8, player, enemy_player )
+
+        expect( king ).to have_received( :increase_move_counter! )
       end
 
       it "updates the move counter on the rook" do
         allow( game ).to receive( :player_in_check? ).and_return( false, false )
-        expect( game ).to receive( :increase_piece_move_counter ).with( rook )
+        
         castle.castle_queenside( king, 8, player, enemy_player )
+
+        expect( rook ).to have_received( :increase_move_counter! )
       end
     end
 
@@ -120,8 +126,10 @@ describe Castle do
       allow( game ).to receive( :restore_piece_to_original_position )
       allow( STDOUT ).to receive( :puts )
       allow( game ).to receive( :increase_piece_move_counter )
+      allow( king ).to receive( :increase_move_counter! )
       allow( king ).to receive( :move_counter ).and_return 0
       allow( rook ).to receive( :move_counter ).and_return 0
+      allow( rook ).to receive( :increase_move_counter! )
     end
 
     it "expect the the board to be updated" do
@@ -187,14 +195,18 @@ describe Castle do
 
       it "updates the move counter on the king" do
         allow( game ).to receive( :player_in_check? ).and_return( false, false )
-        expect( game ).to receive( :increase_piece_move_counter ).with( king )
+        
         castle.castle_kingside( king, 1, player, enemy_player )
+
+        expect( king ).to have_received( :increase_move_counter! )
       end
 
       it "updates the move counter on the rook" do
         allow( game ).to receive( :player_in_check? ).and_return( false, false )
-        expect( game ).to receive( :increase_piece_move_counter ).with( rook )
+        
         castle.castle_kingside( king, 1, player, enemy_player )
+
+        expect( rook ).to have_received( :increase_move_counter! )
       end
     end
 

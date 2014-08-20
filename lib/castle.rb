@@ -74,7 +74,7 @@ class Castle
 
   def increase_king_and_rook_move_counters( king, rook )
     [king, rook].each do |piece|
-      game.increase_piece_move_counter( piece )
+      piece.increase_move_counter!
     end
   end
 

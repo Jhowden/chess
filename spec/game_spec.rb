@@ -131,19 +131,4 @@ describe Game do
       game.player_in_check?( player_1, player_2 )
     end
   end
-
-  describe "#increase_piece_move_counter" do
-    it "increases the pieces counter by one" do
-      expect( piece ).to receive( :increase_move_counter! )
-      game.increase_piece_move_counter( piece )
-    end
-  end
-  
-  describe "#convert_to_position" do
-    it "convers a file and rank into a position" do
-      position = game.convert_to_position( "a", "3" )
-      expect( position.file ).to eq( "a" )
-      expect( position.rank ).to eq( 3 )
-    end
-  end
 end

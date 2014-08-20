@@ -65,14 +65,6 @@ class Game
   def restore_piece_to_original_position( piece, piece_original_position, new_position )
     update_the_board!( piece, piece_original_position.file, piece_original_position.rank, new_position )
   end
-
-  def increase_piece_move_counter( piece )
-    piece.increase_move_counter!
-  end
-  
-  def convert_to_position( file, rank )
-    Position.new( file, rank.to_i )
-  end
   
   private
   
@@ -160,7 +152,7 @@ class Game
     enemy_piece = find_piece_on_board( convert_to_position( target_file, target_rank ) )
     update_the_board!( piece, target_file, target_rank, piece_position )
     check_to_see_if_player_move_put_own_king_in_check( player, enemy_player, piece, piece_original_position, target_file, target_rank, enemy_piece )
-    increase_piece_move_counter( piece )
+    piece.increase_move_counter!
     check_for_pawn_promotion player
   end
 
@@ -215,5 +207,9 @@ class Game
     else
       move_piece_sequence( player, enemy_player, player_input )
     end
+  end
+
+  def convert_to_position( file, rank )
+    Position.new( file, rank.to_i )
   end
 end
