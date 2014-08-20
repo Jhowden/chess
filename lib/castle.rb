@@ -15,7 +15,7 @@ class Castle
 
   def castle_queenside( king, rank, player, enemy_player )
     rook = find_piece_on_board( POSSIBLE_ROOK_FILE_CONTAINER.first, rank )
-    if legal_to_castle?( king.move_counter, rook.move_counter ) && queen_side_spaces_unoccupied?( rank )
+    if legal_to_castle?( king.move_counter, rook.move_counter, CASTLE_QUEENSIDE_FILE_CONTAINER, rank )
       kings_starting_position = copy_piece_position king
       attempt_to_castle( king, rook, CASTLE_QUEENSIDE_FILE_CONTAINER.first, CASTLE_QUEENSIDE_FILE_CONTAINER[1],
         rank, kings_starting_position, player, enemy_player )
@@ -27,7 +27,7 @@ class Castle
 
   def castle_kingside( king, rank, player, enemy_player )
     rook = find_piece_on_board( POSSIBLE_ROOK_FILE_CONTAINER.last, rank )
-    if legal_to_castle?( king.move_counter, rook.move_counter ) && king_side_spaces_unoccupied?( rank )
+    if legal_to_castle?( king.move_counter, rook.move_counter, CASTLE_KINGSIDE_FILE_CONTAINER, rank )
       kings_starting_position = copy_piece_position king
       attempt_to_castle( king, rook, CASTLE_KINGSIDE_FILE_CONTAINER.first, CASTLE_KINGSIDE_FILE_CONTAINER[1], 
         rank, kings_starting_position, player, enemy_player )
@@ -37,8 +37,9 @@ class Castle
     end
   end
 
-  def legal_to_castle?( king_movement_counter, rook_movement_counter )
-    [king_movement_counter, rook_movement_counter].all? { |counter| counter == 0 }
+  def legal_to_castle?( king_movement_counter, rook_movement_counter, file_container, rank )
+    [king_movement_counter, rook_movement_counter].all? { |counter| counter == 0 } &&
+      spaces_between_king_and_rook_unoccupied?( file_container, rank )
   end
 
   private
@@ -111,15 +112,9 @@ class Castle
     piece.respond_to?( :determine_possible_moves ) ? false : true
   end
 
-  def king_side_spaces_unoccupied?( rank )
-    CASTLE_KINGSIDE_FILE_CONTAINER.map { |file|
+  def spaces_between_king_and_rook_unoccupied?( file_container, rank )
+    file_container.map { |file|
       unoccupied_space?( file, rank )
     }.all? { |boolean| boolean }
-  end
-
-  def queen_side_spaces_unoccupied?( rank )
-    CASTLE_QUEENSIDE_FILE_CONTAINER.map { |file|
-      unoccupied_space?( file, rank ) 
-      }.all? { |boolean| boolean }
   end
 end

@@ -19,7 +19,6 @@ describe Castle do
       allow( position ).to receive( :dup ).and_return copied_position
       allow( game ).to receive( :update_the_board! )
       allow( game ).to receive( :player_in_check? )
-      # allow( game ).to receive( :increase_piece_move_counter )
       allow( game ).to receive( :start_player_move )
       allow( game ).to receive( :restore_piece_to_original_position )
       allow( king ).to receive( :increase_move_counter! )
@@ -28,7 +27,7 @@ describe Castle do
       allow( rook ).to receive( :increase_move_counter! )
     end
 
-    it "expect the the board to be updated" do
+    it "updates the board" do
       expect( game ).to receive( :update_the_board! ).with( king, "d", 8, copied_position)
       castle.castle_queenside( king, 8, player, enemy_player )
     end
@@ -222,18 +221,33 @@ describe Castle do
 
   describe "#legal_to_castle?" do
     context "when a rook or king has already moved" do
-      it "returns false" do
-        expect( castle.legal_to_castle?( 0, 1 ) ).to be_false
+      it "returns false when the knight has moved" do
+        expect( castle.legal_to_castle?( 0, 1, Castle::CASTLE_KINGSIDE_FILE_CONTAINER, 8 ) ).to be_false
       end
 
-      it "returns false" do
-        expect( castle.legal_to_castle?( 1, 0 ) ).to be_false
+      it "returns false when the king has moved" do
+        expect( castle.legal_to_castle?( 1, 0, Castle::CASTLE_KINGSIDE_FILE_CONTAINER, 8 ) ).to be_false
+      end
+
+      it "returns false when a piece occupies a space between the king and rook" do
+        allow( piece ).to receive( :respond_to? ).and_return true
+        allow( game ).to receive( :find_piece_on_board ).and_return piece
+
+        expect( castle.legal_to_castle?( 0, 0, Castle::CASTLE_KINGSIDE_FILE_CONTAINER, 8 ) ).to be_false
       end
     end
 
     context "when both rook and king haven't moved" do
-      it "returns true" do
-        expect( castle.legal_to_castle?( 0, 0 ) ).to be
+      it "returns true when neither the king nor rook have moved" do
+        allow( game ).to receive( :find_piece_on_board ).and_return piece
+
+        expect( castle.legal_to_castle?( 0, 0, Castle::CASTLE_KINGSIDE_FILE_CONTAINER, 8 ) ).to be
+      end
+
+      it "returns true when all the spaces between the king and rook are unoccupied" do
+        allow( game ).to receive( :find_piece_on_board ).and_return piece
+
+        expect( castle.legal_to_castle?( 0, 0, Castle::CASTLE_QUEENSIDE_FILE_CONTAINER, 8 ) ).to be
       end
     end
   end
