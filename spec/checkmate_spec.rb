@@ -24,7 +24,6 @@ describe Checkmate do
       and_return false
     allow( piece2 ).to receive( :position ).and_return piece2
     allow( game ).to receive( :update_the_board! )
-    allow( game ).to receive( :convert_to_position ).and_return Position.new( "e", 6 )
   end
   
   describe "#move_king_in_all_possible_spots" do
