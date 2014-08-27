@@ -21,7 +21,7 @@ class Castle
         rank, kings_starting_position, player, enemy_player )
     else
       piece_already_moved_message
-      get_player_move_again( player, enemy_player )
+      get_player_move_again( player, enemy_player ) # instead of restarting the game here, return false and have the game class restart game
     end
   end
 
@@ -33,7 +33,7 @@ class Castle
         rank, kings_starting_position, player, enemy_player )
     else
       piece_already_moved_message
-      get_player_move_again( player, enemy_player )
+      get_player_move_again( player, enemy_player ) # instead of restarting the game here, return false and have the game class restart game
     end
   end
 
@@ -66,7 +66,7 @@ class Castle
   def restart_player_turn( king, kings_starting_position, king_current_position, player, enemy_player )
     restore_board_to_original( king, kings_starting_position, king_current_position )
     illegal_to_castle_message
-    get_player_move_again( player, enemy_player )
+    get_player_move_again( player, enemy_player ) # instead of restarting the game here, return false and have the game class restart game
   end
 
   def get_player_move_again( player, enemy_player )
